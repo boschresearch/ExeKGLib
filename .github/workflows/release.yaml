@@ -1,0 +1,69 @@
+# Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bumped-version-part:
+        description: "The version part to bump."
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+        default: "minor"
+        required: true
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Release
+    if: github.repository == 'bcai-internal/executable-ml-kgs'
+    runs-on: [self-hosted, Linux]
+    container: ubuntu:latest
+
+    steps:
+      - name: Install prerequisites
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install --yes \
+            curl \
+            gcc \
+            git \
+            python3-dev \
+            python3-venv
+
+      - name: Set up poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 - --force
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Configure git
+        run: |
+          git config --add --global safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@bosch.com"
+
+      - name: Release
+        run: |
+          poetry run poe release ${{ github.event.inputs.bumped-version-part }} \
+            --username ${{ secrets.ARTIFACTORY_RESOURCE_USER }} \
+            --password ${{ secrets.ARTIFACTORY_RESOURCE_TOKEN }}

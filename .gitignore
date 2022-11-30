@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+sdist/
+*.egg-info/
+*.egg
+
+# Pytest / coverage reports
+.pytest_cache/
+test_results.xml
+.coverage
+coverage.xml
+junit_result.xml
+pytest.xml
+
+# pyenv
+.python-version
+
+# virtualenv
+.venv/
+venv/
+ENV/
+
+# PyCharm project settings
+.idea/
+
+# Spyder project settings
+.spyderproject
+
+# Rope project settings
+.ropeproject
+
+# vscode project settings
+.vscode/
+
+# mypy
+.mypy_cache
+
+# pylint
+pylint-report.txt
+
+# mkdocs site_dir
+.site/

@@ -1,0 +1,95 @@
+# Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
+
+name: Continuous Integration
+
+on: [pull_request, push, workflow_dispatch]
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI
+    runs-on: [self-hosted, Linux]
+    container: ubuntu:latest
+
+    steps:
+      - name: Install prerequisites
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install --yes \
+            curl \
+            gcc \
+            git \
+            python3-dev \
+            python3-venv
+
+      - name: Set up poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 - --force
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Configure git
+        run: |
+          git config --add --global safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@bosch.com"
+
+      - name: Install & run pre-commit hooks
+        env:
+          SKIP: no-commit-to-branch
+        run: |
+          poetry run pre-commit install
+          poetry run pre-commit run --all-files --show-diff-on-failure
+
+      - name: Run tests
+        run: poetry run poe test
+
+      - name: Code Coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage.xml
+          format: markdown
+          output: both
+
+      - name: Build docs
+        run: poetry run poe docs
+
+      - name: Deploy temporary docs
+        if: github.event_name == 'pull_request'
+        run: |
+          poetry run poe deploy-docs \
+            --push \
+            --alias pr-${{ github.event.number }} \
+            --version-postfix pr-${{ github.event.number }}
+
+      - name: Write PR note
+        if: github.event_name == 'pull_request'
+        run: |
+          COVERAGE=$(cat code-coverage-results.md)
+          cat <<EOT>> pr-note.md
+          ## :rotating_light: Test Coverage
+
+          $COVERAGE
+          EOT
+
+      - name: Add PR note
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2.3.1
+        with:
+          path: pr-note.md
