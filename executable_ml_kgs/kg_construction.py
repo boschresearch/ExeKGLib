@@ -4,6 +4,9 @@ g = Graph(bind_namespaces="rdflib")
 g1 = Graph(bind_namespaces="rdflib")
 exekg_namespace = Namespace("http://www.semanticweb.org/zhuoxun/ontologies/exeKG#")
 g.bind("exeKG", exekg_namespace)
+
+next_task_flag_type_dict = {0: "CanvasTask", 1: "StatisticTask", 2: "MLTask"}
+
 task_type_dict = {}
 method_type_dict = {}
 data_entity_dict = {}
@@ -27,14 +30,7 @@ def add_task(item_name, item_type):
     g.add((new_item_name, RDF.type, new_item_type))
     if item_type == "Pipeline":
         prompt = "Enter inputs of the pipeline, enter 'quit' to stop input: "
-        input_str = input(prompt)
-        if input_str != "quit":
-            data_entity_dict[input_str] = {
-                "DataStructure": "Array",
-                "DataSemantics": "?",
-            }  # todo: input_system
-            input_instance = URIRef(exekg_namespace + input_str)
-            g.add((new_item_name, exekg_namespace.hasInput, input_instance))
+        input_str = None
         while input_str != "quit":
             input_str = input(prompt)
             if input_str != "quit":
@@ -50,23 +46,11 @@ def add_task(item_name, item_type):
                 "Please enter the next task:\n\t0: Visual Task\n\t1: Statistic Task\n\t2. ML Task:\n"
             )
         )
-        if (
-            next_task_flag == 0
-        ):  # TODO: only visualPipeline has initial Task(CanvasTask), maybe in ontology set a class as "initialTask"
-            next_task_type = "CanvasTask"
-            next_task_name = name_task_with_type(next_task_type, task_type_dict)
-            next_task_instance = URIRef(exekg_namespace + next_task_name)
-            g.add((new_item_name, exekg_namespace.hasStartTask, next_task_instance))
-        if next_task_flag == 1:
-            next_task_type = "StatisticTask"
-            next_task_name = name_task_with_type(next_task_type, task_type_dict)
-            next_task_instance = URIRef(exekg_namespace + next_task_name)
-            g.add((new_item_name, exekg_namespace.hasStartTask, next_task_instance))
-        if next_task_flag == 2:
-            next_task_type = "MLTask"
-            next_task_name = name_task_with_type(next_task_type, task_type_dict)
-            next_task_instance = URIRef(exekg_namespace + next_task_name)
-            g.add((new_item_name, exekg_namespace.hasStartTask, next_task_instance))
+        # TODO: only visualPipeline has initial Task(CanvasTask), maybe in ontology set a class as "initialTask"
+        next_task_type = next_task_flag_type_dict[next_task_flag]
+        next_task_name = name_task_with_type(next_task_type, task_type_dict)
+        next_task_instance = URIRef(exekg_namespace + next_task_name)
+        g.add((new_item_name, exekg_namespace.hasStartTask, next_task_instance))
 
         add_task(next_task_name, next_task_type)
     else:
