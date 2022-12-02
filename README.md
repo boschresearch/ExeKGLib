@@ -26,6 +26,4 @@ Library for excutable ML pipelines KGs.
 [pre-commit-badge]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
 [pre-commit]: https://github.com/pre-commit/pre-commit
 
----
 
-> Created with :heart: by the [`bloody-python`](https://github.boschdevcloud.com/bios-bcai/bloody-python) template.
