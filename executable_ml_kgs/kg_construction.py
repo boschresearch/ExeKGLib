@@ -4,29 +4,9 @@ g = Graph(bind_namespaces="rdflib")
 g1 = Graph(bind_namespaces="rdflib")
 exekg_namespace = Namespace("http://www.semanticweb.org/zhuoxun/ontologies/exeKG#")
 g.bind("exeKG", exekg_namespace)
-namespace_dict = {}
 task_type_dict = {}
 method_type_dict = {}
 data_entity_dict = {}
-
-
-def read_ontology(url):
-    g1.parse("kg/" + url)
-    namespace_dict = g1.namespace_manager.__dict__["_NamespaceManager__trie"].copy()
-    for key in namespace_dict:
-        if key == "http://www.w3.org/XML/1998/namespace":
-            namespace_dict[key] = "xml:"
-        elif key == "http://www.w3.org/1999/02/22-rdf-syntax-ns#":
-            namespace_dict[key] = "rdf:"
-        elif key == "http://www.w3.org/2000/01/rdf-schema#":
-            namespace_dict[key] = "rdfs:"
-        elif key == "http://www.w3.org/2001/XMLSchema#":
-            namespace_dict[key] = "xsd:"
-        elif key == "http://www.w3.org/2002/07/owl#":
-            namespace_dict[key] = "owl:"
-        else:
-            namespace_dict[key] = key.split("/")[-1].replace("#", ":")
-    return namespace_dict
 
 
 def pipeline_creation():
@@ -187,14 +167,26 @@ def add_data_entity(data_entity_dict):  # TODO
         data_structure_type = URIRef(
             exekg_namespace + data_entity_dict[data_entity]["DataStructure"]
         )
-        g.add((data_entity_instance, exekg_namespace.hasDataStructure, data_structure_type))
+        g.add(
+            (
+                data_entity_instance,
+                exekg_namespace.hasDataStructure,
+                data_structure_type,
+            )
+        )
         data_semantics_type = URIRef(
             exekg_namespace + data_entity_dict[data_entity]["DataSemantics"]
         )
-        g.add((data_entity_instance, exekg_namespace.hasDataSemantics, data_semantics_type))
+        g.add(
+            (
+                data_entity_instance,
+                exekg_namespace.hasDataSemantics,
+                data_semantics_type,
+            )
+        )
 
 
 if __name__ == "__main__":
     url = "exeKGOntology.ttl"
-    namespace_dict = read_ontology(url)
+    g1.parse("kg/" + url)
     pipeline_creation()
