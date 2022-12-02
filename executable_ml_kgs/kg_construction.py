@@ -4,197 +4,197 @@ g = Graph(bind_namespaces="rdflib")
 g1 = Graph(bind_namespaces="rdflib")
 exekg_namespace = Namespace("http://www.semanticweb.org/zhuoxun/ontologies/exeKG#")
 g.bind("exeKG", exekg_namespace)
-namespaceDict = {}
-taskTypeDict = {}
-methodTypeDict = {}
-dataEntityDict = {}
+namespace_dict = {}
+task_type_dict = {}
+method_type_dict = {}
+data_entity_dict = {}
 
 
-def readOntology(url):
+def read_ontology(url):
     g1.parse("kg/" + url)
-    namespaceDict = g1.namespace_manager.__dict__["_NamespaceManager__trie"].copy()
-    for key in namespaceDict:
+    namespace_dict = g1.namespace_manager.__dict__["_NamespaceManager__trie"].copy()
+    for key in namespace_dict:
         if key == "http://www.w3.org/XML/1998/namespace":
-            namespaceDict[key] = "xml:"
+            namespace_dict[key] = "xml:"
         elif key == "http://www.w3.org/1999/02/22-rdf-syntax-ns#":
-            namespaceDict[key] = "rdf:"
+            namespace_dict[key] = "rdf:"
         elif key == "http://www.w3.org/2000/01/rdf-schema#":
-            namespaceDict[key] = "rdfs:"
+            namespace_dict[key] = "rdfs:"
         elif key == "http://www.w3.org/2001/XMLSchema#":
-            namespaceDict[key] = "xsd:"
+            namespace_dict[key] = "xsd:"
         elif key == "http://www.w3.org/2002/07/owl#":
-            namespaceDict[key] = "owl:"
+            namespace_dict[key] = "owl:"
         else:
-            namespaceDict[key] = key.split("/")[-1].replace("#", ":")
-    return namespaceDict
+            namespace_dict[key] = key.split("/")[-1].replace("#", ":")
+    return namespace_dict
 
 
-def pipelineCreation():
-    userPipeline = "test"
-    pipelineName = userPipeline + "Pipeline"
-    outputFile = "kg/" + pipelineName + ".ttl"
-    addTask(pipelineName, "Pipeline")
-    addMethod(methodTypeDict)
-    addDataEntity(dataEntityDict)
+def pipeline_creation():
+    user_pipeline = "test"
+    pipeline_name = user_pipeline + "Pipeline"
+    output_file = "kg/" + pipeline_name + ".ttl"
+    add_task(pipeline_name, "Pipeline")
+    add_method(method_type_dict)
+    add_data_entity(data_entity_dict)
 
-    with open(outputFile, "w") as f:
+    with open(output_file, "w") as f:
         f.write((g1 + g).serialize())
 
 
-def addTask(itemName, itemType):
-    new_item_name = URIRef(exekg_namespace + itemName)
-    new_item_type = URIRef(exekg_namespace + itemType)
+def add_task(item_name, item_type):
+    new_item_name = URIRef(exekg_namespace + item_name)
+    new_item_type = URIRef(exekg_namespace + item_type)
     g.add((new_item_name, RDF.type, new_item_type))
-    if itemType == "Pipeline":
+    if item_type == "Pipeline":
         prompt = "Enter inputs of the pipeline, enter 'quit' to stop input: "
-        inputStr = input(prompt)
-        if inputStr != "quit":
-            dataEntityDict[inputStr] = {
+        input_str = input(prompt)
+        if input_str != "quit":
+            data_entity_dict[input_str] = {
                 "DataStructure": "Array",
                 "DataSemantics": "?",
-            }  # TODO: input system
-            inputInstance = URIRef(exekg_namespace + inputStr)
-            g.add((new_item_name, exekg_namespace.hasInput, inputInstance))
-        while inputStr != "quit":
-            inputStr = input(prompt)
-            if inputStr != "quit":
-                dataEntityDict[inputStr] = {
+            }  # todo: input_system
+            input_instance = URIRef(exekg_namespace + input_str)
+            g.add((new_item_name, exekg_namespace.hasInput, input_instance))
+        while input_str != "quit":
+            input_str = input(prompt)
+            if input_str != "quit":
+                data_entity_dict[input_str] = {
                     "DataStructure": "Array",
                     "DataSemantics": "?",
                 }  # TODO: input system
-                inputInstance = URIRef(exekg_namespace + inputStr)
-                g.add((new_item_name, exekg_namespace.hasInput, inputInstance))
+                input_instance = URIRef(exekg_namespace + input_str)
+                g.add((new_item_name, exekg_namespace.hasInput, input_instance))
 
-        nextTaskFlag = int(
+        next_task_flag = int(
             input(
                 "Please enter the next task:\n\t0: Visual Task\n\t1: Statistic Task\n\t2. ML Task:\n"
             )
         )
         if (
-            nextTaskFlag == 0
+            next_task_flag == 0
         ):  # TODO: only visualPipeline has initial Task(CanvasTask), maybe in ontology set a class as "initialTask"
-            nextTaskType = "CanvasTask"
-            nextTaskName = nameTaskWithType(nextTaskType, taskTypeDict)
-            nextTaskInstance = URIRef(exekg_namespace + nextTaskName)
-            g.add((new_item_name, exekg_namespace.hasStartTask, nextTaskInstance))
-        if nextTaskFlag == 1:
-            nextTaskType = "StatisticTask"
-            nextTaskName = nameTaskWithType(nextTaskType, taskTypeDict)
-            nextTaskInstance = URIRef(exekg_namespace + nextTaskName)
-            g.add((new_item_name, exekg_namespace.hasStartTask, nextTaskInstance))
-        if nextTaskFlag == 2:
-            nextTaskType = "MLTask"
-            nextTaskName = nameTaskWithType(nextTaskType, taskTypeDict)
-            nextTaskInstance = URIRef(exekg_namespace + nextTaskName)
-            g.add((new_item_name, exekg_namespace.hasStartTask, nextTaskInstance))
+            next_task_type = "CanvasTask"
+            next_task_name = name_task_with_type(next_task_type, task_type_dict)
+            next_task_instance = URIRef(exekg_namespace + next_task_name)
+            g.add((new_item_name, exekg_namespace.hasStartTask, next_task_instance))
+        if next_task_flag == 1:
+            next_task_type = "StatisticTask"
+            next_task_name = name_task_with_type(next_task_type, task_type_dict)
+            next_task_instance = URIRef(exekg_namespace + next_task_name)
+            g.add((new_item_name, exekg_namespace.hasStartTask, next_task_instance))
+        if next_task_flag == 2:
+            next_task_type = "MLTask"
+            next_task_name = name_task_with_type(next_task_type, task_type_dict)
+            next_task_instance = URIRef(exekg_namespace + next_task_name)
+            g.add((new_item_name, exekg_namespace.hasStartTask, next_task_instance))
 
-        addTask(nextTaskName, nextTaskType)
+        add_task(next_task_name, next_task_type)
     else:
         # Method
-        method_propertyQuery = (
-            "\nSELECT ?p ?m WHERE {?p rdfs:domain exeKG:" + itemType + " . "
+        method_property_query = (
+            "\nSELECT ?p ?m WHERE {?p rdfs:domain exeKG:" + item_type + " . "
             "?p rdfs:range ?m . "
             "?m rdfs:subClassOf exeKG:AtomicMethod . }"
         )  # method property
         i = 0
-        methodList = []
-        print("Please enter available Method for {}:".format(itemType))
-        for pair in list(g1.query(method_propertyQuery)):
-            tmpMethod = pair[1].split("#")[1]
-            print("\t{}. {}".format(str(i), tmpMethod))
-            methodList.append(tmpMethod)
+        method_list = []
+        print("please_enter_available_method_for {}:".format(item_type))
+        for pair in list(g1.query(method_property_query)):
+            tmp_method = pair[1].split("#")[1]
+            print("\t{}. {}".format(str(i), tmp_method))
+            method_list.append(tmp_method)
             i += 1
-        methodID = int(input())
-        methodType = methodList[methodID]
-        methodName = nameMethodWithType(methodType, methodTypeDict)
-        hasMethodInstance = URIRef(pair[0])
-        methodInstance = URIRef(pair[1] + methodName)
-        g.add((new_item_name, hasMethodInstance, methodInstance))
+        method_id = int(input())
+        method_type = method_list[method_id]
+        method_name = name_method_with_type(method_type, method_type_dict)
+        has_method_instance = URIRef(pair[0])
+        method_instance = URIRef(pair[1] + method_name)
+        g.add((new_item_name, has_method_instance, method_instance))
 
         # data
         # pick data from dataEntityDict, according to allowedDataStructure of methodType
 
         # DatatypeProperty
-        methodDatatypePropertyQuery = (
-            "\nSELECT ?p ?r WHERE {?p rdfs:domain exeKG:" + methodType + " . "
+        method_datatype_property_query = (
+            "\nSELECT ?p ?r WHERE {?p rdfs:domain exeKG:" + method_type + " . "
             "?p rdfs:range ?r . "
             "?p rdf:type owl:DatatypeProperty . }"
         )
-        propertyList = list(g1.query(methodDatatypePropertyQuery))
-        if propertyList:
-            print("Please enter requested properties for {}:".format(methodType))
-            for pair in propertyList:
-                propertyInstance = URIRef(pair[0])
+        property_list = list(g1.query(method_datatype_property_query))
+        if property_list:
+            print("Please enter requested properties for {}:".format(method_type))
+            for pair in property_list:
+                property_instance = URIRef(pair[0])
                 range = pair[1].split("#")[1]
-                rangeInstance = URIRef(pair[1])
+                range_instance = URIRef(pair[1])
 
-                inputProperty = Literal(
+                input_property = Literal(
                     input("\t{} in range({}): ".format(pair[0].split("#")[1], range)),
-                    datatype=rangeInstance,
+                    datatype=range_instance,
                 )
-                g.add((new_item_name, propertyInstance, inputProperty))
+                g.add((new_item_name, property_instance, input_property))
 
         # Next Task
-        nextTaskQuery = "\nSELECT ?t WHERE {?t rdfs:subClassOf exeKG:AtomicTask . }"
+        next_task_query = "\nSELECT ?t WHERE {?t rdfs:subClassOf exeKG:AtomicTask . }"
         i = 0
-        atomicTaskList = []
+        atomic_task_list = []
         print("Please enter the next Task:")
-        for t in list(g1.query(nextTaskQuery)):
-            tmpTask = t[0].split("#")[1]
-            print("\t{}. {}".format(str(i), tmpTask))
-            atomicTaskList.append(tmpTask)
+        for t in list(g1.query(next_task_query)):
+            tmp_task = t[0].split("#")[1]
+            print("\t{}. {}".format(str(i), tmp_task))
+            atomic_task_list.append(tmp_task)
             i += 1
         print("\t{}. End pipeline".format(str(-1)))
-        taskID = int(input())
-        if taskID != -1:
-            taskType = atomicTaskList[taskID]
-            taskName = nameTaskWithType(taskType, taskTypeDict)
-            taskNamespace = t[0].split("#")[0] + "#"
-            taskInstance = URIRef(taskNamespace + taskName)
-            g.add((new_item_name, exekg_namespace.hasNextTask, taskInstance))
-            addTask(taskName, taskType)
+        task_id = int(input())
+        if task_id != -1:
+            task_type = atomic_task_list[task_id]
+            task_name = name_task_with_type(task_type, task_type_dict)
+            task_namespace = t[0].split("#")[0] + "#"
+            task_instance = URIRef(task_namespace + task_name)
+            g.add((new_item_name, exekg_namespace.hasNextTask, task_instance))
+            add_task(task_name, task_type)
 
 
-def nameTaskWithType(itemType, itemTypeDict):
-    if itemType not in itemTypeDict:
-        itemTypeDict[itemType] = 1
+def name_task_with_type(item_type, item_type_dict):
+    if item_type not in item_type_dict:
+        item_type_dict[item_type] = 1
     else:
-        itemTypeDict[itemType] += 1
-    itemName = itemType + str(itemTypeDict[itemType])
-    return itemName
+        item_type_dict[item_type] += 1
+    item_name = item_type + str(item_type_dict[item_type])
+    return item_name
 
 
-def nameMethodWithType(methodType, methodTypeDict):
-    if methodType not in methodTypeDict:
-        methodTypeDict[methodType] = 0
-    methodName = methodType + "0"
-    return methodName
+def name_method_with_type(method_type, method_type_dict):
+    if method_type not in method_type_dict:
+        method_type_dict[method_type] = 0
+    method_name = method_type + "0"
+    return method_name
 
 
-def addMethod(methodTypeDict):
-    for methodType in methodTypeDict.keys():
-        methodInstance = URIRef(
-            exekg_namespace + nameMethodWithType(methodType, methodTypeDict)
+def add_method(method_type_dict):
+    for method_type in method_type_dict.keys():
+        method_instance = URIRef(
+            exekg_namespace + name_method_with_type(method_type, method_type_dict)
         )
-        methodType = URIRef(exekg_namespace + methodType)
-        g.add((methodInstance, RDF.type, methodType))
+        method_type = URIRef(exekg_namespace + method_type)
+        g.add((method_instance, RDF.type, method_type))
 
 
-def addDataEntity(dataEntityDict):  # TODO
-    for dataEntity in dataEntityDict.keys():
-        dataEntityInstance = URIRef(exekg_namespace + dataEntity)
-        g.add((dataEntityInstance, RDF.type, exekg_namespace.DataEntity))
-        dataStructureType = URIRef(
-            exekg_namespace + dataEntityDict[dataEntity]["DataStructure"]
+def add_data_entity(data_entity_dict):  # TODO
+    for data_entity in data_entity_dict.keys():
+        data_entity_instance = URIRef(exekg_namespace + data_entity)
+        g.add((data_entity_instance, RDF.type, exekg_namespace.DataEntity))
+        data_structure_type = URIRef(
+            exekg_namespace + data_entity_dict[data_entity]["DataStructure"]
         )
-        g.add((dataEntityInstance, exekg_namespace.hasDataStructure, dataStructureType))
-        dataSemanticsType = URIRef(
-            exekg_namespace + dataEntityDict[dataEntity]["DataSemantics"]
+        g.add((data_entity_instance, exekg_namespace.hasDataStructure, data_structure_type))
+        data_semantics_type = URIRef(
+            exekg_namespace + data_entity_dict[data_entity]["DataSemantics"]
         )
-        g.add((dataEntityInstance, exekg_namespace.hasDataSemantics, dataSemanticsType))
+        g.add((data_entity_instance, exekg_namespace.hasDataSemantics, data_semantics_type))
 
 
 if __name__ == "__main__":
     url = "exeKGOntology.ttl"
-    namespaceDict = readOntology(url)
-    pipelineCreation()
+    namespace_dict = read_ontology(url)
+    pipeline_creation()
