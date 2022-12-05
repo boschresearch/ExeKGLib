@@ -67,8 +67,8 @@ jobs:
 #          format: markdown
 #          output: both
 
-      - name: Build docs
-        run: poetry run poe docs
+#      - name: Build docs
+#        run: poetry run poe docs
 
       - name: Deploy temporary docs
         if: github.event_name == 'pull_request'
