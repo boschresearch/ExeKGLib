@@ -57,11 +57,11 @@ jobs:
       - name: Bump patch version
         run: poetry run poe bump-version-tag patch
 
-      - name: Deploy docs
-        run: |
-          poetry run poe test
-          poetry run poe docs
-          poetry run poe deploy-docs --push --alias latest
+#      - name: Deploy docs
+#        run: |
+#          poetry run poe test
+#          poetry run poe docs
+#          poetry run poe deploy-docs --push --alias latest
 
       - name: Deploy package
         run: |
