@@ -64,7 +64,7 @@ jobs:
 #          poetry run poe deploy-docs --push --alias latest
 
       - name: Generate 3rd-Party Licenses
-        run: poetry run poe export-3rd-party-licenses --push
+        run: poetry run poe export-3rd-party-licenses
 
 #      - name: Deploy package
 #        run: |
