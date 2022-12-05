@@ -57,15 +57,15 @@ jobs:
           poetry run pre-commit install
           poetry run pre-commit run --all-files --show-diff-on-failure
 
-      - name: Run tests
-        run: poetry run poe test
-
-      - name: Code Coverage Summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: coverage.xml
-          format: markdown
-          output: both
+#      - name: Run tests
+#        run: poetry run poe test
+#
+#      - name: Code Coverage Summary
+#        uses: irongut/CodeCoverageSummary@v1.3.0
+#        with:
+#          filename: coverage.xml
+#          format: markdown
+#          output: both
 
       - name: Build docs
         run: poetry run poe docs
