@@ -2,7 +2,7 @@
   Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
 -->
 
-# executable-ml-kgs
+# Executable Machine Learning Knowledge Graphs
 
 [![License: All rights reserved][license-badge]][license-url]
 [![CI][ci-badge]][ci]
@@ -10,9 +10,7 @@
 [![pre-commit][pre-commit-badge]][pre-commit]
 [![Code style: black][black-badge]][black]
 
-Library for excutable ML pipelines KGs.
-
-> :construction: Disclaimer: This project is at an early stage of development and subject to change.
+Library for executable ML pipelines KGs.
 
 <!-- URLs -->
 [black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
