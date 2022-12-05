@@ -66,12 +66,12 @@ jobs:
       - name: Generate 3rd-Party Licenses
         run: poetry run poe export-3rd-party-licenses
 
-      - name: Deploy package
-        run: |
-          poetry run poe deploy-package \
-            --repository production \
-            --username ${{ secrets.ARTIFACTORY_RESOURCE_USER }} \
-            --password ${{ secrets.ARTIFACTORY_RESOURCE_TOKEN }}
+#      - name: Deploy package
+#        run: |
+#          poetry run poe deploy-package \
+#            --repository production \
+#            --username ${{ secrets.ARTIFACTORY_RESOURCE_USER }} \
+#            --password ${{ secrets.ARTIFACTORY_RESOURCE_TOKEN }}
 
       - name: Push version tag
         run: poetry run poe push-latest-version-tag
