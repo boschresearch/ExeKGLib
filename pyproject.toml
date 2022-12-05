@@ -285,12 +285,6 @@ cmd = """
 sequence = [
     {cmd = """
       pip-licenses --format markdown --with-authors --with-urls --with-description \
-        --output-file third-party-licenses.md
-      """},
-      {cmd = """
-      echo "Push generated file!" && \
-      git add third-party-licenses.md && \
-      git commit -m "3rd party license update" && \
-      git push
-      """}
+        --output-file ./third-party-licenses.md
+        """}
       ]
