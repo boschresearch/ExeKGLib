@@ -3,7 +3,7 @@
 [tool.poetry]
 name = "executable-ml-kgs"
 version = "0.0.0" # Don't touch: Versions are dynamically generated from git tags
-description = "Library for excutable ML pipelines KGs."
+description = "Library for executable ML pipelines KGs."
 license = "All rights reserved"
 authors = ["Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
 
@@ -56,7 +56,7 @@ pre-commit = "^2.20.0"
 pydocstyle = "^6.1.1"
 pyflakes = "^3.0.1"
 pylint = "^2.15.7"
-pytest = "^7.2.0"
+pytest = ">=7.2.0"
 pytest-cov = "^4.0.0"
 pytest-html = "^3.2.0"
 pytest-xdist = "^3.0.2"

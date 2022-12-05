@@ -1,4 +1,4 @@
-from rdflib import Graph, URIRef, RDF, Namespace, Literal
+from rdflib import RDF, Graph, Literal, Namespace, URIRef
 
 g = Graph(bind_namespaces="rdflib")
 g1 = Graph(bind_namespaces="rdflib")
@@ -66,9 +66,7 @@ def add_task(item_name, item_type):
                 g.add((new_item_name, exekg_namespace.hasInput, input_instance))
 
         next_task_flag = int(
-            input(
-                "Please enter the next task:\n\t0: Visual Task\n\t1: Statistic Task\n\t2. ML Task:\n"
-            )
+            input("Please enter the next task:\n\t0: Visual Task\n\t1: Statistic Task\n\t2. ML Task:\n")
         )
         if (
             next_task_flag == 0
@@ -98,10 +96,10 @@ def add_task(item_name, item_type):
         )  # method property
         i = 0
         method_list = []
-        print("please_enter_available_method_for {}:".format(item_type))
+        print(f"please_enter_available_method_for {item_type}:")
         for pair in list(g1.query(method_property_query)):
             tmp_method = pair[1].split("#")[1]
-            print("\t{}. {}".format(str(i), tmp_method))
+            print(f"\t{str(i)}. {tmp_method}")
             method_list.append(tmp_method)
             i += 1
         method_id = int(input())
@@ -122,7 +120,7 @@ def add_task(item_name, item_type):
         )
         property_list = list(g1.query(method_datatype_property_query))
         if property_list:
-            print("Please enter requested properties for {}:".format(method_type))
+            print(f"Please enter requested properties for {method_type}:")
             for pair in property_list:
                 property_instance = URIRef(pair[0])
                 range = pair[1].split("#")[1]
@@ -141,10 +139,10 @@ def add_task(item_name, item_type):
         print("Please enter the next Task:")
         for t in list(g1.query(next_task_query)):
             tmp_task = t[0].split("#")[1]
-            print("\t{}. {}".format(str(i), tmp_task))
+            print(f"\t{str(i)}. {tmp_task}")
             atomic_task_list.append(tmp_task)
             i += 1
-        print("\t{}. End pipeline".format(str(-1)))
+        print(f"\t{str(-1)}. End pipeline")
         task_id = int(input())
         if task_id != -1:
             task_type = atomic_task_list[task_id]
@@ -173,9 +171,7 @@ def name_method_with_type(method_type, method_type_dict):
 
 def add_method(method_type_dict):
     for method_type in method_type_dict.keys():
-        method_instance = URIRef(
-            exekg_namespace + name_method_with_type(method_type, method_type_dict)
-        )
+        method_instance = URIRef(exekg_namespace + name_method_with_type(method_type, method_type_dict))
         method_type = URIRef(exekg_namespace + method_type)
         g.add((method_instance, RDF.type, method_type))
 
@@ -184,13 +180,9 @@ def add_data_entity(data_entity_dict):  # TODO
     for data_entity in data_entity_dict.keys():
         data_entity_instance = URIRef(exekg_namespace + data_entity)
         g.add((data_entity_instance, RDF.type, exekg_namespace.DataEntity))
-        data_structure_type = URIRef(
-            exekg_namespace + data_entity_dict[data_entity]["DataStructure"]
-        )
+        data_structure_type = URIRef(exekg_namespace + data_entity_dict[data_entity]["DataStructure"])
         g.add((data_entity_instance, exekg_namespace.hasDataStructure, data_structure_type))
-        data_semantics_type = URIRef(
-            exekg_namespace + data_entity_dict[data_entity]["DataSemantics"]
-        )
+        data_semantics_type = URIRef(exekg_namespace + data_entity_dict[data_entity]["DataSemantics"])
         g.add((data_entity_instance, exekg_namespace.hasDataSemantics, data_semantics_type))
 
 
