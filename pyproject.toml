@@ -267,9 +267,9 @@ help = "Run pytest & compute test coverage."
 
 [tool.poe.tasks._export-docs-artifacts]
 sequence = [
-  { cmd = "git-changelog . --output docs/exported/changelog.md --style conventional --template angular" },
-  { cmd = "genbadge coverage --input-file coverage.xml --output-file docs/exported/coverage/badge.svg" },
-  { cmd = "genbadge tests --input-file pytest.xml --output-file docs/exported/tests/badge.svg" },
+#   { cmd = "git-changelog . --output docs/exported/changelog.md --style conventional --template angular" },
+#   { cmd = "genbadge coverage --input-file coverage.xml --output-file docs/exported/coverage/badge.svg" },
+#   { cmd = "genbadge tests --input-file pytest.xml --output-file docs/exported/tests/badge.svg" },
   { ref = "_export-licenses" },
   { shell = "poe --help > docs/exported/poe-options.txt" },
 ]
@@ -278,4 +278,11 @@ sequence = [
 cmd = """
   pip-licenses --format markdown --with-authors --with-urls --with-description \
     --output-file docs/exported/third-party-licenses.md
+  """
+
+
+[tool.poe.tasks.export-3rd-party-licenses]
+cmd = """
+  pip-licenses --format markdown --with-authors --with-urls --with-description \
+    --output-file third-party-licenses.md
   """
