@@ -63,15 +63,6 @@ jobs:
 #          poetry run poe docs
 #          poetry run poe deploy-docs --push --alias latest
 
-      - name: Push files
-          uses: plocket/push-generated-file@master
-          with:
-            source_file_path: './third-party-licenses.md'
-            destination_folder: '.'
-            target_branch: 'feature-branch'
-            author: 'plocket'
-            author_email: 'plocket@example.com'
-
 #      - name: Deploy package
 #        run: |
 #          poetry run poe deploy-package \

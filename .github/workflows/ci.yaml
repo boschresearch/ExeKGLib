@@ -51,13 +51,13 @@ jobs:
           git config user.email "${GITHUB_ACTOR}@bosch.com"
 
       - name: Generate 3rd-Party Licenses
-          run: poetry run poe export-3rd-party-licenses
+        run: poetry run poe export-3rd-party-licenses
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
-          name: Commit updated badges changes 📝
-          with:
-            commit_message: Commit updated 3rd Party License
-            file_pattern: third-party-licenses.md
+      - name: Commit updated badges changes 📝
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Commit updated 3rd Party License
+          file_pattern: 'third-party-licenses.md'
 
       - name: Install & run pre-commit hooks
         env:
