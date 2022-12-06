@@ -4,13 +4,12 @@ from .entity import Entity
 
 
 class ExeKG:
-    def __init__(self):
-        self.ontology = Graph(bind_namespaces="rdflib")
+    def __init__(self, exe_kg_namespace_iri, ontology_path):
         self.exe_kg = Graph(bind_namespaces="rdflib")
-        self.exe_kg_namespace = Namespace(
-            "http://www.semanticweb.org/zhuoxun/ontologies/exeKG#"
-        )
-        self.exe_kg.bind("exeKG", self.exe_kg_namespace)
+        self.exe_kg_namespace = Namespace(exe_kg_namespace_iri)
+        self.exe_kg_namespace_prefix = exe_kg_namespace_iri.split("#")[1]
+        self.exe_kg.bind(self.exe_kg_namespace_prefix, self.exe_kg_namespace)
+
         self.atomic_task = Entity(self.exe_kg_namespace.AtomicTask)
         self.atomic_method = Entity(self.exe_kg_namespace.AtomicMethod)
         self.data_entity = Entity(self.exe_kg_namespace.DataEntity)
@@ -30,8 +29,12 @@ class ExeKG:
         self.data_type_list = []
         self.task_instances_list = []
 
+        self.ontology = Graph(bind_namespaces="rdflib")
+        self.ontology_path = ontology_path
+        self.parse_ontology(ontology_path)
+
     def parse_ontology(self, iri):
-        self.ontology.parse(iri)
+        self.ontology.parse(iri, format="n3")
 
         atomic_task_subclasses = self.get_atomic_task_subclasses()
         for t in list(atomic_task_subclasses):
@@ -160,31 +163,45 @@ class ExeKG:
 
     def get_method_datatype_properties(self, entity_type):
         return self.query_ontology(
-            "\nSELECT ?p ?r WHERE {?p rdfs:domain exeKG:" + entity_type + " . "
+            "\nSELECT ?p ?r WHERE {?p rdfs:domain "
+            + self.exe_kg_namespace_prefix
+            + ":"
+            + entity_type
+            + " . "
             "?p rdfs:range ?r . "
             "?p rdf:type owl:DatatypeProperty . }"
         )
 
     def get_method_properties_and_methods(self, entity_type):
         return self.query_ontology(
-            "\nSELECT ?p ?m WHERE {?p rdfs:domain exeKG:" + entity_type + " . "
+            "\nSELECT ?p ?m WHERE {?p rdfs:domain "
+            + self.exe_kg_namespace_prefix
+            + ":"
+            + entity_type
+            + " . "
             "?p rdfs:range ?m . "
-            "?m rdfs:subClassOf exeKG:AtomicMethod . }"
+            "?m rdfs:subClassOf " + self.exe_kg_namespace_prefix + ":AtomicMethod . }"
         )  # method property
 
     def get_atomic_method_subclasses(self):
         return self.query_ontology(
-            "\nSELECT ?t WHERE {?t rdfs:subClassOf exeKG:AtomicMethod . }"
+            "\nSELECT ?t WHERE {?t rdfs:subClassOf "
+            + self.exe_kg_namespace_prefix
+            + ":AtomicMethod . }"
         )
 
     def get_atomic_task_subclasses(self):
         return self.query_ontology(
-            "\nSELECT ?t WHERE {?t rdfs:subClassOf exeKG:AtomicTask . }"
+            "\nSELECT ?t WHERE {?t rdfs:subClassOf "
+            + self.exe_kg_namespace_prefix
+            + ":AtomicTask . }"
         )
 
     def get_data_type_subclasses(self):
         return self.query_ontology(
-            "\nSELECT ?t WHERE {?t rdfs:subClassOf exeKG:Data . }"
+            "\nSELECT ?t WHERE {?t rdfs:subClassOf "
+            + self.exe_kg_namespace_prefix
+            + ":Data . }"
         )
 
     def add_data_input_to_instance(
