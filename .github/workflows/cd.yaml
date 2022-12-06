@@ -57,18 +57,18 @@ jobs:
       - name: Bump patch version
         run: poetry run poe bump-version-tag patch
 
-      - name: Deploy docs
-        run: |
-          poetry run poe test
-          poetry run poe docs
-          poetry run poe deploy-docs --push --alias latest
+#      - name: Deploy docs
+#        run: |
+#          poetry run poe test
+#          poetry run poe docs
+#          poetry run poe deploy-docs --push --alias latest
 
-      - name: Deploy package
-        run: |
-          poetry run poe deploy-package \
-            --repository production \
-            --username ${{ secrets.ARTIFACTORY_RESOURCE_USER }} \
-            --password ${{ secrets.ARTIFACTORY_RESOURCE_TOKEN }}
+#      - name: Deploy package
+#        run: |
+#          poetry run poe deploy-package \
+#            --repository production \
+#            --username ${{ secrets.ARTIFACTORY_RESOURCE_USER }} \
+#            --password ${{ secrets.ARTIFACTORY_RESOURCE_TOKEN }}
 
       - name: Push version tag
         run: poetry run poe push-latest-version-tag

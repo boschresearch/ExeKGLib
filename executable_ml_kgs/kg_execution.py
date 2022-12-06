@@ -1,24 +1,19 @@
-from cProfile import label
+import time
 from cgitb import small
-import pandas as pd
+from cProfile import label
+
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.font_manager import FontProperties
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import matplotlib.colors as mcolors
-import numpy as np
-import time
 from mpl_toolkits.axisartist.parasite_axes import HostAxes, ParasiteAxes
 from rdflib import Graph
-from utils import (
-    parse_entity,
-    parse_namespace,
-    query,
-    execute_pipeline,
-    PipelineProcessor,
-)
 from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neural_network import MLPRegressor
+from utils import PipelineProcessor, execute_pipeline, parse_entity, parse_namespace, query
 
 
 class Visualizer(PipelineProcessor):
@@ -51,19 +46,13 @@ class Visualizer(PipelineProcessor):
             pass
 
         try:
-            n_rows, n_cols = [
-                int(i) for i in canvas_po["exeKG:hasLayout"][0].split(" ")
-            ]
+            n_rows, n_cols = (int(i) for i in canvas_po["exeKG:hasLayout"][0].split(" "))
         except:
             n_rows, n_cols = (1, 1)
         fig = plt.figure(figsize=self.figsize_default)
         # if n_rows = n_cols = 1, then just single plot
         # otherwise subplot is expected
-        grid = (
-            None
-            if (n_rows == n_cols and n_rows == 1)
-            else plt.GridSpec(n_rows, n_cols, hspace=0.3, wspace=0.3)
-        )
+        grid = None if (n_rows == n_cols and n_rows == 1) else plt.GridSpec(n_rows, n_cols, hspace=0.3, wspace=0.3)
         self.fig = fig
         self.grid = grid
         return (fig, grid)
@@ -108,9 +97,7 @@ class Visualizer(PipelineProcessor):
             plt.ylabel(y_label)
 
         else:
-            row_start, row_end, col_start, col_end = [
-                int(i) for i in task["exeKG:hasLayout"][0].split()
-            ]
+            row_start, row_end, col_start, col_end = (int(i) for i in task["exeKG:hasLayout"][0].split())
             ax = fig.add_subplot(grid[row_start:row_end, col_start:col_end])
             # plot
             ax.plot(
@@ -156,9 +143,7 @@ class Visualizer(PipelineProcessor):
             plt.ylabel(y_label)
 
         else:
-            row_start, row_end, col_start, col_end = [
-                int(i) for i in task["exeKG:hasLayout"][0].split()
-            ]
+            row_start, row_end, col_start, col_end = (int(i) for i in task["exeKG:hasLayout"][0].split())
             ax = fig.add_subplot(grid[row_start:row_end, col_start:col_end])
 
             # plot
@@ -242,9 +227,7 @@ class Visualizer(PipelineProcessor):
                 input_data[input_source] / input_data["QVALUESetpoint"], self.program
             )
         else:
-            plot_data = self.welding_program_filter(
-                input_data[input_source], self.program
-            )
+            plot_data = self.welding_program_filter(input_data[input_source], self.program)
 
         # skip the not existing input_data
         if input_source not in input_data:
@@ -272,9 +255,7 @@ class Visualizer(PipelineProcessor):
             self.canvas_task(task_pos)
             return
 
-        input = parse_entity(
-            self.graph, task_pos["exeKG:hasInput"][0], self.dict_namespace
-        )
+        input = parse_entity(self.graph, task_pos["exeKG:hasInput"][0], self.dict_namespace)
         try:
             data_source = input["exeKG:hasSource"][0]
             input_data = self.raw_data[data_source]
@@ -411,14 +392,10 @@ class StatsiticsAnalyzer(PipelineProcessor):
         self.raw_data[data_source + column_name + str(program)] = np.NaN
         # print(selected_rows)
         # print(input_data)
-        self.raw_data.loc[
-            selected_rows, data_source + column_name + str(program)
-        ] = np.array(input_data)
+        self.raw_data.loc[selected_rows, data_source + column_name + str(program)] = np.array(input_data)
         self.extra_data_list[data_source + column_name + str(program)] = input_data
 
-    def trend_calculation_method(
-        self, data_source: str, half_window_size: int = 2, padding="same", **kwargs
-    ):
+    def trend_calculation_method(self, data_source: str, half_window_size: int = 2, padding="same", **kwargs):
         """calculate the trend of the data, which is the sliding-window average"""
         # print('Calculating trend now ...')
         start_time = time.time()
@@ -428,14 +405,8 @@ class StatsiticsAnalyzer(PipelineProcessor):
             if padding == "same":
                 # print(input)
                 begin_padding = pd.DataFrame([input.iloc[0]] * half_window_size)
-                end_padding = pd.DataFrame(
-                    [input.iloc[len(input) - 1]] * half_window_size
-                )
-                input = (
-                    pd.concat([begin_padding, input, end_padding])
-                    .reset_index()
-                    .drop("index", axis=1)
-                )
+                end_padding = pd.DataFrame([input.iloc[len(input) - 1]] * half_window_size)
+                input = pd.concat([begin_padding, input, end_padding]).reset_index().drop("index", axis=1)
                 return input
 
             else:
@@ -477,9 +448,7 @@ class StatsiticsAnalyzer(PipelineProcessor):
         # print('output - output2 = ', output - output2)
 
         # print('output = ', output)
-        self.add_new_data(
-            output, data_source, "_trend", program, "WeldingProgramNumber"
-        )
+        self.add_new_data(output, data_source, "_trend", program, "WeldingProgramNumber")
         # print(self.raw_data['QVALUEActual_WeldingProgramNumber_2'][:20])
         # print(self.raw_data)
         # plt.plot(output, label='trend'+str(program))
@@ -507,9 +476,7 @@ class StatsiticsAnalyzer(PipelineProcessor):
         # selected_rows = self.select_program(data_source, program, 'WeldingProgramNumber')
         selected_output = self.welding_program_filter(output, program)
         # self.add_new_data(output[selected_rows], data_source, '_scatter', program, 'WeldingProgramNumber')
-        self.add_new_data(
-            selected_output, data_source, "_scatter", program, "WeldingProgramNumber"
-        )
+        self.add_new_data(selected_output, data_source, "_scatter", program, "WeldingProgramNumber")
         # print(output)
         # plt.scatter(range(len(real_value)), real_value, label = 'Q-Value'+str(program))
         # plt.scatter(range(len(output)), output, label = 'scatter'+str(program))
@@ -521,9 +488,7 @@ class StatsiticsAnalyzer(PipelineProcessor):
         """return quarter of the input_data"""
         return np.percentile(input_data, percent)
 
-    def outlier_calculation(
-        self, input: list = [], iq1: float = None, iq3: float = None
-    ):
+    def outlier_calculation(self, input: list = [], iq1: float = None, iq3: float = None):
         """return the outliers in the data"""
         iq1 = self.iqr_calculation_method(input, 25) if (not iq1) else iq1
         iq3 = self.iqr_calculation_method(input, 75) if (not iq3) else iq3
@@ -531,9 +496,7 @@ class StatsiticsAnalyzer(PipelineProcessor):
         iqr = iq3 - iq1
         high_outliers = input < median - 1.5 * iqr
         low_outliers = input > median + 1.5 * iqr
-        outlier_rows = [
-            low_outliers.iloc[i] or high_outliers.iloc[i] for i in range(len(input))
-        ]
+        outlier_rows = [low_outliers.iloc[i] or high_outliers.iloc[i] for i in range(len(input))]
         return input[outlier_rows], outlier_rows
 
     # def dictionary_construction_method(self, input_data, data_source:str, column_name:str = None, filter_value:int = None, filter_name:str = None):
@@ -620,9 +583,7 @@ class StatsiticsAnalyzer(PipelineProcessor):
         data_source = []
         try:
             if len(task_pos["exeKG:hasInput"]) == 1:
-                input = parse_entity(
-                    self.graph, task_pos["exeKG:hasInput"][0], self.dict_namespace
-                )
+                input = parse_entity(self.graph, task_pos["exeKG:hasInput"][0], self.dict_namespace)
                 data_source = input["exeKG:hasSource"][0]
             elif len(task_pos["exeKG:hasInput"]) > 1:
                 for i in task_pos["exeKG:hasInput"]:
@@ -645,9 +606,7 @@ class StatsiticsAnalyzer(PipelineProcessor):
         method = task_pos["exeKG:hasMethod"][0]
         output = []
         if "trend" in method.lower():
-            output = self.trend_calculation_method(
-                data_source, 2, "same", program=program
-            )
+            output = self.trend_calculation_method(data_source, 2, "same", program=program)
         elif "scatter" in method.lower():
             output = self.scattering_calculation(data_source, program=program)
         elif "iqr" in method.lower():
@@ -658,9 +617,7 @@ class StatsiticsAnalyzer(PipelineProcessor):
         elif "normalization" in method.lower():
             output = self.normalization_method(self.raw_data[data_source], data_source)
         elif "concatenation" in method.lower():
-            output = self.concatenation_method(
-                input_data, task_pos["exeKG:hasOutput"][0]
-            )
+            output = self.concatenation_method(input_data, task_pos["exeKG:hasOutput"][0])
         elif "splitting" in method.lower():
             output = self.data_splitting(input_data, task_pos)
         else:

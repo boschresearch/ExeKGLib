@@ -15,7 +15,7 @@ repos:
       - id: check-yaml
         args: ["--unsafe"]
       - id: end-of-file-fixer
-      - id: no-commit-to-branch # default: main, master
+#      - id: no-commit-to-branch # default: main, master
       - id: trailing-whitespace
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
@@ -32,8 +32,8 @@ repos:
         language: system
         name: Format files
         types: [python]
-      - id: lint
-        entry: poetry run poe lint
-        language: system
-        name: Lint code
-        types: [python]
+#      - id: lint
+#        entry: poetry run poe lint
+#        language: system
+#        name: Lint code
+#        types: [python]

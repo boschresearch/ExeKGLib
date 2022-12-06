@@ -50,6 +50,15 @@ jobs:
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@bosch.com"
 
+      - name: Generate 3rd-Party Licenses
+        run: poetry run poe export-3rd-party-licenses
+
+      - name: Commit updated badges changes 📝
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Commit updated 3rd Party License
+          file_pattern: 'third-party-licenses.md'
+
       - name: Install & run pre-commit hooks
         env:
           SKIP: no-commit-to-branch
@@ -57,18 +66,18 @@ jobs:
           poetry run pre-commit install
           poetry run pre-commit run --all-files --show-diff-on-failure
 
-      - name: Run tests
-        run: poetry run poe test
+#      - name: Run tests
+#        run: poetry run poe test
+#
+#      - name: Code Coverage Summary
+#        uses: irongut/CodeCoverageSummary@v1.3.0
+#        with:
+#          filename: coverage.xml
+#          format: markdown
+#          output: both
 
-      - name: Code Coverage Summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: coverage.xml
-          format: markdown
-          output: both
-
-      - name: Build docs
-        run: poetry run poe docs
+#      - name: Build docs
+#        run: poetry run poe docs
 
       - name: Deploy temporary docs
         if: github.event_name == 'pull_request'

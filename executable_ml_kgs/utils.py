@@ -1,5 +1,5 @@
-import rdflib
 import pandas as pd
+import rdflib
 
 
 class PipelineProcessor:
@@ -24,15 +24,9 @@ class PipelineProcessor:
 
     def select_program(self, program, name: str = "WeldingProgramNumber"):
         # program must be int to be compared with excel data
-        return (
-            self.raw_data[name] == int(program)
-            if (program and name)
-            else [True] * len(self.raw_data)
-        )
+        return self.raw_data[name] == int(program) if (program and name) else [True] * len(self.raw_data)
 
-    def welding_program_filter(
-        self, input, filter_value: int = 1, filter_name: str = "WeldingProgramNumber"
-    ):
+    def welding_program_filter(self, input, filter_value: int = 1, filter_name: str = "WeldingProgramNumber"):
         """currently only used for distinguishing filtering different program numbers"""
         # if(filter_value and filter_name):
         #     #input = self.raw_data[data_source]
@@ -87,11 +81,7 @@ def execute_pipeline(pipelines: list, debug: bool = False, **kwargs):
     )
 
     graph = (
-        visualizer.graph
-        if (visualizer)
-        else statistics_analyzer.graph
-        if (statistics_analyzer)
-        else ML_analyser.graph
+        visualizer.graph if (visualizer) else statistics_analyzer.graph if (statistics_analyzer) else ML_analyser.graph
     )
     dict_namespace = (
         visualizer.dict_namespace
@@ -109,9 +99,7 @@ def execute_pipeline(pipelines: list, debug: bool = False, **kwargs):
         # 4.1 the starting task
         all_tasks = []
 
-        start_po = parse_entity(
-            graph, pipeline_po["exeKG:hasStartTask"][0], dict_namespace
-        )
+        start_po = parse_entity(graph, pipeline_po["exeKG:hasStartTask"][0], dict_namespace)
         # print('start_po = ', start_po)
         # all_tasks[pipeline_po['exeKG:hasStartTask'][0]] = start_po
         all_tasks.append(start_po)
@@ -207,7 +195,7 @@ def parse_namespace(graph):
 
 
 def query(graph, cquery, dict_namespace):
-    """query defined by the cquery string, and transfer to a proper format"""
+    """Query defined by the cquery string, and transfer to a proper format."""
 
     pipeline = graph.query(cquery)
     pipeline = [extract_entity(e, dict_namespace) for e in pipeline][0]
