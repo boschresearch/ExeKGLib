@@ -7,7 +7,7 @@ class ExeKG:
     def __init__(self, exe_kg_namespace_iri, ontology_path):
         self.exe_kg = Graph(bind_namespaces="rdflib")
         self.exe_kg_namespace = Namespace(exe_kg_namespace_iri)
-        self.exe_kg_namespace_prefix = exe_kg_namespace_iri.split("#")[1]
+        self.exe_kg_namespace_prefix = exe_kg_namespace_iri.split("/")[-1][:-1]
         self.exe_kg.bind(self.exe_kg_namespace_prefix, self.exe_kg_namespace)
 
         self.atomic_task = Entity(self.exe_kg_namespace.AtomicTask)
