@@ -1,48 +1,4 @@
-import pandas as pd
 import rdflib
-
-
-class PipelineProcessor:
-    def __init__(self):
-        self.raw_data = None
-        self.extra_data_list = {}
-        print("PipelineProcessor initialized")
-
-    def load_graph(self, kg_path=r"KG/exeKGOntology.ttl"):
-        """load the KG from .ttl file into the object"""
-        self.graph.parse(kg_path)
-
-    def load_data(self, raw_path=r"data/a.csv"):
-        """load the raw csv data
-        Args:
-            raw_path: csv file path
-        """
-        self.raw_data = pd.read_csv(raw_path, delimiter=",", encoding="ISO-8859-1")
-
-    def parse_namespace(self):
-        self.dict_namespace = parse_namespace(self.graph)
-
-    def select_program(self, program, name: str = "WeldingProgramNumber"):
-        # program must be int to be compared with excel data
-        return self.raw_data[name] == int(program) if (program and name) else [True] * len(self.raw_data)
-
-    def welding_program_filter(self, input, filter_value: int = 1, filter_name: str = "WeldingProgramNumber"):
-        """currently only used for distinguishing filtering different program numbers"""
-        # if(filter_value and filter_name):
-        #     #input = self.raw_data[data_source]
-        #     filter_rows = self.raw_data[filter_name]==filter_value
-
-        #     # optionally add new column to the data base while keep the same column and index
-        #     # self.raw_data[data_source + '_' + str(filter_name) + '_' + str(filter_value)] = np.NaN
-        #     # self.raw_data.loc[filter_rows, data_source + '_' + str(filter_name) + '_' + str(filter_value)] = input[filter_rows]
-        #     # return self.raw_data[data_source + '_' + str(filter_name) + '_' + str(filter_value)][filter_rows]
-        #     return input[filter_rows]
-
-        # else:
-        #     return input
-        # print('input = ', input)
-        # print('select_program = ',self.select_program(filter_value, filter_name) )
-        return input[self.select_program(filter_value, filter_name)]
 
 
 def execute_tasks(all_tasks: list, visualizer, statistics_analyzer, ML_analyser):
@@ -66,56 +22,6 @@ def execute_tasks(all_tasks: list, visualizer, statistics_analyzer, ML_analyser)
             analyzer.execute_task(task_po)
 
         print("######## next task ######")
-
-
-def execute_pipeline(pipelines: list, debug: bool = False, **kwargs):
-    """parse and execute a whole pipeline, starting from hasStartTask, until no hasNextTask"""
-    visualizer = kwargs.get("visualizer", None)
-    statistics_analyzer = kwargs.get("statistics_analyzer", None)
-    ML_analyser = kwargs.get("ML_analyser", None)
-
-    assert (
-        isinstance(visualizer, PipelineProcessor)
-        or isinstance(statistics_analyzer, PipelineProcessor)
-        or isinstance(ML_analyser, PipelineProcessor)
-    )
-
-    graph = (
-        visualizer.graph if (visualizer) else statistics_analyzer.graph if (statistics_analyzer) else ML_analyser.graph
-    )
-    dict_namespace = (
-        visualizer.dict_namespace
-        if visualizer
-        else statistics_analyzer.dict_namespace
-        if statistics_analyzer
-        else ML_analyser.dict_namespace
-    )
-
-    for pipeline_name in pipelines:
-        pipeline_po = parse_entity(graph, pipeline_name, dict_namespace)
-        if debug:
-            print("pipeline_property_object: ", pipeline_po)
-
-        # 4.1 the starting task
-        all_tasks = []
-
-        start_po = parse_entity(graph, pipeline_po["exeKG:hasStartTask"][0], dict_namespace)
-        # print('start_po = ', start_po)
-        # all_tasks[pipeline_po['exeKG:hasStartTask'][0]] = start_po
-        all_tasks.append(start_po)
-        # statistics_analyzer.execute_task(start_po)
-
-        # 4.2 for the rest of the following plot tasks
-        task_po = start_po
-        while "exeKG:hasNextTask" in task_po:
-            # append each task with corresponding properties to the plot_tasks
-            next_task = task_po["exeKG:hasNextTask"][0]
-            task_po = parse_entity(graph, next_task, dict_namespace)
-            if task_po:
-                all_tasks.append(task_po)
-
-        # print("all_tasks: ", all_tasks)
-        execute_tasks(all_tasks, visualizer, statistics_analyzer, ML_analyser)
 
 
 def parse_entity(graph, centity, dict_namespace, verbose=False) -> dict:
@@ -154,7 +60,7 @@ def extract_entity(cstatement, dict_namespace):
     return [extract_label(e, dict_namespace) for e in cstatement]
 
 
-def extract_label(cstr, dict_namesgpace):
+def extract_label(cstr, dict_namespace):
     """convert the input string to a readable format"""
     if isinstance(cstr, rdflib.term.Literal):
         return str(cstr)
