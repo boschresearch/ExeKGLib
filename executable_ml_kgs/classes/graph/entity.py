@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from rdflib import URIRef
 
 
 class Entity:
-    def __init__(self, iri, parent_entity=None):
+    def __init__(self, iri: str, parent_entity: Entity = None):
         self.iri = URIRef(iri)
         self.parent_entity = parent_entity
         self.namespace = self.get_namespace(iri)
@@ -11,9 +13,9 @@ class Entity:
             self.type = self.get_descriptor(parent_entity.iri)
 
     @staticmethod
-    def get_namespace(iri):
+    def get_namespace(iri: str) -> str:
         return iri.split("#")[0]
 
     @staticmethod
-    def get_descriptor(iri):
+    def get_descriptor(iri: str) -> str:
         return iri.split("#")[1]

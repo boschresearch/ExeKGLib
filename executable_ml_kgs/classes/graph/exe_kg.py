@@ -1,10 +1,12 @@
-from rdflib import URIRef, RDF, Namespace, Literal, Graph
+from typing import Union
+
+from rdflib import URIRef, RDF, Namespace, Literal, Graph, query
 
 from .entity import Entity
 
 
 class ExeKG:
-    def __init__(self, exe_kg_namespace_iri, ontology_path):
+    def __init__(self, exe_kg_namespace_iri: str, ontology_path: str):
         self.exe_kg = Graph(bind_namespaces="rdflib")
         self.exe_kg_namespace = Namespace(exe_kg_namespace_iri)
         self.exe_kg_namespace_prefix = exe_kg_namespace_iri.split("/")[-1][:-1]
@@ -33,7 +35,7 @@ class ExeKG:
         self.ontology_path = ontology_path
         self.parse_ontology(ontology_path)
 
-    def parse_ontology(self, iri):
+    def parse_ontology(self, iri: str) -> None:
         self.ontology.parse(iri, format="n3")
 
         atomic_task_subclasses = self.get_atomic_task_subclasses()
@@ -54,7 +56,7 @@ class ExeKG:
             data_type = Entity(d[0], data_entity)
             self.data_type_list.append(data_type)
 
-    def create_pipeline_task(self, pipeline_name):
+    def create_pipeline_task(self, pipeline_name: str) -> Entity:
         pipeline = Entity(
             self.exe_kg_namespace + pipeline_name,
             self.pipeline,
@@ -77,7 +79,7 @@ class ExeKG:
 
         return pipeline
 
-    def create_next_task(self, prompt, prev_task):
+    def create_next_task(self, prompt: str, prev_task: Entity) -> Union[None, Entity]:
         # Next Entity
         print(prompt)
         for i, t in enumerate(self.atomic_task_list):
@@ -95,7 +97,7 @@ class ExeKG:
             next_task_parent, relation_name, prev_task
         )
 
-    def create_method(self, task_to_attach_to):
+    def create_method(self, task_to_attach_to: Entity) -> None:
         # Entity
         print("Please choose a method for {}:".format(task_to_attach_to.type))
         results = list(self.get_method_properties_and_methods(task_to_attach_to.type))
@@ -139,7 +141,7 @@ class ExeKG:
                 )
                 self.add_literal(task_to_attach_to, property_instance, input_property)
 
-    def start_pipeline_creation(self, pipeline_name):
+    def start_pipeline_creation(self, pipeline_name: str) -> None:
         pipeline = self.create_pipeline_task(pipeline_name)
 
         prompt = "Please choose the first Entity:"
@@ -154,14 +156,14 @@ class ExeKG:
             prompt = "Please choose the next Entity:"
             prev_task = next_task
 
-    def save(self, file_path):
+    def save(self, file_path: str) -> None:
         exe_kg_with_ontology = self.ontology + self.exe_kg
         exe_kg_with_ontology.serialize(destination=file_path)
 
-    def query_ontology(self, query):
-        return self.ontology.query(query)
+    def query_ontology(self, q: str) -> query.Result:
+        return self.ontology.query(q)
 
-    def get_method_datatype_properties(self, entity_type):
+    def get_method_datatype_properties(self, entity_type: str) -> query.Result:
         return self.query_ontology(
             "\nSELECT ?p ?r WHERE {?p rdfs:domain "
             + self.exe_kg_namespace_prefix
@@ -172,7 +174,7 @@ class ExeKG:
             "?p rdf:type owl:DatatypeProperty . }"
         )
 
-    def get_method_properties_and_methods(self, entity_type):
+    def get_method_properties_and_methods(self, entity_type: str) -> query.Result:
         return self.query_ontology(
             "\nSELECT ?p ?m WHERE {?p rdfs:domain "
             + self.exe_kg_namespace_prefix
@@ -183,21 +185,21 @@ class ExeKG:
             "?m rdfs:subClassOf " + self.exe_kg_namespace_prefix + ":AtomicMethod . }"
         )  # method property
 
-    def get_atomic_method_subclasses(self):
+    def get_atomic_method_subclasses(self) -> query.Result:
         return self.query_ontology(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
             + self.exe_kg_namespace_prefix
             + ":AtomicMethod . }"
         )
 
-    def get_atomic_task_subclasses(self):
+    def get_atomic_task_subclasses(self) -> query.Result:
         return self.query_ontology(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
             + self.exe_kg_namespace_prefix
             + ":AtomicTask . }"
         )
 
-    def get_data_type_subclasses(self):
+    def get_data_type_subclasses(self) -> query.Result:
         return self.query_ontology(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
             + self.exe_kg_namespace_prefix
@@ -205,8 +207,12 @@ class ExeKG:
         )
 
     def add_data_input_to_instance(
-        self, instance, data_instance_name, data_structure, data_semantics
-    ):
+        self,
+        instance: Entity,
+        data_instance_name: str,
+        data_structure: str,
+        data_semantics: str,
+    ) -> None:
         data_instance_iri = self.exe_kg_namespace + data_instance_name
         data_instance = Entity(data_instance_iri, self.data_entity)
         self.add_instance(data_instance)
@@ -230,8 +236,8 @@ class ExeKG:
         self.add_exe_kg_relation(instance, "hasInput", data_instance)
 
     def add_instance_from_parent_with_exe_kg_relation(
-        self, instance_parent, relation_name, related_entity
-    ):
+        self, instance_parent: Entity, relation_name: str, related_entity: Entity
+    ) -> Entity:
         instance_name = self.name_instance(instance_parent)
         instance_iri = self.exe_kg_namespace + instance_name
         instance = Entity(instance_iri, instance_parent)
@@ -240,7 +246,7 @@ class ExeKG:
 
         return instance
 
-    def add_instance(self, entity_instance):
+    def add_instance(self, entity_instance: Entity) -> None:
         if (
             entity_instance.parent_entity
             and (entity_instance.iri, None, None) not in self.exe_kg
@@ -249,7 +255,9 @@ class ExeKG:
                 (entity_instance.iri, RDF.type, entity_instance.parent_entity.iri)
             )
 
-    def add_exe_kg_relation(self, from_entity, relation_name, to_entity):
+    def add_exe_kg_relation(
+        self, from_entity: Entity, relation_name: str, to_entity: Entity
+    ):
         self.exe_kg.add(
             (
                 from_entity.iri,
@@ -258,10 +266,10 @@ class ExeKG:
             )
         )
 
-    def add_literal(self, from_entity, relation, literal):
+    def add_literal(self, from_entity: Entity, relation: str, literal: Literal) -> None:
         self.exe_kg.add((from_entity.iri, relation, literal))
 
-    def name_instance(self, parent_entity):
+    def name_instance(self, parent_entity: Entity) -> Union[None, str]:
         if parent_entity.type == "AtomicTask":
             entity_type_dict = self.task_type_dict
         elif parent_entity.type == "AtomicMethod":
