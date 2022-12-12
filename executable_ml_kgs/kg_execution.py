@@ -1,21 +1,22 @@
 import time
 
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from classes.pipeline_execution import MLAnalyser
 from classes.pipeline_execution import StatsiticsAnalyzer
 from classes.pipeline_execution import Visualizer
-from utils import parse_namespace, query
-from classes.pipeline_execution.utils import execute_pipeline
+from classes.pipeline_execution.utils import parse_namespace, query
+from classes.pipeline_execution.pipeline_processor import execute_pipeline
 
 
 def visu_pipeline(
-    raw_data_path=r"data/singlefeatures_wm1.csv",
-    ontology_path=r"kg/testVisualKG.ttl",
-    debug=True,
-    out_name="plot.jpg",
-    show=False,
-    **kwargs,
+        raw_data_path=r"data/singlefeatures_wm1.csv",
+        ontology_path=r"kg/testVisualKG.ttl",
+        debug=True,
+        out_name="plot.jpg",
+        show=True,
+        **kwargs,
 ):
     """visu task pipeline for debugging"""
 
@@ -84,12 +85,12 @@ def visu_pipeline(
 
 
 def stats_visu_pipeline(
-    raw_data_path=r"data/singlefeatures_wm1.csv",
-    ontology_path=r"kg/testStatsVisuKG.ttl",
-    debug=False,
-    out_name="statistics.jpg",
-    show=False,
-    **kwargs,
+        raw_data_path=r"data/singlefeatures_wm1.csv",
+        ontology_path=r"kg/testStatsVisuKG.ttl",
+        debug=False,
+        out_name="statistics.jpg",
+        show=False,
+        **kwargs,
 ):
     """the statistics pipeline for debugging only, currently outlier detection pipeline from the paper"""
 
@@ -113,7 +114,7 @@ def stats_visu_pipeline(
     # 3. query the stats pipeline
     graph = statistics_analyzer.graph
     # cquery = "\nSELECT ?s WHERE {?s rdf:type exeKG:Pipeline}"
-    cquery = "\nSELECT ?s WHERE {?s rdf:type :Pipeline}"
+    cquery = "\nSELECT ?s WHERE {?s rdf:type exeKG:Pipeline}"
     stats_pipelines = query(graph, cquery, statistics_analyzer.dict_namespace)
 
     # 4. execute pipeline
@@ -143,12 +144,12 @@ def stats_visu_pipeline(
 
 
 def ML_pipeline(
-    raw_data_path=r"data/singlefeatures_wm1.csv",
-    ontology_path=r"KG_ML/exeKGExample.ttl",
-    debug=True,
-    out_name="statistics_extract.jpg",
-    show=False,
-    exp=3,
+        raw_data_path=r"data/singlefeatures_wm1.csv",
+        ontology_path=r"KG_ML/exeKGExample.ttl",
+        debug=True,
+        out_name="statistics_extract.jpg",
+        show=False,
+        exp=3,
 ):
     """ML_pipeline for debugging only"""
     global num_exps
@@ -173,7 +174,7 @@ def ML_pipeline(
 
     start_time = time.time()
     # 2. query pipeline
-    cquery = "\nSELECT ?s WHERE {?s rdf:type :Pipeline}"
+    cquery = "\nSELECT ?s WHERE {?s rdf:type exeKG:Pipeline}"
     stats_pipelines = query(ml_analyser.graph, cquery, ml_analyser.dict_namespace)
     # print(stats_pipelines)
 
@@ -296,23 +297,23 @@ def main_stats(input_path=r"kg/testStatsOnly.ttl"):
 
 
 def main_stats_ML():
-    ML_pipeline(ontology_path=r"KG_ML/exeKGExampleKNN.ttl", show=False)
+    ML_pipeline(ontology_path=r"kg/exeKGExampleKNN_noVisu.ttl", show=False)
 
-    # LR
-    knn_kg_path = r"KG_ML/exeKGExampleLR_noVisu.ttl"
-    time0 = []
-    for i in range(10):
-        time0.append(
-            ML_pipeline(
-                raw_data_path=r"data/singlefeatures_wm1.csv",
-                ontology_path=knn_kg_path,
-                show=False,
-                exp=i + 3,
-            )
-        )
+    # # LR
+    # knn_kg_path = r"kg/exeKGExampleLR_noVisu.ttl"
+    # time0 = []
+    # for i in range(10):
+    #     time0.append(
+    #         ML_pipeline(
+    #             raw_data_path=r"data/singlefeatures_wm1.csv",
+    #             ontology_path=knn_kg_path,
+    #             show=False,
+    #             exp=i + 3,
+    #         )
+    #     )
 
     # knn
-    knn_kg_path = r"KG_ML/exeKGExampleKNN_noVisu.ttl"
+    knn_kg_path = r"kg/exeKGExampleKNN_noVisu.ttl"
     time1 = []
     for i in range(10):
         time1.append(
@@ -324,31 +325,82 @@ def main_stats_ML():
             )
         )
 
-    ##### MLP hyperparameters
-    mlp_kg_path = r"KG_ML/exeKGExampleMLP_noVisu.ttl"
-    time2 = []
-    for i in range(3):
-        solver = ["lbfgs", "sgd", "adam"]
-        for j in range(4):
-            time2.append(
-                ML_pipeline(
-                    raw_data_path=r"data/singlefeatures_wm1.csv",
-                    ontology_path=mlp_kg_path,
-                    show=False,
-                    exp=solver[i],
-                )
-            )
-        # time.append(stats_visu_pipeline(program=1, debug=False, show=True))
-        # time.append(visu_pipeline(debug=False, out_name="Qvalue_line.jpg"))#, show=True))
+    # ##### MLP hyperparameters
+    # mlp_kg_path = r"kg/exeKGExampleMLP_noVisu.ttl"
+    # time2 = []
+    # for i in range(3):
+    #     solver = ["lbfgs", "sgd", "adam"]
+    #     for j in range(4):
+    #         time2.append(
+    #             ML_pipeline(
+    #                 raw_data_path=r"data/singlefeatures_wm1.csv",
+    #                 ontology_path=mlp_kg_path,
+    #                 show=False,
+    #                 exp=solver[i],
+    #             )
+    #         )
+    # time.append(stats_visu_pipeline(program=1, debug=False, show=True))
+    # time.append(visu_pipeline(debug=False, out_name="Qvalue_line.jpg"))#, show=True))
 
-    print(time0)
+    # print(time0)
     print(time1)
-    print(time2)
+    # print(time2)
 
+
+from classes.graph import ExeKG
+
+exe_kg_namespaces_and_ontologies = {
+    "Data Science": (
+        "http://www.semanticweb.org/ontologies/ds#",
+        "https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/ds_exeKGOntology.ttl",
+    ),
+    "Visual": (
+        "http://www.semanticweb.org/ontologies/visu#",
+        "https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/visu_exeKGOntology.ttl",
+    ),
+    "Statistics": (
+        "http://www.semanticweb.org/ontologies/stats#",
+        "https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/stats_exeKGOntology.ttl",
+    ),
+    "Machine Learning": (
+        "http://www.semanticweb.org/ontologies/ml#",
+        "https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/ml_exeKGOntology.ttl",
+    ),
+    "generic": (
+        "http://www.semanticweb.org/zhuoxun/ontologies/exeKG#",
+        "./kg/testVisualKG.ttl",
+        # "./kg/exeKGExampleKNN_noVisu.ttl",
+    ),
+}
 
 if __name__ == "__main__":
     # main_stats_ML()
     # main_stats()
-    main_visu()
+    # main_visu()
     # main_ml()
     # main_visu_stats()
+
+    chosen_exe_kg_type = "generic"  # TODO: get user input
+    namespace_iri, ontology_url = exe_kg_namespaces_and_ontologies[chosen_exe_kg_type]
+
+    input_data = pd.read_csv(
+        r"data/singlefeatures_wm1.csv", delimiter=",", encoding="ISO-8859-1"
+    )  # TODO: read data dynamically
+
+    exe_kg = ExeKG(namespace_iri, ontology_url)
+    # exe_kg.parse_ontology("https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/ds_exeKGOntology.ttl")
+
+    pipeline_iri, next_task_iri = exe_kg.get_pipeline_and_first_task_iri()
+    canvas_method = None
+    task_output_dict = {}
+    while next_task_iri is not None:
+        next_task = exe_kg.parse_task_by_iri(next_task_iri, canvas_method)
+        output = next_task.run_method(task_output_dict,  input_data)
+        if output:
+            task_output_dict.update(output)
+        # TODO: plot results of tasks for stats pipeline
+
+        if next_task.type == "CanvasTask":
+            canvas_method = next_task
+
+        next_task_iri = next_task.has_next_task
