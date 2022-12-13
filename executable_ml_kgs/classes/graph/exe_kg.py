@@ -20,8 +20,8 @@ class ExeKG:
         self.exe_kg_namespace_prefix = exe_kg_namespace_iri.split("/")[-1][:-1]
         self.exe_kg.bind(self.exe_kg_namespace_prefix, self.exe_kg_namespace)
 
-        self.atomic_task = Entity(self.exe_kg_namespace.Task)
-        self.atomic_method = Entity(self.exe_kg_namespace.Method)
+        self.atomic_task = Entity(self.exe_kg_namespace.AtomicTask)
+        self.atomic_method = Entity(self.exe_kg_namespace.AtomicMethod)
         self.data_entity = Entity(self.exe_kg_namespace.DataEntity)
         self.pipeline = Entity(self.exe_kg_namespace.Pipeline)
 
@@ -204,21 +204,21 @@ class ExeKG:
             + entity_type
             + " . "
             "?p rdfs:range ?m . "
-            "?m rdfs:subClassOf " + self.exe_kg_namespace_prefix + ":Method . }"
+            "?m rdfs:subClassOf " + self.exe_kg_namespace_prefix + ":AtomicMethod . }"
         )  # method property
 
     def get_atomic_method_subclasses(self) -> query.Result:
         return self.query_ontology(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
             + self.exe_kg_namespace_prefix
-            + ":Method . }"
+            + ":AtomicMethod . }"
         )
 
     def get_atomic_task_subclasses(self) -> query.Result:
         return self.query_ontology(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
             + self.exe_kg_namespace_prefix
-            + ":Task . }"
+            + ":AtomicTask . }"
         )
 
     def get_data_type_subclasses(self) -> query.Result:
@@ -292,9 +292,9 @@ class ExeKG:
         self.exe_kg.add((from_entity.iri, relation, literal))
 
     def name_instance(self, parent_entity: Entity) -> Union[None, str]:
-        if parent_entity.type == "Task":
+        if parent_entity.type == "AtomicTask":
             entity_type_dict = self.task_type_dict
-        elif parent_entity.type == "Method":
+        elif parent_entity.type == "AtomicMethod":
             entity_type_dict = self.method_type_dict
         else:
             print("Error: Invalid parent entity type")
@@ -370,9 +370,7 @@ class ExeKG:
         )
 
     @staticmethod
-    def get_first_query_result_if_exists(
-            query_method, *args
-    ) -> Optional[str]:
+    def get_first_query_result_if_exists(query_method, *args) -> Optional[str]:
         query_result = next(
             iter(list(query_method(*args))),
             None,
@@ -396,7 +394,9 @@ class ExeKG:
 
     def parse_data_entity_by_iri(self, data_entity_iri: str) -> Optional[DataEntity]:
         data_entity_parent_iri = self.get_first_query_result_if_exists(
-            self.query_entity_parent_iri, data_entity_iri, self.exe_kg_namespace.DataEntity
+            self.query_entity_parent_iri,
+            data_entity_iri,
+            self.exe_kg_namespace.DataEntity,
         )
         if data_entity_parent_iri is None:
             return None

@@ -10,7 +10,7 @@ class Entity:
         self.namespace = self.get_namespace(iri)
         self.name = self.type = self.get_descriptor(iri)
         if parent_entity:
-            self.type = self.get_descriptor(parent_entity.iri)
+            self.type = parent_entity.name
 
     @staticmethod
     def get_namespace(iri: str) -> str:
