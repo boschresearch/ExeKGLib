@@ -12,18 +12,16 @@ from .data_entity import DataEntity
 
 
 class ExeKG:
-    def __init__(self, exe_kg_namespace_iri: str, ontology_path: str):
-        # TODO: somehow indicate that the self.ontology is the ExeKG in the case of KG execution,
-        #       BUT self.exe_kg is the ExeKG in the case of KG construction
-        self.exe_kg = Graph(bind_namespaces="rdflib")
-        self.exe_kg_namespace = Namespace(exe_kg_namespace_iri)
-        self.exe_kg_namespace_prefix = exe_kg_namespace_iri.split("/")[-1][:-1]
-        self.exe_kg.bind(self.exe_kg_namespace_prefix, self.exe_kg_namespace)
+    def __init__(self, exe_kg_namespace_iri: str, input_kg_path: str):
+        self.output_kg = Graph(bind_namespaces="rdflib")
+        self.namespace = Namespace(exe_kg_namespace_iri)
+        self.namespace_prefix = exe_kg_namespace_iri.split("/")[-1][:-1]
+        self.output_kg.bind(self.namespace_prefix, self.namespace)
 
-        self.atomic_task = Entity(self.exe_kg_namespace.AtomicTask)
-        self.atomic_method = Entity(self.exe_kg_namespace.AtomicMethod)
-        self.data_entity = Entity(self.exe_kg_namespace.DataEntity)
-        self.pipeline = Entity(self.exe_kg_namespace.Pipeline)
+        self.atomic_task = Entity(self.namespace.AtomicTask)
+        self.atomic_method = Entity(self.namespace.AtomicMethod)
+        self.data_entity = Entity(self.namespace.DataEntity)
+        self.pipeline = Entity(self.namespace.Pipeline)
 
         self.next_task_flag_type_dict = {
             0: "CanvasTask",
@@ -39,12 +37,12 @@ class ExeKG:
         self.data_type_list = []
         self.task_instances_list = []
 
-        self.ontology = Graph(bind_namespaces="rdflib")
-        self.ontology_path = ontology_path
-        self.parse_ontology(ontology_path)
+        self.input_kg = Graph(bind_namespaces="rdflib")
+        self.input_kg_path = input_kg_path
+        self.parse_input_kg(input_kg_path)
 
-    def parse_ontology(self, iri: str) -> None:
-        self.ontology.parse(iri, format="n3")
+    def parse_input_kg(self, iri: str) -> None:
+        self.input_kg.parse(iri, format="n3")
 
         atomic_task_subclasses = self.get_atomic_task_subclasses()
         for t in list(atomic_task_subclasses):
@@ -58,7 +56,7 @@ class ExeKG:
             self.atomic_method_list.append(method)
             self.method_type_dict[method.name] = 1
 
-        data_entity = Entity(self.exe_kg_namespace.Data)
+        data_entity = Entity(self.namespace.Data)
         data_type_subclasses = self.get_data_type_subclasses()
         for d in list(data_type_subclasses):
             data_type = Entity(d[0], data_entity)
@@ -66,7 +64,7 @@ class ExeKG:
 
     def create_pipeline_task(self, pipeline_name: str) -> Entity:
         pipeline = Entity(
-            self.exe_kg_namespace + pipeline_name,
+            self.namespace + pipeline_name,
             self.pipeline,
         )
         self.add_instance(pipeline)
@@ -168,14 +166,14 @@ class ExeKG:
             prev_task = next_task
 
     def save(self, file_path: str) -> None:
-        exe_kg_with_ontology = self.ontology + self.exe_kg
-        exe_kg_with_ontology.serialize(destination=file_path)
+        all_kgs = self.input_kg + self.output_kg
+        all_kgs.serialize(destination=file_path)
 
-    def query_ontology(self, q: str, init_bindings: dict = None) -> query.Result:
-        return self.ontology.query(q, initBindings=init_bindings)
+    def query_input_kg(self, q: str, init_bindings: dict = None) -> query.Result:
+        return self.input_kg.query(q, initBindings=init_bindings)
 
-    def query_exe_kg(self, q: str) -> query.Result:
-        return self.exe_kg.query(q)
+    def query_output_kg(self, q: str) -> query.Result:
+        return self.output_kg.query(q)
 
     def get_data_properties_plus_inherited_by_class_iri(self, class_iri: str):
         property_list = list(self.get_data_properties_by_entity_iri(class_iri))
@@ -188,7 +186,7 @@ class ExeKG:
         return property_list
 
     def get_data_properties_by_entity_iri(self, entity_iri: str) -> query.Result:
-        return self.query_ontology(
+        return self.query_input_kg(
             "\nSELECT ?p ?r WHERE {?p rdfs:domain ?entity_iri . "
             "?p rdfs:range ?r . "
             "?p rdf:type owl:DatatypeProperty . }",
@@ -197,34 +195,34 @@ class ExeKG:
 
     # TODO: below use entity iri instead of type, like above
     def get_method_properties_and_methods(self, entity_type: str) -> query.Result:
-        return self.query_ontology(
+        return self.query_input_kg(
             "\nSELECT ?p ?m WHERE {?p rdfs:domain "
-            + self.exe_kg_namespace_prefix
+            + self.namespace_prefix
             + ":"
             + entity_type
             + " . "
             "?p rdfs:range ?m . "
-            "?m rdfs:subClassOf " + self.exe_kg_namespace_prefix + ":AtomicMethod . }"
+            "?m rdfs:subClassOf " + self.namespace_prefix + ":AtomicMethod . }"
         )  # method property
 
     def get_atomic_method_subclasses(self) -> query.Result:
-        return self.query_ontology(
+        return self.query_input_kg(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-            + self.exe_kg_namespace_prefix
+            + self.namespace_prefix
             + ":AtomicMethod . }"
         )
 
     def get_atomic_task_subclasses(self) -> query.Result:
-        return self.query_ontology(
+        return self.query_input_kg(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-            + self.exe_kg_namespace_prefix
+            + self.namespace_prefix
             + ":AtomicTask . }"
         )
 
     def get_data_type_subclasses(self) -> query.Result:
-        return self.query_ontology(
+        return self.query_input_kg(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-            + self.exe_kg_namespace_prefix
+            + self.namespace_prefix
             + ":Data . }"
         )
 
@@ -235,11 +233,11 @@ class ExeKG:
         data_structure: str,
         data_semantics: str,
     ) -> None:
-        data_instance_iri = self.exe_kg_namespace + data_instance_name
+        data_instance_iri = self.namespace + data_instance_name
         data_instance = Entity(data_instance_iri, self.data_entity)
         self.add_instance(data_instance)
 
-        data_structure_iri = URIRef(self.exe_kg_namespace + data_structure)
+        data_structure_iri = URIRef(self.namespace + data_structure)
         data_structrure_instance = Entity(data_structure_iri)
         self.add_exe_kg_relation(
             data_instance,
@@ -247,7 +245,7 @@ class ExeKG:
             data_structrure_instance,
         )
 
-        data_semantics_iri = URIRef(self.exe_kg_namespace + data_semantics)
+        data_semantics_iri = URIRef(self.namespace + data_semantics)
         data_semantics_instance = Entity(data_semantics_iri)
         self.add_exe_kg_relation(
             data_instance,
@@ -261,7 +259,7 @@ class ExeKG:
         self, instance_parent: Entity, relation_name: str, related_entity: Entity
     ) -> Entity:
         instance_name = self.name_instance(instance_parent)
-        instance_iri = self.exe_kg_namespace + instance_name
+        instance_iri = self.namespace + instance_name
         instance = Entity(instance_iri, instance_parent)
         self.add_instance(instance)
         self.add_exe_kg_relation(related_entity, relation_name, instance)
@@ -271,25 +269,25 @@ class ExeKG:
     def add_instance(self, entity_instance: Entity) -> None:
         if (
             entity_instance.parent_entity
-            and (entity_instance.iri, None, None) not in self.exe_kg
+            and (entity_instance.iri, None, None) not in self.output_kg
         ):
-            self.exe_kg.add(
+            self.output_kg.add(
                 (entity_instance.iri, RDF.type, entity_instance.parent_entity.iri)
             )
 
     def add_exe_kg_relation(
         self, from_entity: Entity, relation_name: str, to_entity: Entity
     ) -> None:
-        self.exe_kg.add(
+        self.output_kg.add(
             (
                 from_entity.iri,
-                URIRef(self.exe_kg_namespace + relation_name),
+                URIRef(self.namespace + relation_name),
                 to_entity.iri,
             )
         )
 
     def add_literal(self, from_entity: Entity, relation: str, literal: Literal) -> None:
-        self.exe_kg.add((from_entity.iri, relation, literal))
+        self.output_kg.add((from_entity.iri, relation, literal))
 
     def name_instance(self, parent_entity: Entity) -> Union[None, str]:
         if parent_entity.type == "AtomicTask":
@@ -328,7 +326,7 @@ class ExeKG:
             self.query_method_iri_by_task_iri, task_iri
         )
         method_parent_iri = self.get_first_query_result_if_exists(
-            self.query_entity_parent_iri, method_iri, self.exe_kg_namespace.Method
+            self.query_entity_parent_iri, method_iri, self.namespace.Method
         )
         if method_parent_iri is None:
             return None
@@ -338,22 +336,22 @@ class ExeKG:
     def get_pipeline_and_first_task_iri(self) -> Tuple[str, str]:
         # assume one pipeline per file
         pipeline_iri, task_iri = list(
-            self.query_ontology(
-                f"\nSELECT ?p ?t WHERE {{?p rdf:type {self.exe_kg_namespace_prefix}:Pipeline ;"
-                f"                       {self.exe_kg_namespace_prefix}:hasStartTask ?t . }}"
+            self.query_input_kg(
+                f"\nSELECT ?p ?t WHERE {{?p rdf:type {self.namespace_prefix}:Pipeline ;"
+                f"                       {self.namespace_prefix}:hasStartTask ?t . }}"
             )
         )[0]
 
         return str(pipeline_iri), str(task_iri)
 
     def query_method_parent_classes(self, method_iri):
-        return self.query_ontology(
+        return self.query_input_kg(
             f"SELECT ?c WHERE {{ ?method rdfs:subClassOf ?c . }}",
             init_bindings={"method": URIRef(method_iri)},
         )
 
     def query_entity_parent_iri(self, entity_iri: str, upper_class_uri_ref: URIRef):
-        return self.query_ontology(
+        return self.query_input_kg(
             f"SELECT ?t WHERE {{ ?entity rdf:type ?t ."
             f"                   ?t rdfs:subClassOf* ?upper_class .}}",
             init_bindings={
@@ -363,9 +361,9 @@ class ExeKG:
         )
 
     def query_method_iri_by_task_iri(self, task_iri: str):
-        return self.query_ontology(
+        return self.query_input_kg(
             f"SELECT ?m WHERE {{ ?task ?m_property ?m ."
-            f"                   ?m_property rdfs:subPropertyOf* {self.exe_kg_namespace_prefix}:hasMethod .}}",
+            f"                   ?m_property rdfs:subPropertyOf* {self.namespace_prefix}:hasMethod .}}",
             init_bindings={"task": URIRef(task_iri)},
         )
 
@@ -396,14 +394,14 @@ class ExeKG:
         data_entity_parent_iri = self.get_first_query_result_if_exists(
             self.query_entity_parent_iri,
             data_entity_iri,
-            self.exe_kg_namespace.DataEntity,
+            self.namespace.DataEntity,
         )
         if data_entity_parent_iri is None:
             return None
 
         data_entity = DataEntity(data_entity_iri, Entity(data_entity_parent_iri))
 
-        for s, p, o in self.ontology.triples((URIRef(data_entity_iri), None, None)):
+        for s, p, o in self.input_kg.triples((URIRef(data_entity_iri), None, None)):
             field_name = self.property_name_to_field_name(str(p))
             if not hasattr(data_entity, field_name) or field_name == "type":
                 continue
@@ -416,7 +414,7 @@ class ExeKG:
         self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
     ) -> Optional[Task]:
         task_parent_iri = self.get_first_query_result_if_exists(
-            self.query_entity_parent_iri, task_iri, self.exe_kg_namespace.Task
+            self.query_entity_parent_iri, task_iri, self.namespace.Task
         )
 
         task = Task(task_iri, Task(task_parent_iri))
@@ -436,7 +434,7 @@ class ExeKG:
         else:
             task = Class(task_iri, Task(task_parent_iri))
 
-        for s, p, o in self.ontology.triples((URIRef(task_iri), None, None)):
+        for s, p, o in self.input_kg.triples((URIRef(task_iri), None, None)):
             field_name = self.property_name_to_field_name(str(p))
             if not hasattr(task, field_name) or field_name == "type":
                 continue
