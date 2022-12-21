@@ -26,8 +26,8 @@ class DataSplittingDataSplittingMethod(Task):
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
-        input = self.get_inputs(other_task_output_dict, input_data)[0]
-        train_data, test_data = data_splitting(input, self.has_split_ratio)
+        input_df = self.get_inputs(other_task_output_dict, input_data)[0]
+        train_data, test_data = data_splitting(input_df, self.has_split_ratio)
 
         return self.create_output_dict({"Train": train_data, "Test": test_data})
 
@@ -64,7 +64,68 @@ class TestKNNTest(Task):
         return {output_name: predicted_y}
 
 
-# TODO: add tasks for LR and MLP models
+class TrainLRTrain(Task):
+    def __init__(self, iri: str, parent_entity: Entity):
+        super().__init__(iri, parent_entity)
+
+    def run_method(
+        self, other_task_output_dict: dict, input_data: pd.DataFrame
+    ) -> dict:
+        # assume one input
+        input_x_y = self.get_inputs(other_task_output_dict, input_data)[0]
+
+        input_x = input_x_y[input_x_y.columns[:-1]]
+        input_y = input_x_y[input_x_y.columns[-1]]
+        model, predicted_y = lr_training(input_x, input_y)
+
+        return self.create_output_dict({"Model": model, "Predicted": predicted_y})
+
+
+class TestLRTest(Task):
+    def __init__(self, iri: str, parent_entity: Entity):
+        super().__init__(iri, parent_entity)
+
+    def run_method(
+        self, other_task_output_dict: dict, input_data: pd.DataFrame
+    ) -> dict:
+        model, input_x_y = self.get_inputs(other_task_output_dict, input_data)
+        input_x = input_x_y[input_x_y.columns[:-1]]
+
+        predicted_y = lr_testing(model, input_x)
+        output_name = self.has_output[0].name  # assume one output
+        return {output_name: predicted_y}
+
+
+class TrainMLPTrain(Task):
+    def __init__(self, iri: str, parent_entity: Entity):
+        super().__init__(iri, parent_entity)
+
+    def run_method(
+        self, other_task_output_dict: dict, input_data: pd.DataFrame
+    ) -> dict:
+        # assume one input
+        input_x_y = self.get_inputs(other_task_output_dict, input_data)[0]
+
+        input_x = input_x_y[input_x_y.columns[:-1]]
+        input_y = input_x_y[input_x_y.columns[-1]]
+        model, predicted_y = mlp_train(input_x, input_y)
+
+        return self.create_output_dict({"Model": model, "Predicted": predicted_y})
+
+
+class TestMLPTest(Task):
+    def __init__(self, iri: str, parent_entity: Entity):
+        super().__init__(iri, parent_entity)
+
+    def run_method(
+        self, other_task_output_dict: dict, input_data: pd.DataFrame
+    ) -> dict:
+        model, input_x_y = self.get_inputs(other_task_output_dict, input_data)
+        input_x = input_x_y[input_x_y.columns[:-1]]
+
+        predicted_y = mlp_test(model, input_x)
+        output_name = self.has_output[0].name  # assume one output
+        return {output_name: predicted_y}
 
 
 class PerformanceCalculationPerformanceCalculationMethod(Task):
