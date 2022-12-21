@@ -1,30 +1,43 @@
 from classes.graph import ExeKG
 
-exe_kg_namespaces_and_ontologies = {
+kg_paths_and_prefixes = {
     "Data Science": (
-        "http://www.semanticweb.org/ontologies/ds#",
-        "https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/ds_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl",
+        "ds",
     ),
     "Visual": (
-        "http://www.semanticweb.org/ontologies/visu#",
-        "https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/visu_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl",
+        "visu",
     ),
     "Statistics": (
-        "http://www.semanticweb.org/ontologies/stats#",
-        "https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/stats_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl",
+        "stats",
     ),
     "Machine Learning": (
-        "http://www.semanticweb.org/ontologies/ml#",
-        "https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/ml_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl",
+        "ml",
     ),
 }
 
 if __name__ == "__main__":
     pipeline_name = "testPipeline"
 
+    top_level_kg_schema_path, top_level_kg_schema_prefix = kg_paths_and_prefixes[
+        "Data Science"
+    ]
+
     chosen_exe_kg_type = "Visual"  # TODO: get user input
-    namespace_iri, ontology_url = exe_kg_namespaces_and_ontologies[chosen_exe_kg_type]
-    exe_kg = ExeKG(namespace_iri, ontology_url)
-    # exe_kg.parse_ontology("https://raw.githubusercontent.com/baifanzhou/ExeKGOntology/main/ds_exeKGOntology.ttl")
+    chosen_kg_schema_path, chosen_kg_schema_prefix = kg_paths_and_prefixes[
+        chosen_exe_kg_type
+    ]
+    exe_kg = ExeKG(
+        chosen_kg_schema_path + "#",
+        "../../ExeKGOntology/visu_exeKGOntology.ttl",
+        chosen_kg_schema_prefix,
+        top_level_kg_schema_path + "#",
+        top_level_kg_schema_path,
+        top_level_kg_schema_prefix,
+    )
+    # exe_kg.parse_ontology("https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl")
     exe_kg.start_pipeline_creation(pipeline_name)
     exe_kg.save(f"kg/{pipeline_name}.ttl")

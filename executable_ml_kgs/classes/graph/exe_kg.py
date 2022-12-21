@@ -12,22 +12,29 @@ from .data_entity import DataEntity
 
 
 class ExeKG:
-    def __init__(self, exe_kg_namespace_iri: str, input_kg_path: str):
+    def __init__(
+        self,
+        input_kg_namespace_iri: str,
+        input_kg_path: str,
+        input_kg_namespace_prefix: str,
+        top_level_kg_namespace_iri: str,
+        top_level_kg_path: str,
+        top_level_kg_namespace_prefix: str,
+    ):
         self.output_kg = Graph(bind_namespaces="rdflib")
-        self.namespace = Namespace(exe_kg_namespace_iri)
-        self.namespace_prefix = exe_kg_namespace_iri.split("/")[-1][:-1]
-        self.output_kg.bind(self.namespace_prefix, self.namespace)
+        self.top_level_kg_namespace = Namespace(top_level_kg_namespace_iri)
+        self.top_level_kg_namespace_prefix = top_level_kg_namespace_prefix
+        self.output_kg.bind(
+            self.top_level_kg_namespace_prefix, self.top_level_kg_namespace
+        )
 
-        self.atomic_task = Entity(self.namespace.AtomicTask)
-        self.atomic_method = Entity(self.namespace.AtomicMethod)
-        self.data_entity = Entity(self.namespace.DataEntity)
-        self.pipeline = Entity(self.namespace.Pipeline)
+        self.input_kg_namespace = Namespace(input_kg_namespace_iri)
+        self.input_kg_namespace_prefix = input_kg_namespace_prefix
 
-        self.next_task_flag_type_dict = {
-            0: "CanvasTask",
-            1: "StatisticTask",
-            2: "MLTask",
-        }
+        self.atomic_task = Entity(self.top_level_kg_namespace.AtomicTask)
+        self.atomic_method = Entity(self.top_level_kg_namespace.AtomicMethod)
+        self.data_entity = Entity(self.top_level_kg_namespace.DataEntity)
+        self.pipeline = Entity(self.top_level_kg_namespace.Pipeline)
 
         self.task_type_dict = {}
         self.method_type_dict = {}
@@ -41,8 +48,11 @@ class ExeKG:
         self.input_kg_path = input_kg_path
         self.parse_input_kg(input_kg_path)
 
-    def parse_input_kg(self, iri: str) -> None:
-        self.input_kg.parse(iri, format="n3")
+        self.top_level_kg = Graph(bind_namespaces="rdflib")
+        self.top_level_kg.parse(top_level_kg_path, format="n3")
+
+    def parse_input_kg(self, path: str) -> None:
+        self.input_kg.parse(path, format="n3")
 
         atomic_task_subclasses = self.get_atomic_task_subclasses()
         for t in list(atomic_task_subclasses):
@@ -56,7 +66,7 @@ class ExeKG:
             self.atomic_method_list.append(method)
             self.method_type_dict[method.name] = 1
 
-        data_entity = Entity(self.namespace.Data)
+        data_entity = Entity(self.top_level_kg_namespace.Data)
         data_type_subclasses = self.get_data_type_subclasses()
         for d in list(data_type_subclasses):
             data_type = Entity(d[0], data_entity)
@@ -64,7 +74,7 @@ class ExeKG:
 
     def create_pipeline_task(self, pipeline_name: str) -> Entity:
         pipeline = Entity(
-            self.namespace + pipeline_name,
+            self.input_kg_namespace + pipeline_name,
             self.pipeline,
         )
         self.add_instance(pipeline)
@@ -72,11 +82,6 @@ class ExeKG:
         prompt = "Enter inputs of the pipeline, enter 'quit' to stop input: "
         input_str = input(prompt)
         while input_str != "quit":
-            self.data_entity_dict[input_str] = {
-                "DataStructure": "Array",
-                "DataSemantics": "?",
-            }  # TODO: input system
-
             self.add_data_input_to_instance(
                 pipeline, input_str, "Array", "?"
             )  # TODO: make hardcoded values dynamic
@@ -96,17 +101,20 @@ class ExeKG:
             return None
 
         next_task_parent = self.atomic_task_list[next_task_id]
-        relation_name = (
-            "hasNextTask" if prev_task.type != "Pipeline" else "hasStartTask"
+        relation_iri = (
+            self.top_level_kg_namespace.hasNextTask
+            if prev_task.type != "Pipeline"
+            else self.top_level_kg_namespace.hasStartTask
         )
         return self.add_instance_from_parent_with_exe_kg_relation(
-            next_task_parent, relation_name, prev_task
+            next_task_parent, relation_iri, prev_task
         )
 
     def create_method(self, task_to_attach_to: Entity) -> None:
         # Entity
         print("Please choose a method for {}:".format(task_to_attach_to.type))
-        results = list(self.get_method_properties_and_methods(task_to_attach_to.type))
+
+        results = list(self.get_method_properties_and_methods(task_to_attach_to.parent_entity.iri))
         for i, pair in enumerate(results):
             tmp_method = pair[1].split("#")[1]
             print("\t{}. {}".format(str(i), tmp_method))
@@ -122,7 +130,7 @@ class ExeKG:
         )
         self.add_instance_from_parent_with_exe_kg_relation(
             method_parent,
-            selected_property_and_method[0].split("#")[1],
+            selected_property_and_method[0],
             task_to_attach_to,
         )
 
@@ -193,36 +201,34 @@ class ExeKG:
             init_bindings={"entity_iri": URIRef(entity_iri)},
         )
 
-    # TODO: below use entity iri instead of type, like above
-    def get_method_properties_and_methods(self, entity_type: str) -> query.Result:
+    def get_method_properties_and_methods(self, entity_parent_iri: str) -> query.Result:
         return self.query_input_kg(
-            "\nSELECT ?p ?m WHERE {?p rdfs:domain "
-            + self.namespace_prefix
-            + ":"
-            + entity_type
-            + " . "
+            "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_parent_iri . "
             "?p rdfs:range ?m . "
-            "?m rdfs:subClassOf " + self.namespace_prefix + ":AtomicMethod . }"
+            "?m rdfs:subClassOf "
+            + self.top_level_kg_namespace_prefix
+            + ":AtomicMethod . }",
+            init_bindings={"entity_iri": URIRef(entity_parent_iri)},
         )  # method property
 
     def get_atomic_method_subclasses(self) -> query.Result:
         return self.query_input_kg(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-            + self.namespace_prefix
+            + self.top_level_kg_namespace_prefix
             + ":AtomicMethod . }"
         )
 
     def get_atomic_task_subclasses(self) -> query.Result:
         return self.query_input_kg(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-            + self.namespace_prefix
+            + self.top_level_kg_namespace_prefix
             + ":AtomicTask . }"
         )
 
     def get_data_type_subclasses(self) -> query.Result:
         return self.query_input_kg(
             "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-            + self.namespace_prefix
+            + self.top_level_kg_namespace_prefix
             + ":Data . }"
         )
 
@@ -233,36 +239,37 @@ class ExeKG:
         data_structure: str,
         data_semantics: str,
     ) -> None:
-        data_instance_iri = self.namespace + data_instance_name
-        data_instance = Entity(data_instance_iri, self.data_entity)
+        data_instance = Entity(
+            self.input_kg_namespace + data_instance_name, self.data_entity
+        )
         self.add_instance(data_instance)
 
-        data_structure_iri = URIRef(self.namespace + data_structure)
-        data_structrure_instance = Entity(data_structure_iri)
+        data_structrure_instance = Entity(self.top_level_kg_namespace + data_structure)
         self.add_exe_kg_relation(
             data_instance,
-            "hasDataStructure",
+            self.top_level_kg_namespace.hasDataStructure,
             data_structrure_instance,
         )
 
-        data_semantics_iri = URIRef(self.namespace + data_semantics)
-        data_semantics_instance = Entity(data_semantics_iri)
+        data_semantics_instance = Entity(self.top_level_kg_namespace + data_semantics)
         self.add_exe_kg_relation(
             data_instance,
-            "hasDataSemantics",
+            self.top_level_kg_namespace.hasDataSemantics,
             data_semantics_instance,
         )
 
-        self.add_exe_kg_relation(instance, "hasInput", data_instance)
+        self.add_exe_kg_relation(
+            instance, self.top_level_kg_namespace.hasInput, data_instance
+        )
 
     def add_instance_from_parent_with_exe_kg_relation(
-        self, instance_parent: Entity, relation_name: str, related_entity: Entity
+        self, instance_parent: Entity, relation_iri: str, related_entity: Entity
     ) -> Entity:
         instance_name = self.name_instance(instance_parent)
-        instance_iri = self.namespace + instance_name
+        instance_iri = self.input_kg_namespace + instance_name
         instance = Entity(instance_iri, instance_parent)
         self.add_instance(instance)
-        self.add_exe_kg_relation(related_entity, relation_name, instance)
+        self.add_exe_kg_relation(related_entity, relation_iri, instance)
 
         return instance
 
@@ -276,12 +283,12 @@ class ExeKG:
             )
 
     def add_exe_kg_relation(
-        self, from_entity: Entity, relation_name: str, to_entity: Entity
+        self, from_entity: Entity, relation_iri: str, to_entity: Entity
     ) -> None:
         self.output_kg.add(
             (
                 from_entity.iri,
-                URIRef(self.namespace + relation_name),
+                URIRef(relation_iri),
                 to_entity.iri,
             )
         )
@@ -326,7 +333,7 @@ class ExeKG:
             self.query_method_iri_by_task_iri, task_iri
         )
         method_parent_iri = self.get_first_query_result_if_exists(
-            self.query_entity_parent_iri, method_iri, self.namespace.Method
+            self.query_entity_parent_iri, method_iri, self.top_level_kg_namespace.Method
         )
         if method_parent_iri is None:
             return None
@@ -337,8 +344,8 @@ class ExeKG:
         # assume one pipeline per file
         pipeline_iri, task_iri = list(
             self.query_input_kg(
-                f"\nSELECT ?p ?t WHERE {{?p rdf:type {self.namespace_prefix}:Pipeline ;"
-                f"                       {self.namespace_prefix}:hasStartTask ?t . }}"
+                f"\nSELECT ?p ?t WHERE {{?p rdf:type {self.top_level_kg_namespace_prefix}:Pipeline ;"
+                f"                       {self.top_level_kg_namespace_prefix}:hasStartTask ?t . }}"
             )
         )[0]
 
@@ -363,7 +370,7 @@ class ExeKG:
     def query_method_iri_by_task_iri(self, task_iri: str):
         return self.query_input_kg(
             f"SELECT ?m WHERE {{ ?task ?m_property ?m ."
-            f"                   ?m_property rdfs:subPropertyOf* {self.namespace_prefix}:hasMethod .}}",
+            f"                   ?m_property rdfs:subPropertyOf* {self.top_level_kg_namespace_prefix}:hasMethod .}}",
             init_bindings={"task": URIRef(task_iri)},
         )
 
@@ -394,7 +401,7 @@ class ExeKG:
         data_entity_parent_iri = self.get_first_query_result_if_exists(
             self.query_entity_parent_iri,
             data_entity_iri,
-            self.namespace.DataEntity,
+            self.top_level_kg_namespace.DataEntity,
         )
         if data_entity_parent_iri is None:
             return None
@@ -414,7 +421,7 @@ class ExeKG:
         self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
     ) -> Optional[Task]:
         task_parent_iri = self.get_first_query_result_if_exists(
-            self.query_entity_parent_iri, task_iri, self.namespace.Task
+            self.query_entity_parent_iri, task_iri, self.top_level_kg_namespace.Task
         )
 
         task = Task(task_iri, Task(task_parent_iri))
