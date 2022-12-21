@@ -5,7 +5,7 @@
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 [![License](https://img.shields.io/badge/license-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
-:warning: **Disclaimer towards conference reviewers**: We apologize for not having the code uploaded yet. In a few days, after some clearance issues are solved, we will upload the code.
+:warning: **Disclaimer towards conference reviewers**: The full code will be available in a few days. We are following Bosch internal process to ensure compliance with the quality and legality guidelines of the published software.
 
 Library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs).
 
