@@ -1,6 +1,6 @@
 import pandas as pd
 
-from classes.graph import ExeKG
+from classes import ExeKG
 
 # exe_kg_namespaces_and_ontologies = {
 #     "Data Science": (

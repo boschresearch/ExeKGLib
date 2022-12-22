@@ -1,4 +1,4 @@
-from classes.graph import ExeKG
+from classes import ExeKG
 
 kg_paths_and_prefixes = {
     "Data Science": (

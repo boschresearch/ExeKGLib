@@ -1,7 +1,7 @@
 from typing import List, Union, Tuple
 
-from classes.graph.data_entity import DataEntity
-from classes.graph.entity import Entity
+from classes.data_entity import DataEntity
+from classes.entity import Entity
 
 
 def get_input_for_existing_data_entities(

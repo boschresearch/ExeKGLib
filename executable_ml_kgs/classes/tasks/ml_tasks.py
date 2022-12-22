@@ -1,6 +1,6 @@
 from utils.task_utils.ml_utils import *
-from classes.graph.entity import Entity
-from classes.graph.task import Task
+from classes.entity import Entity
+from classes.task import Task
 
 
 class ConcatenationConcatenationMethod(Task):
