@@ -125,8 +125,8 @@ class ExeKG:
 
     def get_input_for_new_data_entities(self) -> Tuple[list, list, list]:
         source_list = []
-        data_semantics_list = []
-        data_structure_list = []
+        data_semantics_iri_list = []
+        data_structure_iri_list = []
 
         prompt = "Enter input columns for the task, enter 'quit' to stop input: "
         source = input(prompt)
@@ -137,21 +137,21 @@ class ExeKG:
             for i, t in enumerate(self.data_semantics_list):
                 print("\t{}. {}".format(str(i), t.name))
             chosen_data_semantics_id = int(input())
-            data_semantics_list.append(
-                self.data_semantics_list[chosen_data_semantics_id]
+            data_semantics_iri_list.append(
+                self.data_semantics_list[chosen_data_semantics_id].iri
             )
 
             print(f"Choose data structure for {source}:")
             for i, t in enumerate(self.data_structure_list):
                 print("\t{}. {}".format(str(i), t.name))
             chosen_data_structure_id = int(input())
-            data_structure_list.append(
-                self.data_structure_list[chosen_data_structure_id]
+            data_structure_iri_list.append(
+                self.data_structure_list[chosen_data_structure_id].iri
             )
 
             source = input(prompt)
 
-        return source_list, data_semantics_list, data_structure_list
+        return source_list, data_semantics_iri_list, data_structure_iri_list
 
     def add_input_data_entity(self, data_entity: DataEntity, task_entity: Task) -> None:
         self.add_exe_kg_data_entity(data_entity)
@@ -167,19 +167,19 @@ class ExeKG:
 
         (
             source_list,
-            data_semantics_list,
-            data_structure_list,
+            data_semantics_iri_list,
+            data_structure_iri_list,
         ) = self.get_input_for_new_data_entities()
 
-        for source, data_semantics, data_structure in zip(
-            source_list, data_semantics_list, data_structure_list
+        for source, data_semantics_iri, data_structure_iri in zip(
+            source_list, data_semantics_iri_list, data_structure_iri_list
         ):
             data_entity = DataEntity(
                 self.input_kg_namespace + source,
                 self.data_entity,
                 source,
-                data_semantics,
-                data_structure,
+                data_semantics_iri,
+                data_structure_iri,
             )
             self.add_input_data_entity(data_entity, pipeline)
 
@@ -223,19 +223,19 @@ class ExeKG:
 
             (
                 source_list,
-                data_semantics_list,
-                data_structure_list,
+                data_semantics_iri_list,
+                data_structure_iri_list,
             ) = self.get_input_for_new_data_entities()
 
-            for source, data_semantics, data_structure in zip(
-                source_list, data_semantics_list, data_structure_list
+            for source, data_semantics_iri, data_structure_iri in zip(
+                source_list, data_semantics_iri_list, data_structure_iri_list
             ):
                 data_entity = DataEntity(
                     self.input_kg_namespace + source,
                     self.data_entity,
                     source,
-                    data_semantics,
-                    data_structure,
+                    data_semantics_iri,
+                    data_structure_iri,
                 )
                 self.add_input_data_entity(data_entity, task_entity)
                 existing_data_entity_list.append(data_entity)
@@ -417,13 +417,13 @@ class ExeKG:
         self.add_exe_kg_relation(
             data_entity,
             self.top_level_kg_namespace.hasDataStructure,
-            data_entity.has_data_structure,
+            Entity(data_entity.has_data_structure),
         )
 
         self.add_exe_kg_relation(
             data_entity,
             self.top_level_kg_namespace.hasDataSemantics,
-            data_entity.has_data_semantics,
+            Entity(data_entity.has_data_semantics),
         )
 
     def add_instance_from_parent_with_exe_kg_relation(
