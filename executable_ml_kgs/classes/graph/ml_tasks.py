@@ -26,7 +26,7 @@ class DataSplittingDataSplittingMethod(Task):
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
-        input_df = self.get_inputs(other_task_output_dict, input_data)[0]
+        input_df = self.get_one_input(other_task_output_dict, input_data)
         train_data, test_data = data_splitting(input_df, self.has_split_ratio)
 
         return self.create_output_dict({"Train": train_data, "Test": test_data})
@@ -40,8 +40,7 @@ class TrainKNNTrain(Task):
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
-        input_x_y = self.get_inputs(other_task_output_dict, input_data)[0]
-
+        input_x_y = self.get_one_input(other_task_output_dict, input_data)
         input_x = input_x_y[input_x_y.columns[:-1]]
         input_y = input_x_y[input_x_y.columns[-1]]
         model, predicted_y = k_nn_train(input_x, input_y)
@@ -56,7 +55,7 @@ class TestKNNTest(Task):
     def run_method(
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        model, input_x_y = self.get_inputs(other_task_output_dict, input_data)
+        model, input_x_y = self.get_inputs_from_dict(other_task_output_dict)
         input_x = input_x_y[input_x_y.columns[:-1]]
 
         predicted_y = k_nn_test(model, input_x)
@@ -72,7 +71,7 @@ class TrainLRTrain(Task):
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
-        input_x_y = self.get_inputs(other_task_output_dict, input_data)[0]
+        input_x_y = self.get_one_input(other_task_output_dict, input_data)
 
         input_x = input_x_y[input_x_y.columns[:-1]]
         input_y = input_x_y[input_x_y.columns[-1]]
@@ -88,7 +87,7 @@ class TestLRTest(Task):
     def run_method(
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        model, input_x_y = self.get_inputs(other_task_output_dict, input_data)
+        model, input_x_y = self.get_inputs_from_dict(other_task_output_dict)
         input_x = input_x_y[input_x_y.columns[:-1]]
 
         predicted_y = lr_testing(model, input_x)
@@ -104,7 +103,7 @@ class TrainMLPTrain(Task):
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
-        input_x_y = self.get_inputs(other_task_output_dict, input_data)[0]
+        input_x_y = self.get_one_input(other_task_output_dict, input_data)
 
         input_x = input_x_y[input_x_y.columns[:-1]]
         input_y = input_x_y[input_x_y.columns[-1]]
@@ -120,7 +119,7 @@ class TestMLPTest(Task):
     def run_method(
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        model, input_x_y = self.get_inputs(other_task_output_dict, input_data)
+        model, input_x_y = self.get_inputs_from_dict(other_task_output_dict)
         input_x = input_x_y[input_x_y.columns[:-1]]
 
         predicted_y = mlp_test(model, input_x)
@@ -135,9 +134,12 @@ class PerformanceCalculationPerformanceCalculationMethod(Task):
     def run_method(
         self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        predicted_test, predicted_train, test_x_y, train_x_y = self.get_inputs(
-            other_task_output_dict, input_data
-        )
+        (
+            predicted_test,
+            predicted_train,
+            test_x_y,
+            train_x_y,
+        ) = self.get_inputs_from_dict(other_task_output_dict)
         real_test = test_x_y[test_x_y.columns[-1]]
         real_train = train_x_y[train_x_y.columns[-1]]
 

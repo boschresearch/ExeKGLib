@@ -8,10 +8,9 @@ class TrendCalculationTaskTrendCalculationMethod(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-            self, other_task_output_dict: dict, input_data: pd.DataFrame
+        self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        input = self.get_inputs(other_task_output_dict, input_data)[0]
-
+        input = self.get_one_input(other_task_output_dict, input_data)
         trend_calculation_result = trend_calculation(
             input, self.has_input[0].has_source
         )
@@ -24,9 +23,10 @@ class ScatteringCalculationTaskScatteringCalculationMethod(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
-        input = self.get_inputs(other_task_output_dict, input_data)[0]
-
-        scattering_calculation_result = scattering_calculation(input, self.has_input[0].has_source)
+        input = self.get_one_input(other_task_output_dict, input_data)
+        scattering_calculation_result = scattering_calculation(
+            input, self.has_input[0].has_source
+        )
 
         return self.create_output_dict({"Scattering": scattering_calculation_result})
 
@@ -36,8 +36,7 @@ class NormalizationTaskNormalizationMethod(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
-        input = self.get_inputs(other_task_output_dict, input_data)[0]
-
+        input = self.get_one_input(other_task_output_dict, input_data)
         normalization_result = normalization(input, self.has_input[0].has_source)
 
         return self.create_output_dict({"Normalization": normalization_result})
