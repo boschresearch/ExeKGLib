@@ -1,13 +1,12 @@
-import ast
 import re
-from typing import Union, Tuple, Optional, Any, Callable, List
+from typing import Union, Tuple, Optional, List
 
 from rdflib import URIRef, RDF, Namespace, Literal, Graph, query
 
 # from .visual_tasks import CanvasTask, PlotTask
 from .task import Task
 from .entity import Entity
-from . import visual_tasks, statistic_tasks, ml_tasks
+from .tasks import visual_tasks, statistic_tasks, ml_tasks
 from .data_entity import DataEntity
 
 

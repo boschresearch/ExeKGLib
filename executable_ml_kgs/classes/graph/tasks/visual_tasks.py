@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
 from utils.visual_utils import *
-from .entity import Entity
-from .task import Task
+from classes.graph.entity import Entity
+from classes.graph.task import Task
 
 
 class CanvasTaskCanvasMethod(Task):
