@@ -1,4 +1,4 @@
-from utils.statistic_utils import *
+from utils.task_utils.statistic_utils import *
 from classes.graph.entity import Entity
 from classes.graph.task import Task
 

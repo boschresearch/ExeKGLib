@@ -1,13 +1,17 @@
-import re
-from typing import Union, Tuple, Optional, List
+from typing import Union, Tuple, List
 
-from rdflib import URIRef, RDF, Namespace, Literal, Graph, query
+from rdflib import RDF, Namespace, Literal
 
-# from .visual_tasks import CanvasTask, PlotTask
-from .task import Task
-from .entity import Entity
-from .tasks import visual_tasks, statistic_tasks, ml_tasks
+from utils.cli_utils import (
+    get_input_for_existing_data_entities,
+    get_input_for_new_data_entities,
+)
+from utils.query_utils import *
+from utils.string_utils import property_name_to_field_name
 from .data_entity import DataEntity
+from .entity import Entity
+from .task import Task
+from .tasks import visual_tasks, statistic_tasks, ml_tasks
 
 
 class ExeKG:
@@ -55,15 +59,13 @@ class ExeKG:
         self.parse_kgs()
 
     def parse_kgs(self) -> None:
-        atomic_task_subclasses = self.get_subclasses_of(
-            self.atomic_task.iri, self.input_kg
-        )
+        atomic_task_subclasses = get_subclasses_of(self.atomic_task.iri, self.input_kg)
         for t in list(atomic_task_subclasses):
             task = Entity(t[0], self.atomic_task)
             self.atomic_task_list.append(task)
             self.task_type_dict[task.name] = 1
 
-        atomic_method_subclasses = self.get_subclasses_of(
+        atomic_method_subclasses = get_subclasses_of(
             self.atomic_method.iri, self.input_kg
         )
         for m in list(atomic_method_subclasses):
@@ -71,14 +73,12 @@ class ExeKG:
             self.atomic_method_list.append(method)
             self.method_type_dict[method.name] = 1
 
-        data_type_subclasses = self.get_subclasses_of(
-            self.data_entity.iri, self.input_kg
-        )
+        data_type_subclasses = get_subclasses_of(self.data_entity.iri, self.input_kg)
         for d in list(data_type_subclasses):
             data_type = Entity(d[0], self.data_entity)
             self.data_type_list.append(data_type)
 
-        data_semantics_subclasses = self.get_subclasses_of(
+        data_semantics_subclasses = get_subclasses_of(
             self.data_semantics.iri, self.top_level_kg
         )
         for d in list(data_semantics_subclasses):
@@ -87,7 +87,7 @@ class ExeKG:
             data_semantics = Entity(d[0], self.data_semantics)
             self.data_semantics_list.append(data_semantics)
 
-        data_structure_subclasses = self.get_subclasses_of(
+        data_structure_subclasses = get_subclasses_of(
             self.data_structure.iri, self.top_level_kg
         )
         for d in list(data_structure_subclasses):
@@ -102,63 +102,11 @@ class ExeKG:
             self.pipeline,
         )
 
-    @staticmethod
-    def get_input_for_existing_data_entities(
-        existing_data_entity_list: List[DataEntity],
-    ) -> Union[None, List[DataEntity]]:
-        chosen_data_entity_list = []
-        print("Select input for the task from existing data entities:")
-        while True:
-            for i, data_entity in enumerate(existing_data_entity_list):
-                print("\t{}. {}".format(str(i), data_entity.name))
-            print("\t{}. Continue to choose new input columns".format(str(-1)))
-            chosen_data_entity_i = int(input())
-            if chosen_data_entity_i == -1:
-                break
-
-            chosen_data_entity_list.append(
-                existing_data_entity_list[chosen_data_entity_i]
-            )
-
-        return chosen_data_entity_list
-
-    def get_input_for_new_data_entities(self) -> Tuple[list, list, list]:
-        source_list = []
-        data_semantics_iri_list = []
-        data_structure_iri_list = []
-
-        prompt = "Enter input columns for the task, enter 'quit' to stop input: "
-        source = input(prompt)
-        while source != "quit":
-            source_list.append(source)
-
-            print(f"Choose data semantics for {source}:")
-            for i, t in enumerate(self.data_semantics_list):
-                print("\t{}. {}".format(str(i), t.name))
-            chosen_data_semantics_id = int(input())
-            data_semantics_iri_list.append(
-                self.data_semantics_list[chosen_data_semantics_id].iri
-            )
-
-            print(f"Choose data structure for {source}:")
-            for i, t in enumerate(self.data_structure_list):
-                print("\t{}. {}".format(str(i), t.name))
-            chosen_data_structure_id = int(input())
-            data_structure_iri_list.append(
-                self.data_structure_list[chosen_data_structure_id].iri
-            )
-
-            source = input(prompt)
-
-        return source_list, data_semantics_iri_list, data_structure_iri_list
-
-    def add_input_data_entity(self, data_entity: DataEntity, task_entity: Task) -> None:
+    def add_and_attach_data_entity(
+        self, data_entity: DataEntity, relation: URIRef, task_entity: Task
+    ) -> None:
         self.add_exe_kg_data_entity(data_entity)
-        self.add_exe_kg_relation(
-            task_entity, self.top_level_kg_namespace.hasInput, data_entity
-        )
-
-        task_entity.has_input.append(data_entity)
+        self.add_exe_kg_relation(task_entity, relation, data_entity)
 
     def create_pipeline_task(self, pipeline_name: str) -> Task:
         pipeline = self.create_pipeline_entity(pipeline_name)
@@ -168,7 +116,9 @@ class ExeKG:
             source_list,
             data_semantics_iri_list,
             data_structure_iri_list,
-        ) = self.get_input_for_new_data_entities()
+        ) = get_input_for_new_data_entities(
+            self.data_semantics_list, self.data_structure_list
+        )
 
         for source, data_semantics_iri, data_structure_iri in zip(
             source_list, data_semantics_iri_list, data_structure_iri_list
@@ -180,7 +130,10 @@ class ExeKG:
                 data_semantics_iri,
                 data_structure_iri,
             )
-            self.add_input_data_entity(data_entity, pipeline)
+            self.add_and_attach_data_entity(
+                data_entity, self.top_level_kg_namespace.hasInput, pipeline
+            )
+            pipeline.has_input.append(data_entity)
 
         return pipeline
 
@@ -214,17 +167,23 @@ class ExeKG:
                 )
                 task_entity.has_input.append(data_entity)
         else:  # ask user
-            chosen_data_entity_list = self.get_input_for_existing_data_entities(
+            chosen_data_entity_list = get_input_for_existing_data_entities(
                 existing_data_entity_list
             )
             for chosen_data_entity in chosen_data_entity_list:
-                self.add_input_data_entity(chosen_data_entity, task_entity)
-
+                self.add_and_attach_data_entity(
+                    chosen_data_entity,
+                    self.top_level_kg_namespace.hasInput,
+                    task_entity,
+                )
+                task_entity.has_input.append(chosen_data_entity)
             (
                 source_list,
                 data_semantics_iri_list,
                 data_structure_iri_list,
-            ) = self.get_input_for_new_data_entities()
+            ) = get_input_for_new_data_entities(
+                self.data_semantics_list, self.data_structure_list
+            )
 
             for source, data_semantics_iri, data_structure_iri in zip(
                 source_list, data_semantics_iri_list, data_structure_iri_list
@@ -236,7 +195,10 @@ class ExeKG:
                     data_semantics_iri,
                     data_structure_iri,
                 )
-                self.add_input_data_entity(data_entity, task_entity)
+                self.add_and_attach_data_entity(
+                    data_entity, self.top_level_kg_namespace.hasInput, task_entity
+                )
+                task_entity.has_input.append(data_entity)
                 existing_data_entity_list.append(data_entity)
 
         print(
@@ -247,9 +209,8 @@ class ExeKG:
             data_entity = DataEntity(
                 self.input_kg_namespace + output_name, self.data_entity
             )
-            self.add_instance(data_entity)
-            self.add_exe_kg_relation(
-                task_entity, self.top_level_kg_namespace.hasOutput, data_entity
+            self.add_and_attach_data_entity(
+                data_entity, self.top_level_kg_namespace.hasOutput, task_entity
             )
             task_entity.has_output.append(data_entity)
 
@@ -263,7 +224,11 @@ class ExeKG:
         print("Please choose a method for {}:".format(task_to_attach_to.type))
 
         results = list(
-            self.get_method_properties_and_methods(task_to_attach_to.parent_entity.iri)
+            get_method_properties_and_methods(
+                self.input_kg,
+                self.top_level_kg_namespace_prefix,
+                task_to_attach_to.parent_entity.iri,
+            )
         )
         for i, pair in enumerate(results):
             tmp_method = pair[1].split("#")[1]
@@ -332,98 +297,50 @@ class ExeKG:
     def query_input_kg(self, q: str, init_bindings: dict = None) -> query.Result:
         return self.input_kg.query(q, initBindings=init_bindings)
 
-    def query_output_kg(self, q: str) -> query.Result:
-        return self.output_kg.query(q)
-
-    def query_top_level_kg(self, q: str, init_bindings: dict = None) -> query.Result:
-        return self.top_level_kg.query(q, initBindings=init_bindings)
-
     def get_data_properties_plus_inherited_by_class_iri(self, class_iri: str):
         property_list = list(
-            self.get_data_properties_by_entity_iri(class_iri, self.input_kg)
+            get_data_properties_by_entity_iri(class_iri, self.input_kg)
         )
-        method_parent_classes = list(self.query_method_parent_classes(class_iri))
+        method_parent_classes = list(
+            query_method_parent_classes(self.input_kg, class_iri)
+        )
         for method_class_result_row in method_parent_classes:
             property_list += list(
-                self.get_data_properties_by_entity_iri(
+                get_data_properties_by_entity_iri(
                     method_class_result_row[0], self.input_kg
                 )
             )
 
         return property_list
 
-    @staticmethod
-    def get_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> query.Result:
-        return kg.query(
-            "\nSELECT ?p ?r WHERE {?p rdfs:domain ?entity_iri . "
-            "?p rdfs:range ?r . "
-            "?p rdf:type owl:DatatypeProperty . }",
-            initBindings={"entity_iri": URIRef(entity_iri)},
-        )
-
-    def get_method_properties_and_methods(self, entity_parent_iri: str) -> query.Result:
-        return self.query_input_kg(
-            "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_parent_iri . "
-            "?p rdfs:range ?m . "
-            "?m rdfs:subClassOf "
-            + self.top_level_kg_namespace_prefix
-            + ":AtomicMethod . }",
-            init_bindings={"entity_iri": URIRef(entity_parent_iri)},
-        )  # method property
-
-    @staticmethod
-    def get_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
-        return kg.query(
-            "\nSELECT ?t WHERE {?t rdfs:subClassOf ?class_iri . }",
-            initBindings={"class_iri": class_iri},
-        )
-
-    # def get_atomic_method_subclasses(self) -> query.Result:
-    #     return self.query_input_kg(
-    #         "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-    #         + self.top_level_kg_namespace_prefix
-    #         + ":AtomicMethod . }"
-    #     )
-    #
-    # def get_atomic_task_subclasses(self) -> query.Result:
-    #     return self.query_input_kg(
-    #         "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-    #         + self.top_level_kg_namespace_prefix
-    #         + ":AtomicTask . }"
-    #     )
-    #
-    # def get_data_type_subclasses(self) -> query.Result:
-    #     return self.query_input_kg(
-    #         "\nSELECT ?t WHERE {?t rdfs:subClassOf "
-    #         + self.top_level_kg_namespace_prefix
-    #         + ":Data . }"
-    #     )
-
     def add_exe_kg_data_entity(self, data_entity: DataEntity) -> None:
         self.add_instance(data_entity)
 
-        has_source_iri, range_iri = self.get_first_query_result_if_exists(
-            self.get_data_properties_by_entity_iri, self.data.iri, self.top_level_kg
-        )
+        if data_entity.has_source:
+            has_source_iri, range_iri = get_first_query_result_if_exists(
+                get_data_properties_by_entity_iri, self.data.iri, self.top_level_kg
+            )
 
-        source_literal = Literal(
-            lexical_or_value=data_entity.has_source,
-            datatype=range_iri,
-        )
+            source_literal = Literal(
+                lexical_or_value=data_entity.has_source,
+                datatype=range_iri,
+            )
 
-        self.add_exe_kg_literal(data_entity, has_source_iri, source_literal)
+            self.add_exe_kg_literal(data_entity, has_source_iri, source_literal)
 
-        self.add_exe_kg_relation(
-            data_entity,
-            self.top_level_kg_namespace.hasDataStructure,
-            Entity(data_entity.has_data_structure),
-        )
+        if data_entity.has_data_structure:
+            self.add_exe_kg_relation(
+                data_entity,
+                self.top_level_kg_namespace.hasDataStructure,
+                Entity(data_entity.has_data_structure),
+            )
 
-        self.add_exe_kg_relation(
-            data_entity,
-            self.top_level_kg_namespace.hasDataSemantics,
-            Entity(data_entity.has_data_semantics),
-        )
+        if data_entity.has_data_semantics:
+            self.add_exe_kg_relation(
+                data_entity,
+                self.top_level_kg_namespace.hasDataSemantics,
+                Entity(data_entity.has_data_semantics),
+            )
 
     def add_instance_from_parent_with_exe_kg_relation(
         self, instance_parent: Entity, relation_iri: str, related_entity: Entity
@@ -474,14 +391,6 @@ class ExeKG:
         entity_type_dict[parent_entity.name] += 1
         return instance_name
 
-    @staticmethod
-    def camel_to_snake(name: str) -> str:
-        name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-        return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
-
-    def property_name_to_field_name(self, property_name: str) -> str:
-        return self.camel_to_snake(property_name.split("#")[1])
-
     def property_value_to_field_value(
         self, property_value: str
     ) -> Union[str, DataEntity]:
@@ -494,16 +403,20 @@ class ExeKG:
         return property_value
 
     def get_method_by_task_iri(self, task_iri: str) -> Optional[Entity]:
-        query_result = self.get_first_query_result_if_exists(
-            self.query_method_iri_by_task_iri, task_iri
+        query_result = get_first_query_result_if_exists(
+            query_method_iri_by_task_iri,
+            self.input_kg,
+            self.top_level_kg_namespace_prefix,
+            task_iri,
         )
         if query_result is None:
             return None
 
         method_iri = str(query_result[0])
 
-        query_result = self.get_first_query_result_if_exists(
-            self.query_entity_parent_iri,
+        query_result = get_first_query_result_if_exists(
+            query_entity_parent_iri,
+            self.input_kg,
             method_iri,
             self.top_level_kg_namespace.Method,
         )
@@ -516,64 +429,23 @@ class ExeKG:
 
     def get_pipeline_and_first_task_iri(self) -> Tuple[str, str]:
         # assume one pipeline per file
-        pipeline_iri, task_iri = list(
-            self.query_input_kg(
-                f"\nSELECT ?p ?t WHERE {{?p rdf:type {self.top_level_kg_namespace_prefix}:Pipeline ;"
-                f"                       {self.top_level_kg_namespace_prefix}:hasStartTask ?t . }}"
-            )
-        )[0]
+        query_result = get_first_query_result_if_exists(
+            query_pipeline_and_first_task_iri,
+            self.input_kg,
+            self.top_level_kg_namespace_prefix,
+        )
+        if query_result is None:
+            print("Error: Pipeline and first task not found")
+            exit(1)
+
+        pipeline_iri, task_iri = query_result
 
         return str(pipeline_iri), str(task_iri)
 
-    def query_method_parent_classes(self, method_iri):
-        return self.query_input_kg(
-            f"SELECT ?c WHERE {{ ?method rdfs:subClassOf ?c . }}",
-            init_bindings={"method": URIRef(method_iri)},
-        )
-
-    def query_entity_parent_iri(self, entity_iri: str, upper_class_uri_ref: URIRef):
-        return self.query_input_kg(
-            f"SELECT ?t WHERE {{ ?entity rdf:type ?t ."
-            f"                   ?t rdfs:subClassOf* ?upper_class .}}",
-            init_bindings={
-                "entity": URIRef(entity_iri),
-                "upper_class": upper_class_uri_ref,
-            },
-        )
-
-    def query_method_iri_by_task_iri(self, task_iri: str):
-        return self.query_input_kg(
-            f"SELECT ?m WHERE {{ ?task ?m_property ?m ."
-            f"                   ?m_property rdfs:subPropertyOf* {self.top_level_kg_namespace_prefix}:hasMethod .}}",
-            init_bindings={"task": URIRef(task_iri)},
-        )
-
-    @staticmethod
-    def get_first_query_result_if_exists(query_method, *args) -> Optional[str]:
-        query_result = next(
-            iter(list(query_method(*args))),
-            None,
-        )
-
-        if query_result is None:
-            return None
-
-        return query_result
-
-    # def get_task_method_iri_if_exists(self, task_iri: str) -> Optional[str]:
-    #     method_query_result = next(
-    #         iter(list(self.query_method_iri_by_task_iri(task_iri))),
-    #         None,
-    #     )
-    #
-    #     if method_query_result is None:
-    #         return None
-    #
-    #     return str(method_query_result[0])
-
     def parse_data_entity_by_iri(self, data_entity_iri: str) -> Optional[DataEntity]:
-        query_result = self.get_first_query_result_if_exists(
-            self.query_entity_parent_iri,
+        query_result = get_first_query_result_if_exists(
+            query_entity_parent_iri,
+            self.input_kg,
             data_entity_iri,
             self.top_level_kg_namespace.DataEntity,
         )
@@ -585,7 +457,7 @@ class ExeKG:
         data_entity = DataEntity(data_entity_iri, Entity(data_entity_parent_iri))
 
         for s, p, o in self.input_kg.triples((URIRef(data_entity_iri), None, None)):
-            field_name = self.property_name_to_field_name(str(p))
+            field_name = property_name_to_field_name(str(p))
             if not hasattr(data_entity, field_name) or field_name == "type":
                 continue
             field_value = self.property_value_to_field_value(str(o))
@@ -596,8 +468,9 @@ class ExeKG:
     def parse_task_by_iri(
         self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
     ) -> Optional[Task]:
-        query_result = self.get_first_query_result_if_exists(
-            self.query_entity_parent_iri,
+        query_result = get_first_query_result_if_exists(
+            query_entity_parent_iri,
+            self.input_kg,
             task_iri,
             self.top_level_kg_namespace.AtomicTask,
         )
@@ -626,7 +499,7 @@ class ExeKG:
             task = Class(task_iri, Task(task_parent_iri))
 
         for s, p, o in self.input_kg.triples((URIRef(task_iri), None, None)):
-            field_name = self.property_name_to_field_name(str(p))
+            field_name = property_name_to_field_name(str(p))
             if not hasattr(task, field_name) or field_name == "type":
                 continue
             field_value = self.property_value_to_field_value(str(o))

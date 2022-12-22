@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from utils.visual_utils import *
+from utils.task_utils.visual_utils import *
 from classes.graph.entity import Entity
 from classes.graph.task import Task
 
