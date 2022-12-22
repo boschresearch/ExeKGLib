@@ -13,5 +13,4 @@ class DataEntity(Entity):
         super().__init__(iri, parent_entity)
         self.has_source = has_source
         self.has_data_semantics = has_data_semantics
-
         self.has_data_structure = has_data_structure

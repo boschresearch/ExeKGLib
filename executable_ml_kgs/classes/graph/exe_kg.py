@@ -13,13 +13,13 @@ from .data_entity import DataEntity
 
 class ExeKG:
     def __init__(
-            self,
-            input_kg_namespace_iri: str,
-            input_kg_path: str,
-            input_kg_namespace_prefix: str,
-            top_level_kg_namespace_iri: str,
-            top_level_kg_path: str,
-            top_level_kg_namespace_prefix: str,
+        self,
+        input_kg_namespace_iri: str,
+        input_kg_path: str,
+        input_kg_namespace_prefix: str,
+        top_level_kg_namespace_iri: str,
+        top_level_kg_path: str,
+        top_level_kg_namespace_prefix: str,
     ):
         self.output_kg = Graph(bind_namespaces="rdflib")
         self.top_level_kg_namespace = Namespace(top_level_kg_namespace_iri)
@@ -104,8 +104,9 @@ class ExeKG:
         )
 
     @staticmethod
-    def get_input_for_existing_data_entities(existing_data_entity_list: List[DataEntity]) -> Union[
-        None, List[DataEntity]]:
+    def get_input_for_existing_data_entities(
+        existing_data_entity_list: List[DataEntity],
+    ) -> Union[None, List[DataEntity]]:
         chosen_data_entity_list = []
         print("Select input for the task from existing data entities:")
         while True:
@@ -116,7 +117,9 @@ class ExeKG:
             if chosen_data_entity_i == -1:
                 break
 
-            chosen_data_entity_list.append(existing_data_entity_list[chosen_data_entity_i])
+            chosen_data_entity_list.append(
+                existing_data_entity_list[chosen_data_entity_i]
+            )
 
         return chosen_data_entity_list
 
@@ -134,13 +137,17 @@ class ExeKG:
             for i, t in enumerate(self.data_semantics_list):
                 print("\t{}. {}".format(str(i), t.name))
             chosen_data_semantics_id = int(input())
-            data_semantics_list.append(self.data_semantics_list[chosen_data_semantics_id])
+            data_semantics_list.append(
+                self.data_semantics_list[chosen_data_semantics_id]
+            )
 
             print(f"Choose data structure for {source}:")
             for i, t in enumerate(self.data_structure_list):
                 print("\t{}. {}".format(str(i), t.name))
             chosen_data_structure_id = int(input())
-            data_structure_list.append(self.data_structure_list[chosen_data_structure_id])
+            data_structure_list.append(
+                self.data_structure_list[chosen_data_structure_id]
+            )
 
             source = input(prompt)
 
@@ -158,9 +165,15 @@ class ExeKG:
         pipeline = self.create_pipeline_entity(pipeline_name)
         self.add_instance(pipeline)
 
-        source_list, data_semantics_list, data_structure_list = self.get_input_for_new_data_entities()
+        (
+            source_list,
+            data_semantics_list,
+            data_structure_list,
+        ) = self.get_input_for_new_data_entities()
 
-        for source, data_semantics, data_structure in zip(source_list, data_semantics_list, data_structure_list):
+        for source, data_semantics, data_structure in zip(
+            source_list, data_semantics_list, data_structure_list
+        ):
             data_entity = DataEntity(
                 self.input_kg_namespace + source,
                 self.data_entity,
@@ -172,8 +185,9 @@ class ExeKG:
 
         return pipeline
 
-    def create_next_task(self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]) -> Union[
-        None, Task]:
+    def create_next_task(
+        self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]
+    ) -> Union[None, Task]:
         print(prompt)
         for i, t in enumerate(self.atomic_task_list):
             print("\t{}. {}".format(str(i), t.name))
@@ -201,13 +215,21 @@ class ExeKG:
                 )
                 task_entity.has_input.append(data_entity)
         else:  # ask user
-            chosen_data_entity_list = self.get_input_for_existing_data_entities(existing_data_entity_list)
+            chosen_data_entity_list = self.get_input_for_existing_data_entities(
+                existing_data_entity_list
+            )
             for chosen_data_entity in chosen_data_entity_list:
                 self.add_input_data_entity(chosen_data_entity, task_entity)
 
-            source_list, data_semantics_list, data_structure_list = self.get_input_for_new_data_entities()
+            (
+                source_list,
+                data_semantics_list,
+                data_structure_list,
+            ) = self.get_input_for_new_data_entities()
 
-            for source, data_semantics, data_structure in zip(source_list, data_semantics_list, data_structure_list):
+            for source, data_semantics, data_structure in zip(
+                source_list, data_semantics_list, data_structure_list
+            ):
                 data_entity = DataEntity(
                     self.input_kg_namespace + source,
                     self.data_entity,
@@ -218,12 +240,18 @@ class ExeKG:
                 self.add_input_data_entity(data_entity, task_entity)
                 existing_data_entity_list.append(data_entity)
 
-        print("Enter names for the output values of the task, enter 'quit' to stop input:")
+        print(
+            "Enter names for the output values of the task, enter 'quit' to stop input:"
+        )
         output_name = input()
         while output_name != "quit":
-            data_entity = DataEntity(self.input_kg_namespace + output_name, self.data_entity)
+            data_entity = DataEntity(
+                self.input_kg_namespace + output_name, self.data_entity
+            )
             self.add_instance(data_entity)
-            self.add_exe_kg_relation(task_entity, self.top_level_kg_namespace.hasOutput, data_entity)
+            self.add_exe_kg_relation(
+                task_entity, self.top_level_kg_namespace.hasOutput, data_entity
+            )
             task_entity.has_output.append(data_entity)
 
             existing_data_entity_list.append(data_entity)
@@ -299,7 +327,7 @@ class ExeKG:
             prev_task = next_task
 
     def save(self, file_path: str) -> None:
-        all_kgs = self.input_kg + self.output_kg
+        all_kgs = self.input_kg + self.output_kg + self.top_level_kg
         all_kgs.serialize(destination=file_path)
 
     def query_input_kg(self, q: str, init_bindings: dict = None) -> query.Result:
@@ -399,7 +427,7 @@ class ExeKG:
         )
 
     def add_instance_from_parent_with_exe_kg_relation(
-            self, instance_parent: Entity, relation_iri: str, related_entity: Entity
+        self, instance_parent: Entity, relation_iri: str, related_entity: Entity
     ) -> Entity:
         instance_name = self.name_instance(instance_parent)
         instance_iri = self.input_kg_namespace + instance_name
@@ -411,15 +439,15 @@ class ExeKG:
 
     def add_instance(self, entity_instance: Entity) -> None:
         if (
-                entity_instance.parent_entity
-                and (entity_instance.iri, None, None) not in self.output_kg
+            entity_instance.parent_entity
+            and (entity_instance.iri, None, None) not in self.output_kg
         ):
             self.output_kg.add(
                 (entity_instance.iri, RDF.type, entity_instance.parent_entity.iri)
             )
 
     def add_exe_kg_relation(
-            self, from_entity: Entity, relation_iri: str, to_entity: Entity
+        self, from_entity: Entity, relation_iri: str, to_entity: Entity
     ) -> None:
         self.output_kg.add(
             (
@@ -430,7 +458,7 @@ class ExeKG:
         )
 
     def add_exe_kg_literal(
-            self, from_entity: Entity, relation_iri: str, literal: Literal
+        self, from_entity: Entity, relation_iri: str, literal: Literal
     ) -> None:
         self.output_kg.add((from_entity.iri, URIRef(relation_iri), literal))
 
@@ -456,7 +484,7 @@ class ExeKG:
         return self.camel_to_snake(property_name.split("#")[1])
 
     def property_value_to_field_value(
-            self, property_value: str
+        self, property_value: str
     ) -> Union[str, DataEntity]:
         if "#" in property_value:
             data_entity = self.parse_data_entity_by_iri(property_value)
@@ -467,20 +495,23 @@ class ExeKG:
         return property_value
 
     def get_method_by_task_iri(self, task_iri: str) -> Optional[Entity]:
-        method_iri = str(
-            self.get_first_query_result_if_exists(
-                self.query_method_iri_by_task_iri, task_iri
-            )[0]
+        query_result = self.get_first_query_result_if_exists(
+            self.query_method_iri_by_task_iri, task_iri
         )
-        method_parent_iri = str(
-            self.get_first_query_result_if_exists(
-                self.query_entity_parent_iri,
-                method_iri,
-                self.top_level_kg_namespace.Method,
-            )[0]
-        )
-        if method_parent_iri is None:
+        if query_result is None:
             return None
+
+        method_iri = str(query_result[0])
+
+        query_result = self.get_first_query_result_if_exists(
+            self.query_entity_parent_iri,
+            method_iri,
+            self.top_level_kg_namespace.Method,
+        )
+        if query_result is None:
+            return None
+
+        method_parent_iri = str(query_result[0])
 
         return Entity(method_iri, Entity(method_parent_iri))
 
@@ -542,15 +573,15 @@ class ExeKG:
     #     return str(method_query_result[0])
 
     def parse_data_entity_by_iri(self, data_entity_iri: str) -> Optional[DataEntity]:
-        data_entity_parent_iri = str(
-            self.get_first_query_result_if_exists(
-                self.query_entity_parent_iri,
-                data_entity_iri,
-                self.top_level_kg_namespace.DataEntity,
-            )[0]
+        query_result = self.get_first_query_result_if_exists(
+            self.query_entity_parent_iri,
+            data_entity_iri,
+            self.top_level_kg_namespace.DataEntity,
         )
-        if data_entity_parent_iri is None:
+        if query_result is None:
             return None
+
+        data_entity_parent_iri = str(query_result[0])
 
         data_entity = DataEntity(data_entity_iri, Entity(data_entity_parent_iri))
 
@@ -564,13 +595,19 @@ class ExeKG:
         return data_entity
 
     def parse_task_by_iri(
-            self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
+        self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
     ) -> Optional[Task]:
-        task_parent_iri = str(
-            self.get_first_query_result_if_exists(
-                self.query_entity_parent_iri, task_iri, self.top_level_kg_namespace.Task
-            )[0]
+        query_result = self.get_first_query_result_if_exists(
+            self.query_entity_parent_iri,
+            task_iri,
+            self.top_level_kg_namespace.AtomicTask,
         )
+
+        if query_result is None:
+            print(f"Cannot retrieve parent of task with iri {task_iri}. Exiting...")
+            exit(1)
+
+        task_parent_iri = str(query_result[0])
 
         task = Task(task_iri, Task(task_parent_iri))
         method = self.get_method_by_task_iri(task_iri)
