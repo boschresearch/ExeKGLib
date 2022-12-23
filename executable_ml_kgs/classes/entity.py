@@ -4,6 +4,10 @@ from rdflib import URIRef
 
 
 class Entity:
+    """
+    Abstraction of a KG entity with basic RDF properties plus its parent_entity (connected in KG with rdf:type).
+    """
+
     def __init__(self, iri: str, parent_entity: Entity = None):
         self.iri = URIRef(iri)
         self.parent_entity = parent_entity

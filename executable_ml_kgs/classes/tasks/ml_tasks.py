@@ -2,6 +2,10 @@ from utils.task_utils.ml_utils import *
 from classes.entity import Entity
 from classes.task import Task
 
+"""
+❗ Important for contributors: See the package's README.md before extending the code's functionality.
+"""
+
 
 class ConcatenationConcatenationMethod(Task):
     def __init__(self, iri: str, parent_entity: Entity):

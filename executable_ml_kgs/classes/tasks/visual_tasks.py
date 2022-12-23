@@ -4,6 +4,10 @@ from utils.task_utils.visual_utils import *
 from classes.entity import Entity
 from classes.task import Task
 
+"""
+❗ Important for contributors: See the package's README.md before extending the code's functionality.
+"""
+
 
 class CanvasTaskCanvasMethod(Task):
     def __init__(self, iri: str, parent_entity: Entity):
@@ -21,7 +25,7 @@ class CanvasTaskCanvasMethod(Task):
 
 class PlotTask(Task):
     def __init__(
-            self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
+        self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
     ):
         super().__init__(iri, parent_entity)
         self.fig = canvas_method.fig
@@ -43,30 +47,35 @@ class PlotTask(Task):
 
 class PlotTaskScatterplotMethod(PlotTask):
     def __init__(
-            self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
+        self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
     ):
         super().__init__(iri, parent_entity, canvas_method)
         self.has_scatter_size = None
         self.has_scatter_style = None
 
-    def run_method(
-            self,
-            other_task_output_dict: dict, input_data: pd.DataFrame
-    ):
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input = self.get_one_input(other_task_output_dict, input_data)
         filtered_input_data = input[self.has_input[0].has_source]
-        scatter_plot(data=filtered_input_data, fig=self.fig, grid=self.grid, layout=self.has_layout,
-                     line_width=self.has_line_width,
-                     line_style=self.has_line_style, legend_name=self.has_legend_name, x_lim=self.has_x_lim,
-                     y_lim=self.has_y_lim, x_label=self.has_x_label,
-                     y_label=self.has_y_label)
+        scatter_plot(
+            data=filtered_input_data,
+            fig=self.fig,
+            grid=self.grid,
+            layout=self.has_layout,
+            line_width=self.has_line_width,
+            line_style=self.has_line_style,
+            legend_name=self.has_legend_name,
+            x_lim=self.has_x_lim,
+            y_lim=self.has_y_lim,
+            x_label=self.has_x_label,
+            y_label=self.has_y_label,
+        )
 
         return None
 
 
 class PlotTaskLineplotMethod(PlotTask):
     def __init__(
-            self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
+        self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
     ):
         super().__init__(iri, parent_entity, canvas_method)
 
@@ -74,10 +83,18 @@ class PlotTaskLineplotMethod(PlotTask):
         input = self.get_one_input(other_task_output_dict, input_data)
 
         filtered_input_data = input[self.has_input[0].has_source].copy().dropna()
-        line_plot(data=filtered_input_data, fig=self.fig, grid=self.grid, layout=self.has_layout,
-                  line_width=self.has_line_width,
-                  line_style=self.has_line_style, legend_name=self.has_legend_name, x_lim=self.has_x_lim,
-                  y_lim=self.has_y_lim, x_label=self.has_x_label,
-                  y_label=self.has_y_label)
+        line_plot(
+            data=filtered_input_data,
+            fig=self.fig,
+            grid=self.grid,
+            layout=self.has_layout,
+            line_width=self.has_line_width,
+            line_style=self.has_line_style,
+            legend_name=self.has_legend_name,
+            x_lim=self.has_x_lim,
+            y_lim=self.has_y_lim,
+            x_label=self.has_x_label,
+            y_label=self.has_y_label,
+        )
 
         return None
