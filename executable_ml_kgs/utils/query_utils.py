@@ -54,11 +54,22 @@ def get_method_properties_and_methods(
     input_kg, namespace_prefix, entity_parent_iri: str
 ) -> query.Result:
     return input_kg.query(
-        "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_parent_iri . "
+        "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m . "
         "?m rdfs:subClassOf " + namespace_prefix + ":AtomicMethod . }",
         initBindings={"entity_iri": URIRef(entity_parent_iri)},
     )  # method property
+
+
+def get_output_properties_and_outputs(
+    input_kg, namespace_prefix, entity_parent_iri: str
+) -> query.Result:
+    return input_kg.query(
+        "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
+        "?p rdfs:range ?m ."
+        "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
+        initBindings={"entity_iri": URIRef(entity_parent_iri)},
+    )
 
 
 def query_pipeline_and_first_task_iri(kg, namespace_prefix):

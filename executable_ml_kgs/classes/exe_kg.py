@@ -218,15 +218,7 @@ class ExeKG:
                 next_task,
             )
 
-        # TODO: handle task output
-        # data_entity = DataEntity(
-        #     self.input_kg_namespace + output_name, self.data_entity
-        # )
-        # self.add_and_attach_data_entity(
-        #     data_entity, self.top_level_kg_namespace.hasOutput, task_entity
-        # )
-        # next_task.has_output.append()
-        # existing_data_entity_list.append(data_entity)
+        self.add_outputs_to_task(next_task)
 
         method_parent = Entity(
             self.bottom_level_schema_namespace + method_type, self.atomic_method
@@ -244,7 +236,7 @@ class ExeKG:
         )
         if chosen_property_method is None:
             print(
-                f"Property connecting task of type {task_type} with method {method_type} not found"
+                f"Property connecting task of type {task_type} with method of type {method_type} not found"
             )
             exit(1)
 
@@ -269,6 +261,26 @@ class ExeKG:
             self.add_exe_kg_literal(next_task, property_iri, input_property)
 
         return next_task
+
+    def add_outputs_to_task(self, task_entity: Task) -> None:
+        results = list(
+            get_output_properties_and_outputs(
+                self.input_kg,
+                self.top_level_schema_namespace_prefix,
+                task_entity.parent_entity.iri,
+            )
+        )
+
+        # task_type_index was incremented when creating the task entity
+        task_type_index = self.task_type_dict[task_entity.type] - 1
+        for output_property, output_entity in results:
+            data_entity_iri = output_entity + str(task_type_index)
+            data_entity = DataEntity(
+                data_entity_iri, self.data_entity
+            )
+            self.add_and_attach_data_entity(
+                data_entity, self.top_level_schema_namespace.hasOutput, task_entity
+            )
 
     def create_next_task_cli(
         self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]
@@ -327,21 +339,7 @@ class ExeKG:
             task_entity.has_input.append(data_entity)
             existing_data_entity_list.append(data_entity)
 
-        print(
-            "Enter names for the output values of the task, enter 'quit' to stop input:"
-        )
-        output_name = input()
-        while output_name != "quit":
-            data_entity = DataEntity(
-                self.bottom_level_schema_namespace + output_name, self.data_entity
-            )
-            self.add_and_attach_data_entity(
-                data_entity, self.top_level_schema_namespace.hasOutput, task_entity
-            )
-            task_entity.has_output.append(data_entity)
-
-            existing_data_entity_list.append(data_entity)
-            output_name = input()
+        self.add_outputs_to_task(task_entity)
 
         return task_entity
 
@@ -419,9 +417,6 @@ class ExeKG:
     def save(self, file_path: str) -> None:
         all_kgs = self.output_kg
         all_kgs.serialize(destination=file_path)
-
-    def query_input_kg(self, q: str, init_bindings: dict = None) -> query.Result:
-        return self.input_kg.query(q, initBindings=init_bindings)
 
     def get_data_properties_plus_inherited_by_class_iri(self, class_iri: str):
         property_list = list(
