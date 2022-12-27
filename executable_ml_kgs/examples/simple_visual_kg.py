@@ -13,7 +13,7 @@ if __name__ == "__main__":
     canvas_task = exe_kg.add_task(
         prev_task=pipeline,
         task_type="CanvasTask",
-        input_data_entities=[],
+        input_data_entity_dict={},
         method_type="CanvasMethod",
         data_properties=canvas_task_properties,
         existing_data_entity_list=[],
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     lineplot_task = exe_kg.add_task(
         prev_task=canvas_task,
         task_type="PlotTask",
-        input_data_entities=[my_data_entity],
+        input_data_entity_dict={"DataInVector": my_data_entity},
         method_type="LineplotMethod",
         data_properties=lineplot_task_properties,
         existing_data_entity_list=[],
