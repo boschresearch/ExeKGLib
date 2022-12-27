@@ -13,34 +13,87 @@ from .entity import Entity
 from .task import Task
 from .tasks import visual_tasks, statistic_tasks, ml_tasks
 
+KG_SCHEMAS = {
+    "Data Science": (
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl",  # path
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#",  # namespace
+        "ds",  # namespace prefix
+    ),
+    "Visual": (
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
+        "visu",
+    ),
+    "Statistics": (
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl#",
+        "stats",
+    ),
+    "Machine Learning": (
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
+        "ml",
+    ),
+}
+
 
 class ExeKG:
-    def __init__(
-        self,
-        input_kg_namespace_iri: str,
-        input_kg_path: str,
-        input_kg_namespace_prefix: str,
-        top_level_kg_namespace_iri: str,
-        top_level_kg_path: str,
-        top_level_kg_namespace_prefix: str,
-    ):
+    def __init__(self, kg_schema_name: str = None, input_exe_kg_path: str = None):
+        top_level_schema_info = KG_SCHEMAS["Data Science"]
+        top_level_schema_path = top_level_schema_info[0]
+        top_level_schema_namespace = top_level_schema_info[1]
+        top_level_schema_namespace_prefix = top_level_schema_info[2]
+
+        self.top_level_schema_namespace = Namespace(top_level_schema_namespace)
+        self.top_level_schema_namespace_prefix = top_level_schema_namespace_prefix
+
+        self.atomic_task = Entity(self.top_level_schema_namespace.AtomicTask)
+        self.atomic_method = Entity(self.top_level_schema_namespace.AtomicMethod)
+        self.data_entity = Entity(self.top_level_schema_namespace.DataEntity)
+        self.pipeline = Entity(self.top_level_schema_namespace.Pipeline)
+        self.data = Entity(self.top_level_schema_namespace.Data)
+        self.data_semantics = Entity(self.top_level_schema_namespace.DataSemantics)
+        self.data_structure = Entity(self.top_level_schema_namespace.DataStructure)
+
+        self.top_level_kg = Graph(bind_namespaces="rdflib")
+        self.top_level_kg.parse(top_level_schema_path, format="n3")
+
+        self.input_kg = Graph(bind_namespaces="rdflib")
+        if input_exe_kg_path:
+            self.input_kg.parse(input_exe_kg_path, format="n3")
+            all_ns = [n for n in self.input_kg.namespace_manager.namespaces()]
+            schema_info_set = False
+            for schema_name, schema_info in KG_SCHEMAS.items():
+                if schema_name == "Data Science":
+                    continue
+                if (schema_info[2], URIRef(schema_info[1])) in all_ns:
+                    bottom_level_schema_path = schema_info[0]
+                    bottom_level_schema_namespace = schema_info[1]
+                    bottom_level_schema_namespace_prefix = schema_info[2]
+                    schema_info_set = True
+                    break
+            if not schema_info_set:
+                print("Input executable KG did not have any bottom level KG schemas")
+                exit(1)
+        else:
+            bottom_level_schema_info = KG_SCHEMAS[kg_schema_name]
+            bottom_level_schema_path = bottom_level_schema_info[0]
+            bottom_level_schema_namespace = bottom_level_schema_info[1]
+            bottom_level_schema_namespace_prefix = bottom_level_schema_info[2]
+
+        self.bottom_level_kg = Graph(bind_namespaces="rdflib")
+        self.bottom_level_kg.parse(bottom_level_schema_path, format="n3")
+
+        self.input_kg += self.top_level_kg + self.bottom_level_kg
         self.output_kg = Graph(bind_namespaces="rdflib")
-        self.top_level_kg_namespace = Namespace(top_level_kg_namespace_iri)
-        self.top_level_kg_namespace_prefix = top_level_kg_namespace_prefix
-        self.output_kg.bind(
-            self.top_level_kg_namespace_prefix, self.top_level_kg_namespace
-        )
 
-        self.input_kg_namespace = Namespace(input_kg_namespace_iri)
-        self.input_kg_namespace_prefix = input_kg_namespace_prefix
+        self.bottom_level_schema_namespace = Namespace(bottom_level_schema_namespace)
+        self.bottom_level_schema_namespace_prefix = bottom_level_schema_namespace_prefix
 
-        self.atomic_task = Entity(self.top_level_kg_namespace.AtomicTask)
-        self.atomic_method = Entity(self.top_level_kg_namespace.AtomicMethod)
-        self.data_entity = Entity(self.top_level_kg_namespace.DataEntity)
-        self.pipeline = Entity(self.top_level_kg_namespace.Pipeline)
-        self.data = Entity(self.top_level_kg_namespace.Data)
-        self.data_semantics = Entity(self.top_level_kg_namespace.DataSemantics)
-        self.data_structure = Entity(self.top_level_kg_namespace.DataStructure)
+        self.bottom_level_kg = Graph(bind_namespaces="rdflib")
+        self.bottom_level_kg.parse(bottom_level_schema_path, format="n3")
+
+        self.bind_top_bottom_level_namespaces([self.input_kg, self.output_kg])
 
         self.task_type_dict = {}
         self.method_type_dict = {}
@@ -50,13 +103,17 @@ class ExeKG:
         self.data_semantics_list = []
         self.data_structure_list = []
 
-        self.top_level_kg = Graph(bind_namespaces="rdflib")
-        self.top_level_kg.parse(top_level_kg_path, format="n3")
-
-        self.input_kg = Graph(bind_namespaces="rdflib")
-        self.input_kg.parse(input_kg_path, format="n3")
-
         self.parse_kgs()
+
+    def bind_top_bottom_level_namespaces(self, kgs: List[Graph]):
+        for kg in kgs:
+            kg.bind(
+                self.top_level_schema_namespace_prefix, self.top_level_schema_namespace
+            )
+            kg.bind(
+                self.bottom_level_schema_namespace_prefix,
+                self.bottom_level_schema_namespace,
+            )
 
     def parse_kgs(self) -> None:
         atomic_task_subclasses = get_subclasses_of(self.atomic_task.iri, self.input_kg)
@@ -98,7 +155,7 @@ class ExeKG:
 
     def create_pipeline_entity(self, name: str):
         return Task(
-            self.input_kg_namespace + name,
+            self.bottom_level_schema_namespace + name,
             self.pipeline,
         )
 
@@ -122,11 +179,11 @@ class ExeKG:
         data_structure_name: str,
     ):
         return DataEntity(
-            self.input_kg_namespace + name,
+            self.bottom_level_schema_namespace + name,
             self.data_entity,
             source_value,
-            self.top_level_kg_namespace + data_semantics_name,
-            self.top_level_kg_namespace + data_structure_name,
+            self.top_level_schema_namespace + data_semantics_name,
+            self.top_level_schema_namespace + data_structure_name,
         )
 
     def add_task(
@@ -140,12 +197,14 @@ class ExeKG:
     ) -> Task:
 
         relation_iri = (
-            self.top_level_kg_namespace.hasNextTask
+            self.top_level_schema_namespace.hasNextTask
             if prev_task.type != "Pipeline"
-            else self.top_level_kg_namespace.hasStartTask
+            else self.top_level_schema_namespace.hasStartTask
         )
 
-        parent_task = Task(self.input_kg_namespace + task_type, self.atomic_task)
+        parent_task = Task(
+            self.bottom_level_schema_namespace + task_type, self.atomic_task
+        )
         added_entity = self.add_instance_from_parent_with_exe_kg_relation(
             parent_task, relation_iri, prev_task
         )
@@ -155,7 +214,7 @@ class ExeKG:
         for data_entity in next_task.has_input:
             self.add_and_attach_data_entity(
                 data_entity,
-                self.top_level_kg_namespace.hasInput,
+                self.top_level_schema_namespace.hasInput,
                 next_task,
             )
 
@@ -170,12 +229,12 @@ class ExeKG:
         # existing_data_entity_list.append(data_entity)
 
         method_parent = Entity(
-            self.input_kg_namespace + method_type, self.atomic_method
+            self.bottom_level_schema_namespace + method_type, self.atomic_method
         )
         results = list(
             get_method_properties_and_methods(
                 self.input_kg,
-                self.top_level_kg_namespace_prefix,
+                self.top_level_schema_namespace_prefix,
                 next_task.parent_entity.iri,
             )
         )
@@ -224,9 +283,9 @@ class ExeKG:
 
         next_task_parent = self.atomic_task_list[next_task_id]
         relation_iri = (
-            self.top_level_kg_namespace.hasNextTask
+            self.top_level_schema_namespace.hasNextTask
             if prev_task.type != "Pipeline"
-            else self.top_level_kg_namespace.hasStartTask
+            else self.top_level_schema_namespace.hasStartTask
         )
         task_entity = self.add_instance_from_parent_with_exe_kg_relation(
             next_task_parent, relation_iri, prev_task
@@ -240,7 +299,7 @@ class ExeKG:
         for chosen_data_entity in chosen_data_entity_list:
             self.add_and_attach_data_entity(
                 chosen_data_entity,
-                self.top_level_kg_namespace.hasInput,
+                self.top_level_schema_namespace.hasInput,
                 task_entity,
             )
             task_entity.has_input.append(chosen_data_entity)
@@ -256,14 +315,14 @@ class ExeKG:
             source_list, data_semantics_iri_list, data_structure_iri_list
         ):
             data_entity = DataEntity(
-                self.input_kg_namespace + source,
+                self.bottom_level_schema_namespace + source,
                 self.data_entity,
                 source,
                 data_semantics_iri,
                 data_structure_iri,
             )
             self.add_and_attach_data_entity(
-                data_entity, self.top_level_kg_namespace.hasInput, task_entity
+                data_entity, self.top_level_schema_namespace.hasInput, task_entity
             )
             task_entity.has_input.append(data_entity)
             existing_data_entity_list.append(data_entity)
@@ -274,10 +333,10 @@ class ExeKG:
         output_name = input()
         while output_name != "quit":
             data_entity = DataEntity(
-                self.input_kg_namespace + output_name, self.data_entity
+                self.bottom_level_schema_namespace + output_name, self.data_entity
             )
             self.add_and_attach_data_entity(
-                data_entity, self.top_level_kg_namespace.hasOutput, task_entity
+                data_entity, self.top_level_schema_namespace.hasOutput, task_entity
             )
             task_entity.has_output.append(data_entity)
 
@@ -293,7 +352,7 @@ class ExeKG:
         results = list(
             get_method_properties_and_methods(
                 self.input_kg,
-                self.top_level_kg_namespace_prefix,
+                self.top_level_schema_namespace_prefix,
                 task_to_attach_to.parent_entity.iri,
             )
         )
@@ -358,7 +417,7 @@ class ExeKG:
             prev_task = next_task
 
     def save(self, file_path: str) -> None:
-        all_kgs = self.input_kg + self.output_kg + self.top_level_kg
+        all_kgs = self.output_kg
         all_kgs.serialize(destination=file_path)
 
     def query_input_kg(self, q: str, init_bindings: dict = None) -> query.Result:
@@ -398,14 +457,14 @@ class ExeKG:
         if data_entity.has_data_structure:
             self.add_exe_kg_relation(
                 data_entity,
-                self.top_level_kg_namespace.hasDataStructure,
+                self.top_level_schema_namespace.hasDataStructure,
                 Entity(data_entity.has_data_structure),
             )
 
         if data_entity.has_data_semantics:
             self.add_exe_kg_relation(
                 data_entity,
-                self.top_level_kg_namespace.hasDataSemantics,
+                self.top_level_schema_namespace.hasDataSemantics,
                 Entity(data_entity.has_data_semantics),
             )
 
@@ -445,7 +504,7 @@ class ExeKG:
 
     def create_entity_from_parent(self, parent_entity: Entity) -> Entity:
         entity_name = self.name_instance(parent_entity)
-        entity_iri = self.input_kg_namespace + entity_name
+        entity_iri = self.bottom_level_schema_namespace + entity_name
         return Entity(entity_iri, parent_entity)
 
     def name_instance(self, parent_entity: Entity) -> Union[None, str]:
@@ -476,7 +535,7 @@ class ExeKG:
         query_result = get_first_query_result_if_exists(
             query_method_iri_by_task_iri,
             self.input_kg,
-            self.top_level_kg_namespace_prefix,
+            self.top_level_schema_namespace_prefix,
             task_iri,
         )
         if query_result is None:
@@ -488,7 +547,7 @@ class ExeKG:
             query_entity_parent_iri,
             self.input_kg,
             method_iri,
-            self.top_level_kg_namespace.Method,
+            self.top_level_schema_namespace.Method,
         )
         if query_result is None:
             return None
@@ -502,7 +561,7 @@ class ExeKG:
         query_result = get_first_query_result_if_exists(
             query_pipeline_and_first_task_iri,
             self.input_kg,
-            self.top_level_kg_namespace_prefix,
+            self.top_level_schema_namespace_prefix,
         )
         if query_result is None:
             print("Error: Pipeline and first task not found")
@@ -517,7 +576,7 @@ class ExeKG:
             query_entity_parent_iri,
             self.input_kg,
             data_entity_iri,
-            self.top_level_kg_namespace.DataEntity,
+            self.top_level_schema_namespace.DataEntity,
         )
         if query_result is None:
             return None
@@ -542,7 +601,7 @@ class ExeKG:
             query_entity_parent_iri,
             self.input_kg,
             task_iri,
-            self.top_level_kg_namespace.AtomicTask,
+            self.top_level_schema_namespace.AtomicTask,
         )
 
         if query_result is None:
