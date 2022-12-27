@@ -15,12 +15,12 @@ from .tasks import visual_tasks, statistic_tasks, ml_tasks
 
 KG_SCHEMAS = {
     "Data Science": (
-        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl",  # path
+        "../../ExeKGOntology/ds_exeKGOntology.ttl",
         "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#",  # namespace
         "ds",  # namespace prefix
     ),
     "Visual": (
-        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl",
+        "../../ExeKGOntology/visu_exeKGOntology.ttl",
         "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
         "visu",
     ),
@@ -30,7 +30,7 @@ KG_SCHEMAS = {
         "stats",
     ),
     "Machine Learning": (
-        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl",
+        "../../ExeKGOntology/ml_exeKGOntology.ttl",
         "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
         "ml",
     ),
@@ -102,6 +102,7 @@ class ExeKG:
         self.data_type_list = []
         self.data_semantics_list = []
         self.data_structure_list = []
+        self.existing_data_entity_list = []
 
         self.parse_kgs()
 
@@ -190,7 +191,7 @@ class ExeKG:
         self,
         prev_task: Task,
         task_type: str,
-        input_data_entities: List[DataEntity],
+        input_data_entity_dict: dict,
         method_type: str,
         data_properties: dict,
         existing_data_entity_list: List[DataEntity],
@@ -209,15 +210,7 @@ class ExeKG:
             parent_task, relation_iri, prev_task
         )
         next_task = Task.from_entity(added_entity)
-        next_task.has_input = input_data_entities[:]
-
-        for data_entity in next_task.has_input:
-            self.add_and_attach_data_entity(
-                data_entity,
-                self.top_level_schema_namespace.hasInput,
-                next_task,
-            )
-
+        self.add_inputs_to_task(next_task, input_data_entity_dict)
         self.add_outputs_to_task(next_task)
 
         method_parent = Entity(
@@ -262,6 +255,34 @@ class ExeKG:
 
         return next_task
 
+    def add_inputs_to_task(
+        self, task_entity: Task, input_data_entity_dict: dict[str, DataEntity]
+    ) -> None:
+        results = list(
+            get_input_properties_and_inputs(
+                self.input_kg,
+                self.top_level_schema_namespace_prefix,
+                task_entity.parent_entity.iri,
+            )
+        )
+
+        # task_type_index was incremented when creating the task entity
+        task_type_index = self.task_type_dict[task_entity.type] - 1
+        for _, input_entity in results:
+            input_entity_name = input_entity.split("#")[1]
+            input_data_entity = input_data_entity_dict[input_entity_name]
+            data_entity_iri = input_entity + str(task_type_index)
+
+            data_entity = DataEntity(
+                data_entity_iri,
+                self.data_entity,
+                has_reference=input_data_entity.iri,
+            )
+            self.add_exe_kg_data_entity(input_data_entity)
+            self.add_and_attach_data_entity(
+                data_entity, self.top_level_schema_namespace.hasInput, task_entity
+            )
+
     def add_outputs_to_task(self, task_entity: Task) -> None:
         results = list(
             get_output_properties_and_outputs(
@@ -275,9 +296,7 @@ class ExeKG:
         task_type_index = self.task_type_dict[task_entity.type] - 1
         for output_property, output_entity in results:
             data_entity_iri = output_entity + str(task_type_index)
-            data_entity = DataEntity(
-                data_entity_iri, self.data_entity
-            )
+            data_entity = DataEntity(data_entity_iri, self.data_entity)
             self.add_and_attach_data_entity(
                 data_entity, self.top_level_schema_namespace.hasOutput, task_entity
             )
@@ -461,6 +480,13 @@ class ExeKG:
                 data_entity,
                 self.top_level_schema_namespace.hasDataSemantics,
                 Entity(data_entity.has_data_semantics),
+            )
+
+        if data_entity.has_reference:
+            self.add_exe_kg_relation(
+                data_entity,
+                self.top_level_schema_namespace.hasReference,
+                Entity(data_entity.has_reference),
             )
 
     def add_instance_from_parent_with_exe_kg_relation(

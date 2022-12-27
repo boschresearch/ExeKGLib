@@ -61,12 +61,25 @@ def get_method_properties_and_methods(
     )  # method property
 
 
+def get_input_properties_and_inputs(
+    input_kg, namespace_prefix, entity_parent_iri: str
+) -> query.Result:
+    return input_kg.query(
+        "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
+        "?p rdfs:range ?m ."
+        "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
+        "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
+        initBindings={"entity_iri": URIRef(entity_parent_iri)},
+    )
+
+
 def get_output_properties_and_outputs(
     input_kg, namespace_prefix, entity_parent_iri: str
 ) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m ."
+        "?p rdfs:subPropertyOf " + namespace_prefix + ":hasOutput ."
         "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
         initBindings={"entity_iri": URIRef(entity_parent_iri)},
     )
