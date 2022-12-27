@@ -26,6 +26,10 @@ class Task(Entity):
         self.has_input = []
         self.has_output = []
 
+    @classmethod
+    def from_entity(cls, entity: Entity):
+        return cls(entity.iri, entity.parent_entity)
+
     def create_output_dict(self, keyword_value_dict: dict) -> dict:
         """
         For each key in keyword_value_dict, checks if the key exists in an output name of the Task.

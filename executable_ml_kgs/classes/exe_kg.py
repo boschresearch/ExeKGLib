@@ -112,32 +112,106 @@ class ExeKG:
         pipeline = self.create_pipeline_entity(pipeline_name)
         self.add_instance(pipeline)
 
-        (
-            source_list,
-            data_semantics_iri_list,
-            data_structure_iri_list,
-        ) = get_input_for_new_data_entities(
-            self.data_semantics_list, self.data_structure_list
-        )
-
-        for source, data_semantics_iri, data_structure_iri in zip(
-            source_list, data_semantics_iri_list, data_structure_iri_list
-        ):
-            data_entity = DataEntity(
-                self.input_kg_namespace + source,
-                self.data_entity,
-                source,
-                data_semantics_iri,
-                data_structure_iri,
-            )
-            self.add_and_attach_data_entity(
-                data_entity, self.top_level_kg_namespace.hasInput, pipeline
-            )
-            pipeline.has_input.append(data_entity)
-
         return pipeline
 
-    def create_next_task(
+    def create_data_entity(
+        self,
+        name: str,
+        source_value: str,
+        data_semantics_name: str,
+        data_structure_name: str,
+    ):
+        return DataEntity(
+            self.input_kg_namespace + name,
+            self.data_entity,
+            source_value,
+            self.top_level_kg_namespace + data_semantics_name,
+            self.top_level_kg_namespace + data_structure_name,
+        )
+
+    def add_task(
+        self,
+        prev_task: Task,
+        task_type: str,
+        input_data_entities: List[DataEntity],
+        method_type: str,
+        data_properties: dict,
+        existing_data_entity_list: List[DataEntity],
+    ) -> Task:
+
+        relation_iri = (
+            self.top_level_kg_namespace.hasNextTask
+            if prev_task.type != "Pipeline"
+            else self.top_level_kg_namespace.hasStartTask
+        )
+
+        parent_task = Task(self.input_kg_namespace + task_type, self.atomic_task)
+        added_entity = self.add_instance_from_parent_with_exe_kg_relation(
+            parent_task, relation_iri, prev_task
+        )
+        next_task = Task.from_entity(added_entity)
+        next_task.has_input = input_data_entities[:]
+
+        for data_entity in next_task.has_input:
+            self.add_and_attach_data_entity(
+                data_entity,
+                self.top_level_kg_namespace.hasInput,
+                next_task,
+            )
+
+        # TODO: handle task output
+        # data_entity = DataEntity(
+        #     self.input_kg_namespace + output_name, self.data_entity
+        # )
+        # self.add_and_attach_data_entity(
+        #     data_entity, self.top_level_kg_namespace.hasOutput, task_entity
+        # )
+        # next_task.has_output.append()
+        # existing_data_entity_list.append(data_entity)
+
+        method_parent = Entity(
+            self.input_kg_namespace + method_type, self.atomic_method
+        )
+        results = list(
+            get_method_properties_and_methods(
+                self.input_kg,
+                self.top_level_kg_namespace_prefix,
+                next_task.parent_entity.iri,
+            )
+        )
+
+        chosen_property_method = next(
+            filter(lambda pair: pair[1].split("#")[1] == method_type, results), None
+        )
+        if chosen_property_method is None:
+            print(
+                f"Property connecting task of type {task_type} with method {method_type} not found"
+            )
+            exit(1)
+
+        self.add_instance_from_parent_with_exe_kg_relation(
+            method_parent,
+            chosen_property_method[0],
+            next_task,
+        )
+
+        property_list = self.get_data_properties_plus_inherited_by_class_iri(
+            method_parent.iri
+        )
+
+        for pair in property_list:
+            property_iri = pair[0]
+            property_name = property_iri.split("#")[1]
+            range_iri = pair[1]
+            input_property = Literal(
+                lexical_or_value=data_properties[property_name],
+                datatype=range_iri,
+            )
+            self.add_exe_kg_literal(next_task, property_iri, input_property)
+
+        return next_task
+
+    def create_next_task_cli(
         self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]
     ) -> Union[None, Task]:
         print(prompt)
@@ -160,46 +234,39 @@ class ExeKG:
 
         task_entity = Task(task_entity.iri, task_entity.parent_entity)
 
-        if prev_task.type == "Pipeline":
-            for data_entity in prev_task.has_input:
-                self.add_exe_kg_relation(
-                    task_entity, self.top_level_kg_namespace.hasInput, data_entity
-                )
-                task_entity.has_input.append(data_entity)
-        else:  # ask user
-            chosen_data_entity_list = get_input_for_existing_data_entities(
-                existing_data_entity_list
+        chosen_data_entity_list = get_input_for_existing_data_entities(
+            existing_data_entity_list
+        )
+        for chosen_data_entity in chosen_data_entity_list:
+            self.add_and_attach_data_entity(
+                chosen_data_entity,
+                self.top_level_kg_namespace.hasInput,
+                task_entity,
             )
-            for chosen_data_entity in chosen_data_entity_list:
-                self.add_and_attach_data_entity(
-                    chosen_data_entity,
-                    self.top_level_kg_namespace.hasInput,
-                    task_entity,
-                )
-                task_entity.has_input.append(chosen_data_entity)
-            (
-                source_list,
-                data_semantics_iri_list,
-                data_structure_iri_list,
-            ) = get_input_for_new_data_entities(
-                self.data_semantics_list, self.data_structure_list
-            )
+            task_entity.has_input.append(chosen_data_entity)
+        (
+            source_list,
+            data_semantics_iri_list,
+            data_structure_iri_list,
+        ) = get_input_for_new_data_entities(
+            self.data_semantics_list, self.data_structure_list
+        )
 
-            for source, data_semantics_iri, data_structure_iri in zip(
-                source_list, data_semantics_iri_list, data_structure_iri_list
-            ):
-                data_entity = DataEntity(
-                    self.input_kg_namespace + source,
-                    self.data_entity,
-                    source,
-                    data_semantics_iri,
-                    data_structure_iri,
-                )
-                self.add_and_attach_data_entity(
-                    data_entity, self.top_level_kg_namespace.hasInput, task_entity
-                )
-                task_entity.has_input.append(data_entity)
-                existing_data_entity_list.append(data_entity)
+        for source, data_semantics_iri, data_structure_iri in zip(
+            source_list, data_semantics_iri_list, data_structure_iri_list
+        ):
+            data_entity = DataEntity(
+                self.input_kg_namespace + source,
+                self.data_entity,
+                source,
+                data_semantics_iri,
+                data_structure_iri,
+            )
+            self.add_and_attach_data_entity(
+                data_entity, self.top_level_kg_namespace.hasInput, task_entity
+            )
+            task_entity.has_input.append(data_entity)
+            existing_data_entity_list.append(data_entity)
 
         print(
             "Enter names for the output values of the task, enter 'quit' to stop input:"
@@ -282,7 +349,7 @@ class ExeKG:
         prev_task = pipeline
         data_entities_list = pipeline.has_input
         while True:
-            next_task = self.create_next_task(prompt, prev_task, data_entities_list)
+            next_task = self.create_next_task_cli(prompt, prev_task, data_entities_list)
             if next_task is None:
                 break
 
@@ -345,9 +412,7 @@ class ExeKG:
     def add_instance_from_parent_with_exe_kg_relation(
         self, instance_parent: Entity, relation_iri: str, related_entity: Entity
     ) -> Entity:
-        instance_name = self.name_instance(instance_parent)
-        instance_iri = self.input_kg_namespace + instance_name
-        instance = Entity(instance_iri, instance_parent)
+        instance = self.create_entity_from_parent(instance_parent)
         self.add_instance(instance)
         self.add_exe_kg_relation(related_entity, relation_iri, instance)
 
@@ -377,6 +442,11 @@ class ExeKG:
         self, from_entity: Entity, relation_iri: str, literal: Literal
     ) -> None:
         self.output_kg.add((from_entity.iri, URIRef(relation_iri), literal))
+
+    def create_entity_from_parent(self, parent_entity: Entity) -> Entity:
+        entity_name = self.name_instance(parent_entity)
+        entity_iri = self.input_kg_namespace + entity_name
+        return Entity(entity_iri, parent_entity)
 
     def name_instance(self, parent_entity: Entity) -> Union[None, str]:
         if parent_entity.type == "AtomicTask":
