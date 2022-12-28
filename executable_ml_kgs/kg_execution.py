@@ -7,7 +7,7 @@ if __name__ == "__main__":
         r"data/singlefeatures_wm1.csv", delimiter=",", encoding="ISO-8859-1"
     )  # TODO: read data dynamically
 
-    exe_kg = ExeKG(input_exe_kg_path="./kg/testPipeline.ttl")
+    exe_kg = ExeKG(input_exe_kg_path="./kg/testPipeline_ml.ttl")
 
     pipeline_iri, next_task_iri = exe_kg.get_pipeline_and_first_task_iri()
     canvas_method = None

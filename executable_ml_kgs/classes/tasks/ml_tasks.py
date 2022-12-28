@@ -12,13 +12,11 @@ class ConcatenationConcatenationMethod(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        data_sources = [has_input_elem.has_source for has_input_elem in self.has_input]
-        concatenation_result = concatenation(input_data, data_sources)
-        # assume one output
-        output_name = self.has_output[0].name
-        return {output_name: concatenation_result}
+        inputs = self.get_inputs(other_task_output_dict, input_data)
+        concatenation_result = concatenation(inputs)
+        return {self.has_output[0].name: concatenation_result}
 
 
 class DataSplittingDataSplittingMethod(Task):
@@ -27,7 +25,7 @@ class DataSplittingDataSplittingMethod(Task):
         self.has_split_ratio = None
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
         input_df = self.get_one_input(other_task_output_dict, input_data)
@@ -41,12 +39,12 @@ class TrainKNNTrain(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
-        input_x_y = self.get_one_input(other_task_output_dict, input_data)
-        input_x = input_x_y[input_x_y.columns[:-1]]
-        input_y = input_x_y[input_x_y.columns[-1]]
+        input_x, input_y = self.get_inputs(other_task_output_dict, input_data)
+        # input_x = input_x_y[input_x_y.columns[:-1]]
+        # input_y = input_x_y[input_x_y.columns[-1]]
         model, predicted_y = k_nn_train(input_x, input_y)
 
         return self.create_output_dict({"Model": model, "Predicted": predicted_y})
@@ -57,9 +55,9 @@ class TestKNNTest(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        model, input_x_y = self.get_inputs_from_dict(other_task_output_dict)
+        model, input_x_y = self.get_inputs(other_task_output_dict)
         input_x = input_x_y[input_x_y.columns[:-1]]
 
         predicted_y = k_nn_test(model, input_x)
@@ -72,7 +70,7 @@ class TrainLRTrain(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
         input_x_y = self.get_one_input(other_task_output_dict, input_data)
@@ -89,9 +87,9 @@ class TestLRTest(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        model, input_x_y = self.get_inputs_from_dict(other_task_output_dict)
+        model, input_x_y = self.get_inputs(other_task_output_dict)
         input_x = input_x_y[input_x_y.columns[:-1]]
 
         predicted_y = lr_testing(model, input_x)
@@ -104,7 +102,7 @@ class TrainMLPTrain(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         # assume one input
         input_x_y = self.get_one_input(other_task_output_dict, input_data)
@@ -121,9 +119,9 @@ class TestMLPTest(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
-        model, input_x_y = self.get_inputs_from_dict(other_task_output_dict)
+        model, input_x_y = self.get_inputs(other_task_output_dict)
         input_x = input_x_y[input_x_y.columns[:-1]]
 
         predicted_y = mlp_test(model, input_x)
@@ -136,14 +134,14 @@ class PerformanceCalculationPerformanceCalculationMethod(Task):
         super().__init__(iri, parent_entity)
 
     def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
+            self, other_task_output_dict: dict, input_data: pd.DataFrame
     ) -> dict:
         (
             predicted_test,
             predicted_train,
             test_x_y,
             train_x_y,
-        ) = self.get_inputs_from_dict(other_task_output_dict)
+        ) = self.get_inputs(other_task_output_dict)
         real_test = test_x_y[test_x_y.columns[-1]]
         real_train = train_x_y[train_x_y.columns[-1]]
 

@@ -161,7 +161,7 @@ class ExeKG:
         )
 
     def add_and_attach_data_entity(
-        self, data_entity: DataEntity, relation: URIRef, task_entity: Task
+            self, data_entity: DataEntity, relation: URIRef, task_entity: Task
     ) -> None:
         self.add_exe_kg_data_entity(data_entity)
         self.add_exe_kg_relation(task_entity, relation, data_entity)
@@ -173,11 +173,11 @@ class ExeKG:
         return pipeline
 
     def create_data_entity(
-        self,
-        name: str,
-        source_value: str,
-        data_semantics_name: str,
-        data_structure_name: str,
+            self,
+            name: str,
+            source_value: str,
+            data_semantics_name: str,
+            data_structure_name: str,
     ):
         return DataEntity(
             self.bottom_level_schema_namespace + name,
@@ -188,13 +188,13 @@ class ExeKG:
         )
 
     def add_task(
-        self,
-        prev_task: Task,
-        task_type: str,
-        input_data_entity_dict: dict,
-        method_type: str,
-        data_properties: dict,
-        existing_data_entity_list: List[DataEntity],
+            self,
+            prev_task: Task,
+            task_type: str,
+            input_data_entity_dict: dict,
+            method_type: str,
+            data_properties: dict,
+            existing_data_entity_list: List[DataEntity],
     ) -> Task:
 
         relation_iri = (
@@ -256,7 +256,7 @@ class ExeKG:
         return next_task
 
     def add_inputs_to_task(
-        self, task_entity: Task, input_data_entity_dict: dict[str, DataEntity]
+            self, task_entity: Task, input_data_entity_dict: dict[str, List[DataEntity]]
     ) -> None:
         results = list(
             get_input_properties_and_inputs(
@@ -270,18 +270,22 @@ class ExeKG:
         task_type_index = self.task_type_dict[task_entity.type] - 1
         for _, input_entity in results:
             input_entity_name = input_entity.split("#")[1]
-            input_data_entity = input_data_entity_dict[input_entity_name]
-            data_entity_iri = input_entity + str(task_type_index)
+            input_data_entity_list = input_data_entity_dict[input_entity_name]
 
-            data_entity = DataEntity(
-                data_entity_iri,
-                self.data_entity,
-                has_reference=input_data_entity.iri,
-            )
-            self.add_exe_kg_data_entity(input_data_entity)
-            self.add_and_attach_data_entity(
-                data_entity, self.top_level_schema_namespace.hasInput, task_entity
-            )
+            same_input_index = 0
+            for input_data_entity in input_data_entity_list:
+                data_entity_iri = input_entity + str(task_type_index) + "_" + str(same_input_index)
+                data_entity = DataEntity(
+                    data_entity_iri,
+                    self.data_entity,
+                    has_reference=input_data_entity.iri,
+                )
+                self.add_exe_kg_data_entity(input_data_entity)
+                self.add_and_attach_data_entity(
+                    data_entity, self.top_level_schema_namespace.hasInput, task_entity
+                )
+                task_entity.has_input.append(data_entity)
+                same_input_index += 1
 
     def add_outputs_to_task(self, task_entity: Task) -> None:
         results = list(
@@ -300,9 +304,10 @@ class ExeKG:
             self.add_and_attach_data_entity(
                 data_entity, self.top_level_schema_namespace.hasOutput, task_entity
             )
+            task_entity.has_output.append(data_entity)
 
     def create_next_task_cli(
-        self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]
+            self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]
     ) -> Union[None, Task]:
         print(prompt)
         for i, t in enumerate(self.atomic_task_list):
@@ -343,7 +348,7 @@ class ExeKG:
         )
 
         for source, data_semantics_iri, data_structure_iri in zip(
-            source_list, data_semantics_iri_list, data_structure_iri_list
+                source_list, data_semantics_iri_list, data_structure_iri_list
         ):
             data_entity = DataEntity(
                 self.bottom_level_schema_namespace + source,
@@ -490,7 +495,7 @@ class ExeKG:
             )
 
     def add_instance_from_parent_with_exe_kg_relation(
-        self, instance_parent: Entity, relation_iri: str, related_entity: Entity
+            self, instance_parent: Entity, relation_iri: str, related_entity: Entity
     ) -> Entity:
         instance = self.create_entity_from_parent(instance_parent)
         self.add_instance(instance)
@@ -500,15 +505,15 @@ class ExeKG:
 
     def add_instance(self, entity_instance: Entity) -> None:
         if (
-            entity_instance.parent_entity
-            and (entity_instance.iri, None, None) not in self.output_kg
+                entity_instance.parent_entity
+                and (entity_instance.iri, None, None) not in self.output_kg
         ):
             self.output_kg.add(
                 (entity_instance.iri, RDF.type, entity_instance.parent_entity.iri)
             )
 
     def add_exe_kg_relation(
-        self, from_entity: Entity, relation_iri: str, to_entity: Entity
+            self, from_entity: Entity, relation_iri: str, to_entity: Entity
     ) -> None:
         self.output_kg.add(
             (
@@ -519,7 +524,7 @@ class ExeKG:
         )
 
     def add_exe_kg_literal(
-        self, from_entity: Entity, relation_iri: str, literal: Literal
+            self, from_entity: Entity, relation_iri: str, literal: Literal
     ) -> None:
         self.output_kg.add((from_entity.iri, URIRef(relation_iri), literal))
 
@@ -542,7 +547,7 @@ class ExeKG:
         return instance_name
 
     def property_value_to_field_value(
-        self, property_value: str
+            self, property_value: str
     ) -> Union[str, DataEntity]:
         if "#" in property_value:
             data_entity = self.parse_data_entity_by_iri(property_value)
@@ -592,7 +597,20 @@ class ExeKG:
 
         return str(pipeline_iri), str(task_iri)
 
-    def parse_data_entity_by_iri(self, data_entity_iri: str) -> Optional[DataEntity]:
+    def parse_data_entity_by_iri(
+            self, in_out_data_entity_iri: str
+    ) -> Optional[DataEntity]:
+        query_result = get_first_query_result_if_exists(
+            query_data_entity_reference_iri,
+            self.input_kg,
+            self.top_level_schema_namespace_prefix,
+            in_out_data_entity_iri,
+        )
+        if query_result is None:
+            data_entity_iri = str(in_out_data_entity_iri)
+        else:
+            data_entity_iri = str(query_result[0])
+
         query_result = get_first_query_result_if_exists(
             query_entity_parent_iri,
             self.input_kg,
@@ -604,7 +622,8 @@ class ExeKG:
 
         data_entity_parent_iri = str(query_result[0])
 
-        data_entity = DataEntity(data_entity_iri, Entity(data_entity_parent_iri))
+        data_entity = DataEntity(in_out_data_entity_iri, Entity(data_entity_parent_iri))
+        data_entity.has_reference = data_entity_iri.split("#")[1]
 
         for s, p, o in self.input_kg.triples((URIRef(data_entity_iri), None, None)):
             field_name = property_name_to_field_name(str(p))
@@ -616,7 +635,7 @@ class ExeKG:
         return data_entity
 
     def parse_task_by_iri(
-        self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
+            self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
     ) -> Optional[Task]:
         query_result = get_first_query_result_if_exists(
             query_entity_parent_iri,

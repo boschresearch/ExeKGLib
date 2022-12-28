@@ -55,9 +55,9 @@ class PlotTaskScatterplotMethod(PlotTask):
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input = self.get_one_input(other_task_output_dict, input_data)
-        filtered_input_data = input[self.has_input[0].has_source]
+        # filtered_input_data = input[self.has_input[0].has_source]
         scatter_plot(
-            data=filtered_input_data,
+            data=input,
             fig=self.fig,
             grid=self.grid,
             layout=self.has_layout,
@@ -82,9 +82,9 @@ class PlotTaskLineplotMethod(PlotTask):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input = self.get_one_input(other_task_output_dict, input_data)
 
-        filtered_input_data = input[self.has_input[0].has_source].copy().dropna()
+        # filtered_input_data = input.copy().dropna()
         line_plot(
-            data=filtered_input_data,
+            data=input,
             fig=self.fig,
             grid=self.grid,
             layout=self.has_layout,

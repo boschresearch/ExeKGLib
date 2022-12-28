@@ -21,6 +21,15 @@ def query_entity_parent_iri(kg, entity_iri: str, upper_class_uri_ref: URIRef):
     )
 
 
+def query_data_entity_reference_iri(kg, namespace_prefix, entity_iri: str):
+    return kg.query(
+        f"SELECT ?r WHERE {{ ?entity {namespace_prefix}:hasReference ?r . }}",
+        initBindings={
+            "entity": URIRef(entity_iri),
+        },
+    )
+
+
 def query_method_iri_by_task_iri(kg, namespace_prefix, task_iri: str):
     return kg.query(
         f"SELECT ?m WHERE {{ ?task ?m_property ?m ."

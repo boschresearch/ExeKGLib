@@ -1,5 +1,7 @@
 from abc import abstractmethod
+from typing import List
 
+import numpy as np
 import pandas as pd
 
 from .entity import Entity
@@ -16,9 +18,9 @@ class Task(Entity):
     """
 
     def __init__(
-        self,
-        iri: str,
-        parent_entity: Entity = None,
+            self,
+            iri: str,
+            parent_entity: Entity = None,
     ):
         super().__init__(iri, parent_entity)
         self.has_next_task = None
@@ -51,37 +53,38 @@ class Task(Entity):
 
         return out_dict
 
-    def get_inputs_from_dict(self, dict_to_search: dict) -> list:
+    def get_inputs(self, dict_to_search: dict, fallback_df: pd.DataFrame) -> List[np.ndarray]:
         """
         Tries to match the Task's input names with the keys of dict_to_search
-        and fills inputs_found_in_dict with their corresponding values.
+        and fills inputs list with their corresponding values.
+        If the matches fail, it retrieves columns of the provided fallback_df
         @param dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
+        @param fallback_df: contains data to return as an alternative
         @return: list with the found inputs' values
         """
-        input_names = [has_input_elem.name for has_input_elem in self.has_input]
-        inputs_found_in_dict = []
-        for input_name in input_names:
+        inputs = []
+        for input in self.has_input:
             try:
-                inputs_found_in_dict.append(dict_to_search[input_name])
+                inputs.append(dict_to_search[input.has_reference])
             except KeyError:
-                continue
+                inputs.append(fallback_df[input.has_source])
 
-        return inputs_found_in_dict
+        return inputs
 
     def get_one_input(
-        self, dict_to_search: dict, fallback_df: pd.DataFrame
+            self, dict_to_search: dict, fallback_df: pd.DataFrame
     ) -> pd.DataFrame:
         """
         Tries to match the Task's first input name with the keys of dict_to_search and return its corresponding value.
-        If the match fails, it returns the provided fallback_df
+        If the match fails, it returns a column of the provided fallback_df
         @param dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
-        @param fallback_df: data to return as an alternative
+        @param fallback_df: contains data to return as an alternative
         @return: found input's value or fallback_df
         """
         try:
-            return dict_to_search[self.has_input[0].name]
+            return dict_to_search[self.has_input[0].has_reference]
         except KeyError:
-            return fallback_df
+            return fallback_df[self.has_input[0].has_source]
 
     @abstractmethod
     def run_method(self, *args):
