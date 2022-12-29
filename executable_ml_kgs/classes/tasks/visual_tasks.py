@@ -54,10 +54,10 @@ class PlotTaskScatterplotMethod(PlotTask):
         self.has_scatter_style = None
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
-        input = self.get_one_input(other_task_output_dict, input_data)
-        # filtered_input_data = input[self.has_input[0].has_source]
+        input_dict = self.get_inputs(other_task_output_dict, input_data)
+        input_data = list(input_dict.values())[0]  # one input expected
         scatter_plot(
-            data=input,
+            data=input_data,
             fig=self.fig,
             grid=self.grid,
             layout=self.has_layout,
@@ -80,11 +80,10 @@ class PlotTaskLineplotMethod(PlotTask):
         super().__init__(iri, parent_entity, canvas_method)
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
-        input = self.get_one_input(other_task_output_dict, input_data)
-
-        # filtered_input_data = input.copy().dropna()
+        input_dict = self.get_inputs(other_task_output_dict, input_data)
+        input_data = list(input_dict.values())[0]  # one input expected
         line_plot(
-            data=input,
+            data=input_data,
             fig=self.fig,
             grid=self.grid,
             layout=self.has_layout,
