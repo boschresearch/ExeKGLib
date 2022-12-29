@@ -1,6 +1,8 @@
-from typing import Optional, Callable
+from typing import Optional, Callable, Tuple
 
-from rdflib import URIRef, Graph, query
+from rdflib import URIRef, Graph, query, Namespace
+
+from classes.entity import Entity
 
 
 def query_method_parent_classes(kg, method_iri):
@@ -106,3 +108,63 @@ def get_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
         "\nSELECT ?t WHERE {?t rdfs:subClassOf ?class_iri . }",
         initBindings={"class_iri": class_iri},
     )
+
+
+def get_data_properties_plus_inherited_by_class_iri(input_kg, class_iri: str):
+    property_list = list(get_data_properties_by_entity_iri(class_iri, input_kg))
+    method_parent_classes = list(query_method_parent_classes(input_kg, class_iri))
+    for method_class_result_row in method_parent_classes:
+        property_list += list(
+            get_data_properties_by_entity_iri(method_class_result_row[0], input_kg)
+        )
+
+    return property_list
+
+
+def get_pipeline_and_first_task_iri(
+    kg: Graph, namespace_prefix: str
+) -> Tuple[str, str]:
+    # assume one pipeline per file
+    query_result = get_first_query_result_if_exists(
+        query_pipeline_and_first_task_iri,
+        kg,
+        namespace_prefix,
+    )
+    if query_result is None:
+        print("Error: Pipeline and first task not found")
+        exit(1)
+
+    pipeline_iri, task_iri = query_result
+
+    return str(pipeline_iri), str(task_iri)
+
+
+def get_method_by_task_iri(
+    kg: Graph,
+    namespace_prefix: str,
+    namespace: Namespace,
+    task_iri: str,
+) -> Optional[Entity]:
+    query_result = get_first_query_result_if_exists(
+        query_method_iri_by_task_iri,
+        kg,
+        namespace_prefix,
+        task_iri,
+    )
+    if query_result is None:
+        return None
+
+    method_iri = str(query_result[0])
+
+    query_result = get_first_query_result_if_exists(
+        query_entity_parent_iri,
+        kg,
+        method_iri,
+        namespace.Method,
+    )
+    if query_result is None:
+        return None
+
+    method_parent_iri = str(query_result[0])
+
+    return Entity(method_iri, Entity(method_parent_iri))
