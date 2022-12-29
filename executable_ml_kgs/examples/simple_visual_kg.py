@@ -11,12 +11,10 @@ if __name__ == "__main__":
 
     canvas_task_properties = {"hasCanvasName": "mycanvas", "hasLayout": "1 2"}
     canvas_task = exe_kg.add_task(
-        prev_task=pipeline,
         task_type="CanvasTask",
         input_data_entity_dict={},
         method_type="CanvasMethod",
         data_properties=canvas_task_properties,
-        existing_data_entity_list=[],
     )
 
     lineplot_task_properties = {
@@ -25,12 +23,10 @@ if __name__ == "__main__":
         "hasLineWidth": 1,
     }
     lineplot_task = exe_kg.add_task(
-        prev_task=canvas_task,
         task_type="PlotTask",
-        input_data_entity_dict={"DataInVector": my_data_entity},
+        input_data_entity_dict={"DataInVector": [my_data_entity]},
         method_type="LineplotMethod",
         data_properties=lineplot_task_properties,
-        existing_data_entity_list=[],
     )
 
     exe_kg.save(f"../kg/{pipeline_name}.ttl")

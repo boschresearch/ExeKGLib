@@ -1,7 +1,7 @@
 from typing import Union, List
 
 import pandas as pd
-from rdflib import Namespace, Literal
+from rdflib import Literal
 
 from utils.cli_utils import (
     get_input_for_existing_data_entities,
@@ -17,8 +17,11 @@ from utils.kg_creation_utils import (
     add_and_attach_data_entity,
 )
 from utils.query_utils import *
-from utils.query_utils import get_data_properties_plus_inherited_by_class_iri, get_pipeline_and_first_task_iri, \
-    get_method_by_task_iri
+from utils.query_utils import (
+    get_data_properties_plus_inherited_by_class_iri,
+    get_pipeline_and_first_task_iri,
+    get_method_by_task_iri,
+)
 from utils.string_utils import property_name_to_field_name
 from .data_entity import DataEntity
 from .entity import Entity
@@ -75,8 +78,10 @@ class ExeKG:
             all_ns = [n for n in self.input_kg.namespace_manager.namespaces()]
             schema_info_set = False
             for schema_name, schema_info in KG_SCHEMAS.items():
-                if schema_name == "Data Science" or schema_name == "Visualization":
+                if schema_name == "Data Science":
                     continue
+                elif schema_name == "Visualization":
+                    schema_info_set = True
                 if (schema_info[2], URIRef(schema_info[1])) in all_ns:
                     bottom_level_schema_path = schema_info[0]
                     bottom_level_schema_namespace = schema_info[1]
