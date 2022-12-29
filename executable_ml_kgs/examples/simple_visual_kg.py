@@ -1,7 +1,7 @@
 from classes import ExeKG
 
 if __name__ == "__main__":
-    exe_kg = ExeKG(kg_schema_name="Visual")
+    exe_kg = ExeKG(kg_schema_name="Visualization")
     my_data_entity = exe_kg.create_data_entity(
         "CurrentActual", "CurrentActual", "TimeSeries", "Vector"
     )

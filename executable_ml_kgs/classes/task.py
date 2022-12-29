@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 import pandas as pd
@@ -18,15 +18,21 @@ class Task(Entity):
     """
 
     def __init__(
-            self,
-            iri: str,
-            parent_entity: Entity = None,
+        self,
+        iri: str,
+        parent_entity: Entity = None,
     ):
         super().__init__(iri, parent_entity)
         self.has_next_task = None
         self.has_method = None
         self.has_input = []
         self.has_output = []
+        self.input_dict = (
+            {}
+        )  # used for storing input DataEntity objects during KG creation
+        self.output_dict = (
+            {}
+        )  # used for storing output DataEntity objects during KG creation
 
     @classmethod
     def from_entity(cls, entity: Entity):
@@ -53,26 +59,28 @@ class Task(Entity):
 
         return out_dict
 
-    def get_inputs(self, dict_to_search: dict, fallback_df: pd.DataFrame) -> List[np.ndarray]:
+    def get_inputs(
+        self, dict_to_search: dict, fallback_df: pd.DataFrame
+    ) -> Dict[str, np.ndarray]:
         """
         Tries to match the Task's input names with the keys of dict_to_search
-        and fills inputs list with their corresponding values.
+        and fills input_dict list with their corresponding values.
         If the matches fail, it retrieves columns of the provided fallback_df
         @param dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
         @param fallback_df: contains data to return as an alternative
-        @return: list with the found inputs' values
+        @return: list with the found input_dict' values
         """
-        inputs = []
+        input_dict = {}
         for input in self.has_input:
             try:
-                inputs.append(dict_to_search[input.has_reference])
+                input_dict[input.type] = dict_to_search[input.has_reference]
             except KeyError:
-                inputs.append(fallback_df[input.has_source])
+                input_dict[input.type] = fallback_df[input.has_source]
 
-        return inputs
+        return input_dict
 
     def get_one_input(
-            self, dict_to_search: dict, fallback_df: pd.DataFrame
+        self, dict_to_search: dict, fallback_df: pd.DataFrame
     ) -> pd.DataFrame:
         """
         Tries to match the Task's first input name with the keys of dict_to_search and return its corresponding value.
