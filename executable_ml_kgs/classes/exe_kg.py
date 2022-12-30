@@ -76,19 +76,28 @@ class ExeKG:
         if input_exe_kg_path:
             self.input_kg.parse(input_exe_kg_path, format="n3")
             all_ns = [n for n in self.input_kg.namespace_manager.namespaces()]
-            schema_info_set = False
+            bottom_level_schema_info_set = False
             for schema_name, schema_info in KG_SCHEMAS.items():
-                if schema_name == "Data Science":
+                if schema_name == "Data Science" or schema_name == "Visualization":
                     continue
-                elif schema_name == "Visualization":
-                    schema_info_set = True
+
                 if (schema_info[2], URIRef(schema_info[1])) in all_ns:
                     bottom_level_schema_path = schema_info[0]
                     bottom_level_schema_namespace = schema_info[1]
                     bottom_level_schema_namespace_prefix = schema_info[2]
-                    schema_info_set = True
+                    bottom_level_schema_info_set = True
                     break
-            if not schema_info_set:
+            visu_schema_info = KG_SCHEMAS["Visualization"]
+            if (
+                not bottom_level_schema_info_set
+                and (visu_schema_info[2], URIRef(visu_schema_info[1])) in all_ns
+            ):
+                bottom_level_schema_path = visu_schema_info[0]
+                bottom_level_schema_namespace = visu_schema_info[1]
+                bottom_level_schema_namespace_prefix = visu_schema_info[2]
+                bottom_level_schema_info_set = True
+
+            if not bottom_level_schema_info_set:
                 print("Input executable KG did not have any bottom level KG schemas")
                 exit(1)
         else:
@@ -97,26 +106,22 @@ class ExeKG:
             bottom_level_schema_namespace = bottom_level_schema_info[1]
             bottom_level_schema_namespace_prefix = bottom_level_schema_info[2]
 
-        visualization_schema_info = KG_SCHEMAS["Visualization"]
-        visualization_schema_path = visualization_schema_info[0]
-        visualization_schema_namespace = visualization_schema_info[1]
-        visualization_schema_namespace_prefix = visualization_schema_info[2]
+        visu_schema_info = KG_SCHEMAS["Visualization"]
+        visu_schema_path = visu_schema_info[0]
+        visu_schema_namespace = visu_schema_info[1]
+        visu_schema_namespace_prefix = visu_schema_info[2]
 
         self.bottom_level_schema_namespace = Namespace(bottom_level_schema_namespace)
         self.bottom_level_schema_namespace_prefix = bottom_level_schema_namespace_prefix
         self.bottom_level_kg = Graph(bind_namespaces="rdflib")
         self.bottom_level_kg.parse(bottom_level_schema_path, format="n3")
 
-        self.visualization_schema_namespace = Namespace(visualization_schema_namespace)
-        self.visualization_schema_namespace_prefix = (
-            visualization_schema_namespace_prefix
-        )
-        self.visualization_kg = Graph(bind_namespaces="rdflib")
-        self.visualization_kg.parse(visualization_schema_path, format="n3")
+        self.visu_schema_namespace = Namespace(visu_schema_namespace)
+        self.visu_schema_namespace_prefix = visu_schema_namespace_prefix
+        self.visu_kg = Graph(bind_namespaces="rdflib")
+        self.visu_kg.parse(visu_schema_path, format="n3")
 
-        self.input_kg += (
-            self.top_level_kg + self.bottom_level_kg + self.visualization_kg
-        )
+        self.input_kg += self.top_level_kg + self.bottom_level_kg + self.visu_kg
 
         self.output_kg = Graph(bind_namespaces="rdflib")
 
