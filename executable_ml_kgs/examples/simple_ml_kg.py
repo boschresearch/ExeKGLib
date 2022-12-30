@@ -13,7 +13,9 @@ if __name__ == "__main__":
     )
 
     pipeline_name = "testPipeline_ml"
-    pipeline = exe_kg.create_pipeline_task(pipeline_name)
+    pipeline = exe_kg.create_pipeline_task(
+        pipeline_name, input_data_path="data/singlefeatures_wm1.csv"
+    )
 
     concatenate_task = exe_kg.add_task(
         task_type="Concatenation",
@@ -27,7 +29,9 @@ if __name__ == "__main__":
     data_splitting_task = exe_kg.add_task(
         task_type="DataSplitting",
         input_data_entity_dict={
-            "DataInDataSplittingX": [concatenate_task.output_dict["DataOutConcatenatedData"]],
+            "DataInDataSplittingX": [
+                concatenate_task.output_dict["DataOutConcatenatedData"]
+            ],
             "DataInDataSplittingY": [qvalue_actual],
         },
         method_type="DataSplittingMethod",

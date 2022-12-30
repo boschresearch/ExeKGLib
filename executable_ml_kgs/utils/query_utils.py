@@ -96,10 +96,11 @@ def get_output_properties_and_outputs(
     )
 
 
-def query_pipeline_and_first_task_iri(kg, namespace_prefix):
+def query_pipeline_info(kg, namespace_prefix):
     return kg.query(
-        f"\nSELECT ?p ?t WHERE {{?p rdf:type {namespace_prefix}:Pipeline ;"
-        f"                       {namespace_prefix}:hasStartTask ?t . }}"
+        f"\nSELECT ?p ?i ?t WHERE {{?p rdf:type {namespace_prefix}:Pipeline ;"
+        f"                          {namespace_prefix}:hasInputDataPath ?i ;"
+        f"                          {namespace_prefix}:hasStartTask ?t . }}"
     )
 
 
@@ -123,20 +124,20 @@ def get_data_properties_plus_inherited_by_class_iri(input_kg, class_iri: str):
 
 def get_pipeline_and_first_task_iri(
     kg: Graph, namespace_prefix: str
-) -> Tuple[str, str]:
+) -> Tuple[str, str, str]:
     # assume one pipeline per file
     query_result = get_first_query_result_if_exists(
-        query_pipeline_and_first_task_iri,
+        query_pipeline_info,
         kg,
         namespace_prefix,
     )
     if query_result is None:
-        print("Error: Pipeline and first task not found")
+        print("Error: Pipeline info not found")
         exit(1)
 
-    pipeline_iri, task_iri = query_result
+    pipeline_iri, input_data_path, task_iri = query_result
 
-    return str(pipeline_iri), str(task_iri)
+    return str(pipeline_iri), str(input_data_path), str(task_iri)
 
 
 def get_method_by_task_iri(

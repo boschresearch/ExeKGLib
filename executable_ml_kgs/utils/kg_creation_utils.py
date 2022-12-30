@@ -1,6 +1,6 @@
 from typing import Union, Dict
 
-from rdflib import RDF, URIRef, Literal, Graph, Namespace
+from rdflib import RDF, URIRef, Literal, Graph, Namespace, XSD
 
 from classes.data_entity import DataEntity
 from classes.entity import Entity
@@ -128,3 +128,31 @@ def add_and_attach_data_entity(
         kg, data, top_level_kg, top_level_schema_namespace, data_entity
     )
     add_relation(kg, task_entity, relation, data_entity)
+
+
+def create_pipeline_task(
+    top_level_namespace,
+    bottom_level_schema_namespace,
+    pipeline1,
+    output_kg,
+    pipeline_name: str,
+    input_data_path: str,
+) -> Task:
+    pipeline = Task(
+        bottom_level_schema_namespace + pipeline_name,
+        pipeline1,
+    )
+    add_instance(output_kg, pipeline)
+
+    input_data_path_literal = Literal(
+        lexical_or_value=input_data_path,
+        datatype=XSD.string,
+    )
+    add_literal(
+        output_kg,
+        pipeline,
+        top_level_namespace.hasInputDataPath,
+        input_data_path_literal,
+    )
+
+    return pipeline

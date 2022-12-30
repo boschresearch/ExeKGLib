@@ -6,15 +6,14 @@ from rdflib import Literal
 from utils.cli_utils import (
     get_input_for_existing_data_entities,
     get_input_for_new_data_entities,
-    create_pipeline_task_cli,
 )
 from utils.kg_creation_utils import (
-    add_instance,
     add_literal,
     add_instance_from_parent_with_relation,
     name_instance,
     add_data_entity_instance,
     add_and_attach_data_entity,
+    create_pipeline_task,
 )
 from utils.query_utils import *
 from utils.query_utils import (
@@ -149,8 +148,8 @@ class ExeKG:
                 self.bottom_level_schema_namespace,
             )
             kg.bind(
-                self.visualization_schema_namespace_prefix,
-                self.visualization_schema_namespace,
+                self.visu_schema_namespace_prefix,
+                self.visu_schema_namespace,
             )
 
     def parse_kgs(self) -> None:
@@ -191,14 +190,16 @@ class ExeKG:
             data_structure = Entity(d[0], self.data_structure)
             self.data_structure_list.append(data_structure)
 
-    def create_pipeline_task(self, pipeline_name: str) -> Task:
-        pipeline = Task(
-            self.bottom_level_schema_namespace + pipeline_name,
+    def create_pipeline_task(self, pipeline_name: str, input_data_path: str) -> Task:
+        pipeline = create_pipeline_task(
+            self.top_level_schema_namespace,
+            self.bottom_level_schema_namespace,
             self.pipeline,
+            self.output_kg,
+            pipeline_name,
+            input_data_path,
         )
-        add_instance(self.output_kg, pipeline)
         self.last_created_task = pipeline
-
         return pipeline
 
     def create_data_entity(
@@ -225,7 +226,7 @@ class ExeKG:
         visualization: bool = False,
     ) -> Task:
         namespace_to_use = (
-            self.visualization_schema_namespace
+            self.visu_schema_namespace
             if visualization
             else self.bottom_level_schema_namespace
         )
@@ -498,12 +499,14 @@ class ExeKG:
                     self.output_kg, task_to_attach_to, property_instance, input_property
                 )
 
-    def start_pipeline_creation(self, pipeline_name: str) -> None:
-        pipeline = create_pipeline_task_cli(
+    def start_pipeline_creation(self, pipeline_name: str, input_data_path: str) -> None:
+        pipeline = create_pipeline_task(
+            self.top_level_schema_namespace,
             self.bottom_level_schema_namespace,
             self.pipeline,
             self.output_kg,
             pipeline_name,
+            input_data_path,
         )
 
         prompt = "Please choose the first Task:"
@@ -622,10 +625,11 @@ class ExeKG:
 
         return task
 
-    def execute_pipeline(self, input_data: pd.DataFrame):
-        pipeline_iri, next_task_iri = get_pipeline_and_first_task_iri(
+    def execute_pipeline(self):
+        pipeline_iri, input_data_path, next_task_iri = get_pipeline_and_first_task_iri(
             self.input_kg, self.top_level_schema_namespace_prefix
         )
+        input_data = pd.read_csv(input_data_path, delimiter=",", encoding="ISO-8859-1")
         canvas_method = None
         task_output_dict = {}
         while next_task_iri is not None:

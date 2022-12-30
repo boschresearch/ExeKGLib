@@ -6,8 +6,10 @@ if __name__ == "__main__":
         "CurrentActual", "CurrentActual", "TimeSeries", "Vector"
     )
 
-    pipeline_name = "testPipeline"
-    pipeline = exe_kg.create_pipeline_task(pipeline_name)
+    pipeline_name = "testPipeline_visu"
+    pipeline = exe_kg.create_pipeline_task(
+        pipeline_name, input_data_path="data/singlefeatures_wm1.csv"
+    )
 
     canvas_task_properties = {"hasCanvasName": "mycanvas", "hasLayout": "1 2"}
     canvas_task = exe_kg.add_task(

@@ -2,8 +2,6 @@ from typing import List, Union, Tuple
 
 from classes.data_entity import DataEntity
 from classes.entity import Entity
-from classes.task import Task
-from utils.kg_creation_utils import add_instance
 
 
 def get_input_for_existing_data_entities(
@@ -57,11 +55,8 @@ def get_input_for_new_data_entities(
     return source_list, data_semantics_iri_list, data_structure_iri_list
 
 
-def create_pipeline_task_cli(bottom_level_schema_namespace, pipeline1, output_kg, pipeline_name: str) -> Task:
-    pipeline = Task(
-        bottom_level_schema_namespace + pipeline_name,
-        pipeline1,
-    )
-    add_instance(output_kg, pipeline)
+def input_pipeline_info():
+    pipeline_name = input("Enter a name for the pipeline: ")
+    input_data_path = input("Enter a path for the input data: ")
 
-    return pipeline
+    return pipeline_name, input_data_path
