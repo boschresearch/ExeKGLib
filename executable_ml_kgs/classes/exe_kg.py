@@ -29,12 +29,12 @@ from .tasks import visual_tasks, statistic_tasks, ml_tasks
 
 KG_SCHEMAS = {
     "Data Science": (
-        "../../ExeKGOntology/ds_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl",
         "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#",  # namespace
         "ds",  # namespace prefix
     ),
     "Visualization": (
-        "../../ExeKGOntology/visu_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl",
         "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
         "visu",
     ),
@@ -44,7 +44,7 @@ KG_SCHEMAS = {
         "stats",
     ),
     "Machine Learning": (
-        "../../ExeKGOntology/ml_exeKGOntology.ttl",
+        "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl",
         "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
         "ml",
     ),
