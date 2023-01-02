@@ -8,6 +8,30 @@
 
 Library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs).
 
+## Overview
+The functionality of this Python library can be divided in the below two parts:
+1. **Executable KG construction**: An executable KG representing an ML pipeline is constructed as per user's input (programmatically or via CLI) based on the KG schemas. The construction is done by sequentially creating pairs of instances of [ds:AtomicTask](https://nsai-uio.github.io/ExeKGOntology/OnToology/ds_exeKGOntology.ttl/documentation/index-en.html#AtomicTask) and [ds:AtomicMethod](https://nsai-uio.github.io/ExeKGOntology/OnToology/ds_exeKGOntology.ttl/documentation/index-en.html#AtomicMethod) sub-classes, and their properties. The definition of these sub-classes can be found in the [bottom-level KG schemas](#bottom-level-kg-schemas). After each KG component is built, it is validated using the KG schemas and added to an RDFLib `Graph` object. The KG is finally saved in Turtle format.
+2. **ML pipeline execution**: The executable KG is parsed using RDFLib and queried using SPARQL to retrieve its ML pipeline. The pipeline's ordered tasks are sequentially mapped to Python objects that include an implemented `run_method()` Python method which is then invoked. This is as an abstract method of the _Task_ class that is implemented by its bottom-level children classes.
+
+The different implementations of `run_method()` correspond to each of the _Method_'s bottom level sub-classes that are defined in the Visualization, Statistics, and ML KG schemas. The method categories are described below.
+1. **Visualization**: This is a set of methods for visualization, including two types: (1) The plot canvas methods that define the plot size and layout. (2) The various kinds of plot methods (line plot, scatter plot, bar plot, etc.). These methods use matplotlib to visualize data.
+2. **Statistics and Feature Engineering**: This includes methods for statistical analysis and feature engineering like IQR calculation, mean and std-deviation calculation, etc., which can then form complex methods like outlier detection method and normalization method.
+3. **Machine Learning**: This is a group of methods that support ML algorithms like Linear Regression, MLP, and k-NN and helper functions that perform e.g. data splitting and ML model performance calculation.
+
+## Usage
+For using the library, see the [provided examples](executable_ml_kgs/examples/).
+
+## Installation
+For instructions on how to install the library, see the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
+
+## Adding a new ML-related task and method
+To perform this type of library extension, there are 3 required steps:
+1. Selection of a relevant bottom-level KG schema (Statistics, ML, or Visualization) according to the type of the new task and method.
+2. Addition of new semantic components (entities, properties, etc) to the selected KG schema.
+3. Addition of a Python class to the corresponding module of `executable_ml_kgs.classes.tasks` package.
+
+For steps 2 and 3, refer to the [relevant page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/).
+
 ## External resources
 ### Top-level KG schemas
 - [Data Science KG schema](https://w3id.org/def/exekg-ds)
@@ -27,16 +51,6 @@ Repo for the above KG schemas: https://github.com/nsai-uio/ExeKGOntology
   1. The name of the file has been changed.
   2. In the column names, the spaces have been replaced with `_`.
   3. A new column has been added (`diagnosis_binary`) containing `1` for the rows that the `diagnosis` column has `M`, and `0` for the rest.
-
-## Overview
-The functionality of this Python library can be divided in the below two parts:
-1. **Executable KG construction**: An executable KG representing an ML pipeline is constructed as per user's input (programmatically or via CLI) based on the KG schemas. The construction consists of sequential creations of task-method pairs and their properties. After each KG component is built, it is validated using the KG schemas and added to an RDFLib `Graph` object. The KG is finally saved in Turtle format.
-2. **ML pipeline execution**: The executable KG is parsed using RDFLib and queried using SPARQL to retrieve its ML pipeline. The pipeline's ordered tasks are sequentially mapped to Python objects that include an implemented `run_method()` Python method which is then invoked. This is as an abstract method of the _Task_ class that is implemented by its bottom-level children classes.
-
-The different implementations of `run_method()` correspond to each of the _Method_'s bottom level sub-classes that are defined in the Visualization, Statistics, and ML KG schemas. The method categories are described below.
-1. **Visualization**: This is a set of methods for visualization, including two types: (1) The plot canvas methods that define the plot size and layout. (2) The various kinds of plot methods (line plot, scatter plot, bar plot, etc.). These methods use matplotlib to visualize data.
-2. **Statistics and Feature Engineering**: This includes methods for statistical analysis and feature engineering like IQR calculation, mean and std-deviation calculation, etc., which can then form complex methods like outlier detection method and normalization method.
-3. **Machine Learning**: This is a group of methods that support ML algorithms like Linear Regression, MLP, and k-NN and helper functions that perform e.g. data splitting and ML model performance calculation.
 
 ## License
 
