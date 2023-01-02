@@ -1,7 +1,3 @@
-<!---
-  Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
--->
-
 # Contributing
 
 ## TL;DR: 10 Steps To Your First Pull Request
@@ -210,6 +206,6 @@ _May the source be with you!_
 [code-review-love]: https://mtlynch.io/code-review-love/
 [conventionalcommits]: https://www.conventionalcommits.org/
 [innersourcecommons]: https://innersourcecommons.org/
-[issues]: https://github.boschdevcloud.com/bcai-internal/executable-ml-kgs/issues
+[issues]: https://github.com/boschresearch/ExeKGLib/issues
 [markdown]: https://github.github.com/gfm/
 [mermaid]: https://mermaid-js.github.io/mermaid

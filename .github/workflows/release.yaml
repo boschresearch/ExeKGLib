@@ -24,7 +24,7 @@ concurrency:
 jobs:
   release:
     name: Release
-    if: github.repository == 'bcai-internal/executable-ml-kgs'
+    if: github.repository == 'boschresearch/ExeKGLib'
     runs-on: [self-hosted, Linux]
     container: ubuntu:latest
 

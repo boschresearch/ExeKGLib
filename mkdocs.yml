@@ -1,10 +1,10 @@
-site_name: "executable-ml-kgs"
+site_name: "ExeKGLib"
 site_author: "Mohamed Gad-Elrab"
-site_description: "Library for excutable ML pipelines KGs."
-site_url: "https://pages.github.boschdevcloud.com/bcai-internal/executable-ml-kgs"
+site_description: "Library for executable ML pipelines represented by KGs."
+site_url: "https://boschresearch.github.io/ExeKGLib"
 
-repo_name: "bcai-internal/executable-ml-kgs"
-repo_url: "https://github.boschdevcloud.com/bcai-internal/executable-ml-kgs"
+repo_name: "boschresearch/ExeKGLib"
+repo_url: "https://github.com/boschresearch/ExeKGLib"
 edit_uri: "edit/main/docs"
 
 site_dir: .site

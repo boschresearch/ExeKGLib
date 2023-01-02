@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "executable-ml-kgs"
+name = "ExeKGLib"
 version = "0.0.0" # Don't touch: Versions are dynamically generated from git tags
-description = "Library for executable ML pipelines KGs."
-license = "All rights reserved"
+description = "Library for executable ML pipelines represented by KGs."
+license = "AGPL-3.0"
 authors = ["Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
 
 classifiers = [
@@ -15,11 +15,11 @@ classifiers = [
   "Topic :: Software Development",
 ]
 
-homepage = "https://github.boschdevcloud.com/bcai-internal/executable-ml-kgs"
+homepage = "https://boschresearch.github.io/ExeKGLib"
 include = ["README.md", "pyproject.toml"]
 maintainers = ["Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
 readme = "README.md"
-repository = "https://github.boschdevcloud.com/bcai-internal/executable-ml-kgs"
+repository = "https://github.com/boschresearch/ExeKGLib"
 
 [build-system]
 requires = ["poetry-core>=1.3.2"]
