@@ -1,5 +1,3 @@
-# Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
-
 """Generate code reference using `mkdocs-gen-files` and `mkdocs-literate-nav`.
 
 This script is run when mkdocs builds the documentation, and automatically creates
