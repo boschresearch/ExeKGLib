@@ -15,6 +15,9 @@ nav:
     - Installation: installation.md
     - Getting Started: getting-started.md
     - Changelog: exported/changelog.md
+#  - Examples:
+#    - Overview: examples/overview.md
+#    - examples/dask-distributed.md
   - Code Reference: reference/
   - Development:
     - Contributing: contributing.md
@@ -90,6 +93,10 @@ markdown_extensions:
 
 plugins:
   - gen-files:
+#      'exclude' throws a "Config value" warnings, as it is a custom property
+      exclude:
+        - "/examples"
+        - "__init__"
       scripts:
         - docs/generate-code-reference.py
   - git-revision-date-localized:

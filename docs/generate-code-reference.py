@@ -13,15 +13,18 @@ PACKAGE_IMPORT_NAME = "executable_ml_kgs"
 nav = mkdocs_gen_files.Nav()
 nav[PACKAGE_IMPORT_NAME] = "index.md"
 
+excludes = mkdocs_gen_files.config["plugins"]["gen-files"].config["exclude"]
+
 for path in sorted(Path(PACKAGE_IMPORT_NAME).glob("**/*.py")):
     relative_path = path.relative_to(PACKAGE_IMPORT_NAME)
     module_path = relative_path.with_suffix("")
     doc_path = relative_path.with_suffix(".md")
     full_doc_path = Path("reference", doc_path)
 
-    parts = module_path.parts
-    if "__init__" in parts:
+    if any([exclude in str(full_doc_path) for exclude in excludes]):
         continue
+
+    parts = module_path.parts
     nav[parts] = doc_path.as_posix()
 
     with mkdocs_gen_files.open(full_doc_path, "w") as file:
