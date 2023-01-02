@@ -6,6 +6,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/</loc>
+         <lastmod>2023-01-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://boschresearch.github.io/ExeKGLib/contributing/</loc>
          <lastmod>2023-01-02</lastmod>
          <changefreq>daily</changefreq>
@@ -87,6 +92,11 @@
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/examples/simple_ml_kg/</loc>
+         <lastmod>2023-01-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://boschresearch.github.io/ExeKGLib/reference/examples/simple_stats_kg/</loc>
          <lastmod>2023-01-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
