@@ -23,6 +23,16 @@ Library for conveniently constructing and executing Machine Learning (ML) pipeli
 
 Repo for the above KG schemas: https://github.com/nsai-uio/ExeKGOntology
 
+### Breast Cancer Wisconsin (Diagnostic) Data Set
+- URL: https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data
+- Alternative URL: https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Diagnostic%29
+- Creators: Dr. William H. Wolberg, W. Nick Street, and Olvi L. Mangasarian.
+- Copyright: This dataset is copyright of the above creators and licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) License.
+- Changes: The dataset file `examples/data/breast_cancer_data.csv` has the following changes compared to the original one.
+  1. The name of the file has been changed.
+  2. In the column names, the spaces have been replaced with `_`.
+  3. A new column has been added (`diagnosis_binary`) containing `1` for the rows that the `diagnosis` column has `M`, and `0` for the rest.
+
 ## Overview
 The functionality of this Python library can be divided in the below two parts:
 1. **Executable KG construction**: An executable KG representing an ML pipeline is constructed as per user's input (programmatically or via CLI) based on the KG schemas. The construction consists of sequential creations of task-method pairs and their properties. After each KG component is built, it is validated using the KG schemas and added to an RDFLib `Graph` object. The KG is finally saved in Turtle format.
