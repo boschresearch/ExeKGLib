@@ -21,6 +21,8 @@ nav:
   - Code Reference: reference/
   - Development:
     - Contributing: contributing.md
+    - Documentation of executable_ml_kgs.classes.tasks package: tasks-package-documentation.md
+    - Adding a new ML-related task and method: adding-new-task-and-method.md
     - Coverage: exported/coverage/report.html
     - Tests: exported/tests/report.html
   - License:
