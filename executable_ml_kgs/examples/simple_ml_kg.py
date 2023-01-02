@@ -51,7 +51,7 @@ if __name__ == "__main__":
         "label_" + label_column, label_column, "TimeSeries", "Vector"
     )
 
-    pipeline_name = "testPipeline_ml"
+    pipeline_name = "MLPipeline"
     pipeline = exe_kg.create_pipeline_task(
         pipeline_name, input_data_path="examples/data/breast_cancer_data.csv"
     )

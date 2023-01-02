@@ -6,7 +6,7 @@ if __name__ == "__main__":
         "radius_mean", "radius_mean", "TimeSeries", "Vector"
     )
 
-    pipeline_name = "testPipeline_visu"
+    pipeline_name = "VisuPipeline"
     pipeline = exe_kg.create_pipeline_task(
         pipeline_name, input_data_path="examples/data/breast_cancer_data.csv"
     )
