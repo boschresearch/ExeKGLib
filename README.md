@@ -10,18 +10,17 @@ Library for conveniently constructing and executing Machine Learning (ML) pipeli
 
 ## External resources
 ### Top-level KG schemas
-- Data Science KG schema: https://w3id.org/def/exekg-ds
+- [Data Science KG schema](https://w3id.org/def/exekg-ds)
 
 ### Bottom-level KG schemas
-- Visualization KG schema: https://w3id.org/def/exekg-visu
-- Statistics KG schema: https://w3id.org/def/exekg-stats
-- Machine Learning KG schema: https://w3id.org/def/exekg-ml
+- [Visualization KG schema](https://w3id.org/def/exekg-visu)
+- [Statistics KG schema](https://w3id.org/def/exekg-stats)
+- [Machine Learning KG schema](https://w3id.org/def/exekg-ml)
 
 Repo for the above KG schemas: https://github.com/nsai-uio/ExeKGOntology
 
 ### Breast Cancer Wisconsin (Diagnostic) Data Set
-- URL: https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data
-- Alternative URL: https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Diagnostic%29
+- [Kaggle dataset page](https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data)
 - Creators: Dr. William H. Wolberg, W. Nick Street, and Olvi L. Mangasarian.
 - Copyright: This dataset is copyright of the above creators and licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) License.
 - Changes: The dataset file `examples/data/breast_cancer_data.csv` has the following changes compared to the original one.
