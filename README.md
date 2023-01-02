@@ -1,4 +1,4 @@
-# Executable Machine Learning Knowledge Graphs
+# ExeKGLib
 
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
 ![Poetry](https://img.shields.io/badge/poetry-v1.2.2-blue)
