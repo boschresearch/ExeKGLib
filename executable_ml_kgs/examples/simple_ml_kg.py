@@ -2,26 +2,63 @@ from classes import ExeKG
 
 if __name__ == "__main__":
     exe_kg = ExeKG(kg_schema_name="Machine Learning")
-    current_actual = exe_kg.create_data_entity(
-        "CurrentActual", "CurrentActual", "TimeSeries", "Vector"
-    )
-    cap_wear_count = exe_kg.create_data_entity(
-        "CapWearCount", "CapWearCount", "TimeSeries", "Vector"
-    )
-    qvalue_actual = exe_kg.create_data_entity(
-        "QValueActual", "QVALUEActual", "TimeSeries", "Vector"
+    feature_columns = [
+        "diagnosis",
+        "radius_mean",
+        "texture_mean",
+        "perimeter_mean",
+        "area_mean",
+        "smoothness_mean",
+        "compactness_mean",
+        "concavity_mean",
+        "concave_points_mean",
+        "symmetry_mean",
+        "fractal_dimension_mean",
+        "radius_se",
+        "texture_se",
+        "perimeter_se",
+        "area_se",
+        "smoothness_se",
+        "compactness_se",
+        "concavity_se",
+        "concave_points_se",
+        "symmetry_se",
+        "fractal_dimension_se",
+        "radius_worst",
+        "texture_worst",
+        "perimeter_worst",
+        "area_worst",
+        "smoothness_worst",
+        "compactness_worst",
+        "concavity_worst",
+        "concave_points_worst",
+        "symmetry_worst",
+        "fractal_dimension_worst",
+        "diagnosis_binary",
+    ]
+
+    label_column = "diagnosis_binary"
+
+    feature_data_entities = []
+    for feature_column in feature_columns:
+        feature_data_entities.append(
+            exe_kg.create_data_entity(
+                "feature_" + feature_column, feature_column, "TimeSeries", "Vector"
+            )
+        )
+
+    label_data_entity = exe_kg.create_data_entity(
+        "label_" + label_column, label_column, "TimeSeries", "Vector"
     )
 
     pipeline_name = "testPipeline_ml"
     pipeline = exe_kg.create_pipeline_task(
-        pipeline_name, input_data_path="data/singlefeatures_wm1.csv"
+        pipeline_name, input_data_path="examples/data/breast_cancer_data.csv"
     )
 
     concatenate_task = exe_kg.add_task(
         task_type="Concatenation",
-        input_data_entity_dict={
-            "DataInConcatenation": [current_actual, cap_wear_count]
-        },
+        input_data_entity_dict={"DataInConcatenation": feature_data_entities},
         method_type="ConcatenationMethod",
         data_properties={},
     )
@@ -32,7 +69,7 @@ if __name__ == "__main__":
             "DataInDataSplittingX": [
                 concatenate_task.output_dict["DataOutConcatenatedData"]
             ],
-            "DataInDataSplittingY": [qvalue_actual],
+            "DataInDataSplittingY": [label_data_entity],
         },
         method_type="DataSplittingMethod",
         data_properties={"hasSplitRatio": 0.8},
@@ -93,11 +130,13 @@ if __name__ == "__main__":
         input_data_entity_dict={
             "DataInVector": [train_error],
         },
-        method_type="LineplotMethod",
+        method_type="ScatterplotMethod",
         data_properties={
-            "hasLegendName": "MyLegend",
-            "hasLineStyle": "-",
+            "hasLegendName": "Train rror",
+            "hasLineStyle": "o",
+            "hasScatterStyle": "o",
             "hasLineWidth": 1,
+            "hasScatterSize": 1,
         },
         visualization=True,
     )
@@ -107,11 +146,13 @@ if __name__ == "__main__":
         input_data_entity_dict={
             "DataInVector": [test_error],
         },
-        method_type="LineplotMethod",
+        method_type="ScatterplotMethod",
         data_properties={
             "hasLegendName": "MyLegend",
-            "hasLineStyle": "-",
+            "hasLineStyle": "o",
+            "hasScatterStyle": "o",
             "hasLineWidth": 1,
+            "hasScatterSize": 1,
         },
         visualization=True,
     )

@@ -3,15 +3,15 @@ from classes import ExeKG
 if __name__ == "__main__":
     exe_kg = ExeKG(kg_schema_name="Visualization")
     my_data_entity = exe_kg.create_data_entity(
-        "CurrentActual", "CurrentActual", "TimeSeries", "Vector"
+        "radius_mean", "radius_mean", "TimeSeries", "Vector"
     )
 
     pipeline_name = "testPipeline_visu"
     pipeline = exe_kg.create_pipeline_task(
-        pipeline_name, input_data_path="data/singlefeatures_wm1.csv"
+        pipeline_name, input_data_path="examples/data/breast_cancer_data.csv"
     )
 
-    canvas_task_properties = {"hasCanvasName": "mycanvas", "hasLayout": "1 2"}
+    canvas_task_properties = {"hasCanvasName": "MyCanvas", "hasLayout": "1 2"}
     canvas_task = exe_kg.add_task(
         task_type="CanvasTask",
         input_data_entity_dict={},
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     )
 
     lineplot_task_properties = {
-        "hasLegendName": "mylegend",
+        "hasLegendName": "Radius mean",
         "hasLineStyle": "-",
         "hasLineWidth": 1,
     }
