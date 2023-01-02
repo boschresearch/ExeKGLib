@@ -14,7 +14,7 @@ nav = mkdocs_gen_files.Nav()
 nav[PACKAGE_IMPORT_NAME] = "index.md"
 
 excludes = mkdocs_gen_files.config["plugins"]["gen-files"].config["exclude"]
-print(excludes)
+
 for path in sorted(Path(PACKAGE_IMPORT_NAME).glob("**/*.py")):
     relative_path = path.relative_to(PACKAGE_IMPORT_NAME)
     module_path = relative_path.with_suffix("")
