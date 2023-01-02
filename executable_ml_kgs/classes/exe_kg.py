@@ -617,7 +617,7 @@ class ExeKG:
             if not hasattr(task, field_name) or field_name == "type":
                 continue
             field_value = self.property_value_to_field_value(str(o))
-            print(field_name, field_value)
+
             if field_name == "has_input" or field_name == "has_output":
                 getattr(task, field_name).append(field_value)
             else:
