@@ -13,15 +13,15 @@ nav:
   - Overview:
     - Overview: index.md
     - Installation: installation.md
-    - Getting Started: getting-started.md
-    - Changelog: exported/changelog.md
+#    - Getting Started: getting-started.md
+#    - Changelog: exported/changelog.md
 #  - Examples:
 #    - Overview: examples/overview.md
 #    - examples/dask-distributed.md
   - Code Reference: reference/
   - Development:
-    - Documentation of executable_ml_kgs.classes.tasks package: tasks-package-documentation.md
     - Adding a new ML-related task and method: adding-new-task-and-method.md
+    - Documentation of executable_ml_kgs.classes.tasks package: tasks-package-documentation.md
     - Contributing: contributing.md
 #    - Coverage: exported/coverage/report.html
 #    - Tests: exported/tests/report.html
