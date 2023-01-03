@@ -55,7 +55,7 @@ Repo for the above KG schemas: https://github.com/nsai-uio/ExeKGOntology
 ## License
 
 ExeKGLib is open-sourced under the AGPL-3.0 license. See the
-[LICENSE](LICENSE) file for details.
+[LICENSE](LICENSE.md) file for details.
 
 <!-- URLs -->
 [black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg

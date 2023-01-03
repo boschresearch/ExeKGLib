@@ -1,2 +1,2 @@
 <!-- markdownlint-disable-next-line MD041 -->
---8<-- "LICENSE.md"
+--8<-- "third-party-licenses.md"
