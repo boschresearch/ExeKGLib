@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "ExeKGLib"
+name = "exe-kg-lib"
 version = "0.0.0" # Don't touch: Versions are dynamically generated from git tags
 description = "Library for executable ML pipelines represented by KGs."
 license = "AGPL-3.0"
-authors = ["Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
+authors = ["Antonis Klironomos <antonis.klironomos@de.bosch.com>", "Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
 
 classifiers = [
   "Development Status :: 1 - Planning",
@@ -17,7 +17,7 @@ classifiers = [
 
 homepage = "https://boschresearch.github.io/ExeKGLib"
 include = ["README.md", "pyproject.toml"]
-maintainers = ["Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
+maintainers = ["Antonis Klironomos <antonis.klironomos@de.bosch.com>", "Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
 readme = "README.md"
 repository = "https://github.com/boschresearch/ExeKGLib"
 
@@ -75,7 +75,7 @@ skip_empty = true
 
 [tool.coverage.run]
 branch = true
-source = ["executable_ml_kgs"]
+source = ["exe_kg_lib"]
 
 [tool.isort]
 line_length = 120
@@ -226,7 +226,7 @@ sequence = [
 ]
 help = "Lint Python files with bandit, pydocstyle, pyflakes, mypy & pylint."
 args = [
-  { name = "files", positional = true, multiple = true, default = "executable_ml_kgs tests", help = "List of files or directories (optional)" },
+  { name = "files", positional = true, multiple = true, default = "exe_kg_lib tests", help = "List of files or directories (optional)" },
 ]
 
 [tool.poe.tasks.push-latest-version-tag]

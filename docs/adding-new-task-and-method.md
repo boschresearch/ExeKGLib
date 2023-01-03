@@ -79,4 +79,4 @@ To add the required semantic components, the following steps should be followed:
 
 
 ## Adding a relevant Python class
-To achieve this, a sub-class of `executable_ml_kgs.classes.task.Task` should be added to an existing module of `executable_ml_kgs.classes.tasks` package according to the conventions mentioned in the [package's documentation](../tasks-package-documentation).
+To achieve this, a sub-class of `exe_kg_lib.classes.task.Task` should be added to an existing module of `exe_kg_lib.classes.tasks` package according to the conventions mentioned in the [package's documentation](../tasks-package-documentation).

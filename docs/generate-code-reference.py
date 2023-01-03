@@ -8,7 +8,7 @@ from pathlib import Path
 
 import mkdocs_gen_files
 
-PACKAGE_IMPORT_NAME = "executable_ml_kgs"
+PACKAGE_IMPORT_NAME = "exe_kg_lib"
 
 nav = mkdocs_gen_files.Nav()
 nav[PACKAGE_IMPORT_NAME] = "index.md"

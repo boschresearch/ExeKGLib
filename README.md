@@ -30,7 +30,7 @@ See the [installation page of the library's documentation site](https://boschres
 2. Follow the input prompts.
 
 #### Via code
-See the [provided examples](executable_ml_kgs/examples/).
+See the [provided examples](exe_kg_lib/examples/).
 
 ### Executing a generated KG
 Run `python kg_execution.py [kg_file_path]`.
@@ -40,7 +40,7 @@ To perform this type of library extension, there are 3 required steps:
 
 1. Selection of a relevant bottom-level KG schema (Statistics, ML, or Visualization) according to the type of the new task and method.
 2. Addition of new semantic components (entities, properties, etc) to the selected KG schema.
-3. Addition of a Python class to the corresponding module of `executable_ml_kgs.classes.tasks` package.
+3. Addition of a Python class to the corresponding module of `exe_kg_lib.classes.tasks` package.
 
 For steps 2 and 3, refer to the [relevant page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/).
 

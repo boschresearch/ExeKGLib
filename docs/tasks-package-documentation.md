@@ -1,1 +1,1 @@
---8<-- "executable_ml_kgs/classes/tasks/README.md"
+--8<-- "exe_kg_lib/classes/tasks/README.md"

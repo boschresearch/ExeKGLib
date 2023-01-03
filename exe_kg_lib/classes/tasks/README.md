@@ -1,4 +1,4 @@
-## Documentation of `executable_ml_kgs.classes.tasks` package
+## Documentation of `exe_kg_lib.classes.tasks` package
 
 ### Overview
 
