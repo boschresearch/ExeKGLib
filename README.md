@@ -19,7 +19,7 @@ The different implementations of `run_method()` correspond to each of the _Metho
 3. **Machine Learning**: This is a group of methods that support ML algorithms like Linear Regression, MLP, and k-NN and helper functions that perform e.g. data splitting and ML model performance calculation.
 
 ## Installation
-For instructions on how to install the library, see the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
+See the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
 
 ## Usage
 ### Creating an executable KG
