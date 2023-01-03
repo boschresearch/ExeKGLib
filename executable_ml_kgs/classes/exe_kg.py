@@ -1,3 +1,4 @@
+import os
 from typing import Union, List
 
 import pandas as pd
@@ -519,8 +520,11 @@ class ExeKG:
             prev_task = next_task
 
     def save(self, file_path: str) -> None:
-        all_kgs = self.output_kg
-        all_kgs.serialize(destination=file_path)
+        dir_path = os.path.dirname(file_path)
+        os.makedirs(dir_path, exist_ok=True)
+
+        self.output_kg.serialize(destination=file_path)
+        print(f"Executable KG saved in {file_path}")
 
     def property_value_to_field_value(
             self, property_value: str
