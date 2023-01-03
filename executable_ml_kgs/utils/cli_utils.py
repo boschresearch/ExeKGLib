@@ -7,6 +7,9 @@ from classes.entity import Entity
 def get_input_for_existing_data_entities(
         existing_data_entity_list: List[DataEntity],
 ) -> Union[None, List[DataEntity]]:
+    if not existing_data_entity_list:
+        return []
+
     chosen_data_entity_list = []
     print("Choose input for the task from existing data entities:")
     while True:
