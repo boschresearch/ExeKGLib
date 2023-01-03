@@ -42,9 +42,12 @@ class Task(Entity):
         """
         For each key in keyword_value_dict, checks if the key exists in an output name of the Task.
         If yes, adds the output name with its value to out_dict.
-        @param keyword_value_dict: key-value pairs where key is a keyword to find in an output name of the Task
+        Args:
+            keyword_value_dict: key-value pairs where key is a keyword to find in an output name of the Task
                                   and value is the value corresponding to that output name
-        @return: out_dict with key-value pairs where key is an output name of the Task and value its output value
+
+        Returns:
+            dict: pairs of Task's output names and corresponding output values
         """
         if len(self.has_output) == 0:
             # assume one output and use task name as key
@@ -66,9 +69,12 @@ class Task(Entity):
         Tries to match the Task's input names with the keys of dict_to_search
         and fills input_dict list with their corresponding values.
         If the matches fail, it retrieves columns of the provided fallback_df
-        @param dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
-        @param fallback_df: contains data to return as an alternative
-        @return: list with the found input_dict' values
+        Args:
+            dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
+            fallback_df: contains data to return as an alternative
+
+        Returns:
+            Dict[str, np.ndarray]: pairs of input entity types and corresponding input values
         """
         input_dict = {}
         for input in self.has_input:
@@ -84,6 +90,7 @@ class Task(Entity):
         """
         Abstract method to be implemented by Task sub-classes that are in the bottom of the hierarchy.
         Executes the logic that is needed to fulfill the Task.
-        @param args: defined by sub-classes
+        Args:
+            *args: defined by sub-classes
         """
         raise NotImplementedError
