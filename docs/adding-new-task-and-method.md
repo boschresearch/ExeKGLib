@@ -6,6 +6,7 @@
 When extending an [existing bottom-level KG schema](https://github.com/boschresearch/ExeKGLib#bottom-level-kg-schemas), naming conventions should be followed and can be inferred by the below example code snippets. The placeholders used are specified below each snippet. For the sake of example, the namespace prefix of the ML KG schema (`ml`) is used in the following code snippets.
 
 To add the required semantic components, the following steps should be followed:
+
 1. Open the `.ttl` file of the desired bottom-level KG schema, found in the [relevant repo](https://github.com/nsai-uio/ExeKGOntology).
 2. Add a new sub-class of [ds:AtomicTask](https://nsai-uio.github.io/ExeKGOntology/OnToology/ds_exeKGOntology.ttl/documentation/index-en.html#AtomicTask).
 
