@@ -17,7 +17,7 @@ jobs:
   cd:
     name: CD
     if: github.repository == 'boschresearch/ExeKGLib'
-    runs-on: [self-hosted, Linux]
+    runs-on: ubuntu-latest
     container: ubuntu:latest
 
     steps:
@@ -46,14 +46,14 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      - name: Configure git
-        run: |
-          git config --add --global safe.directory "$GITHUB_WORKSPACE"
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@bosch.com"
+#      - name: Configure git
+#        run: |
+#          git config --add --global safe.directory "$GITHUB_WORKSPACE"
+#          git config user.name "${GITHUB_ACTOR}"
+#          git config user.email "${GITHUB_ACTOR}@de.bosch.com"
 
-      - name: Bump patch version
-        run: poetry run poe bump-version-tag patch
+#      - name: Bump patch version
+#        run: poetry run poe bump-version-tag patch
 
 #      - name: Deploy docs
 #        run: |
@@ -68,18 +68,15 @@ jobs:
 #            --username ${{ secrets.ARTIFACTORY_RESOURCE_USER }} \
 #            --password ${{ secrets.ARTIFACTORY_RESOURCE_TOKEN }}
 
-      - name: Push version tag
-        run: poetry run poe push-latest-version-tag
+#      - name: Push version tag
+#        run: poetry run poe push-latest-version-tag
 
   update_release_draft:
     name: Update release notes
-    runs-on: [self-hosted, Linux]
+    runs-on: ubuntu-latest
     container: ubuntu:latest
 
     steps:
-      - name: Set GHE_HOST
-        run: echo "GHE_HOST=${GITHUB_SERVER_URL##https:\/\/}" >> $GITHUB_ENV
-
       - uses: release-drafter/release-drafter@v5.22.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
