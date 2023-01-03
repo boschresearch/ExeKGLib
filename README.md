@@ -1,5 +1,6 @@
 # ExeKGLib
 
+![PyPI](https://img.shields.io/pypi/v/exe-kg-lib)
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
 ![Poetry](https://img.shields.io/badge/poetry-v1.2.2-blue)
 [![Code style: black][black-badge]][black]
@@ -20,8 +21,10 @@ The different implementations of `run_method()` correspond to each of the _Metho
 2. **Statistics and Feature Engineering**: This includes methods for statistical analysis and feature engineering like IQR calculation, mean and std-deviation calculation, etc., which can then form complex methods like outlier detection method and normalization method.
 3. **Machine Learning**: This is a group of methods that support ML algorithms like Linear Regression, MLP, and k-NN and helper functions that perform e.g. data splitting and ML model performance calculation.
 
-## Installation
-See the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
+## Getting started
+The library is available as a [PyPi package](https://pypi.org/project/exe-kg-lib/).
+
+To download, run `pip install exe-kg-lib`.
 
 ## Usage
 ### Creating an executable KG
@@ -34,6 +37,9 @@ See the [provided examples](exe_kg_lib/examples/).
 
 ### Executing a generated KG
 Run `python kg_execution.py [kg_file_path]`.
+
+## Installation
+See the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
 
 ## Adding a new ML-related task and method
 To perform this type of library extension, there are 3 required steps:
