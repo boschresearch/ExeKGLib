@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List, Dict
+from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -18,9 +18,9 @@ class Task(Entity):
     """
 
     def __init__(
-        self,
-        iri: str,
-        parent_entity: Entity = None,
+            self,
+            iri: str,
+            parent_entity: Entity = None,
     ):
         super().__init__(iri, parent_entity)
         self.has_next_task = None
@@ -60,7 +60,7 @@ class Task(Entity):
         return out_dict
 
     def get_inputs(
-        self, dict_to_search: dict, fallback_df: pd.DataFrame
+            self, dict_to_search: dict, fallback_df: pd.DataFrame
     ) -> Dict[str, np.ndarray]:
         """
         Tries to match the Task's input names with the keys of dict_to_search
@@ -78,21 +78,6 @@ class Task(Entity):
                 input_dict[input.type] = fallback_df[input.has_source]
 
         return input_dict
-
-    def get_one_input(
-        self, dict_to_search: dict, fallback_df: pd.DataFrame
-    ) -> pd.DataFrame:
-        """
-        Tries to match the Task's first input name with the keys of dict_to_search and return its corresponding value.
-        If the match fails, it returns a column of the provided fallback_df
-        @param dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
-        @param fallback_df: contains data to return as an alternative
-        @return: found input's value or fallback_df
-        """
-        try:
-            return dict_to_search[self.has_input[0].has_reference]
-        except KeyError:
-            return fallback_df[self.has_input[0].has_source]
 
     @abstractmethod
     def run_method(self, *args):
