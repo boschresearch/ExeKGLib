@@ -212,7 +212,7 @@ ml:PerformanceCalculationMethod1 a ml:PerformanceCalculationMethod .
 ml:PlotTask1 a visu:PlotTask ;
     ds:hasInput visu:DataInVector1_1 ;
     ds:hasNextTask ml:PlotTask2 ;
-    visu:hasLegendName "Train rror"^^xsd:string ;
+    visu:hasLegendName "Train error"^^xsd:string ;
     visu:hasLineStyle "o"^^xsd:string ;
     visu:hasLineWidth "1"^^xsd:int ;
     visu:hasPlotMethod ml:ScatterplotMethod1 ;
@@ -221,7 +221,7 @@ ml:PlotTask1 a visu:PlotTask ;
 
 ml:PlotTask2 a visu:PlotTask ;
     ds:hasInput visu:DataInVector2_1 ;
-    visu:hasLegendName "MyLegend"^^xsd:string ;
+    visu:hasLegendName "Test error"^^xsd:string ;
     visu:hasLineStyle "o"^^xsd:string ;
     visu:hasLineWidth "1"^^xsd:int ;
     visu:hasPlotMethod ml:ScatterplotMethod2 ;

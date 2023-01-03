@@ -132,7 +132,7 @@ if __name__ == "__main__":
         },
         method_type="ScatterplotMethod",
         data_properties={
-            "hasLegendName": "Train rror",
+            "hasLegendName": "Train error",
             "hasLineStyle": "o",
             "hasScatterStyle": "o",
             "hasLineWidth": 1,
@@ -148,7 +148,7 @@ if __name__ == "__main__":
         },
         method_type="ScatterplotMethod",
         data_properties={
-            "hasLegendName": "MyLegend",
+            "hasLegendName": "Test error",
             "hasLineStyle": "o",
             "hasScatterStyle": "o",
             "hasLineWidth": 1,
