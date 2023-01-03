@@ -8,11 +8,11 @@ def get_input_for_existing_data_entities(
         existing_data_entity_list: List[DataEntity],
 ) -> Union[None, List[DataEntity]]:
     chosen_data_entity_list = []
-    print("Select input for the task from existing data entities:")
+    print("Choose input for the task from existing data entities:")
     while True:
         for i, data_entity in enumerate(existing_data_entity_list):
             print("\t{}. {}".format(str(i), data_entity.name))
-        print("\t{}. Continue to choose new input columns".format(str(-1)))
+        print("\t{}. Continue".format(str(-1)))
         chosen_data_entity_i = int(input())
         if chosen_data_entity_i == -1:
             break

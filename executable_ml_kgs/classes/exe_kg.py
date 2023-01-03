@@ -369,10 +369,8 @@ class ExeKG:
             )
             task_entity.output_dict[output_entity_iri.split("#")[1]] = data_entity
 
-    def create_next_task_cli(
-            self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]
-    ) -> Union[None, Task]:
-        print(prompt)
+    def create_next_task_cli(self, prev_task: Task, existing_data_entity_list: List[DataEntity]) -> Union[None, Task]:
+        print("Please choose the next task")
         for i, t in enumerate(self.atomic_task_list):
             print("\t{}. {}".format(str(i), t.name))
         print("\t{}. End pipeline".format(str(-1)))
@@ -509,11 +507,10 @@ class ExeKG:
             input_data_path,
         )
 
-        prompt = "Please choose the first Task:"
         prev_task = pipeline
         data_entities_list = pipeline.has_input
         while True:
-            next_task = self.create_next_task_cli(prompt, prev_task, data_entities_list)
+            next_task = self.create_next_task_cli(prev_task, data_entities_list)
             if next_task is None:
                 break
 
