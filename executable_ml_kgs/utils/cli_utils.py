@@ -5,7 +5,7 @@ from classes.entity import Entity
 
 
 def get_input_for_existing_data_entities(
-    existing_data_entity_list: List[DataEntity],
+        existing_data_entity_list: List[DataEntity],
 ) -> Union[None, List[DataEntity]]:
     chosen_data_entity_list = []
     print("Select input for the task from existing data entities:")
@@ -23,7 +23,7 @@ def get_input_for_existing_data_entities(
 
 
 def get_input_for_new_data_entities(
-    data_semantics_list: List[Entity], data_structure_list: List[Entity]
+        data_semantics_list: List[Entity], data_structure_list: List[Entity]
 ) -> Tuple[list, list, list]:
     source_list = []
     data_semantics_iri_list = []

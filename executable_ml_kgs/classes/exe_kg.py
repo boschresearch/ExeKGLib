@@ -88,8 +88,8 @@ class ExeKG:
                     break
             visu_schema_info = KG_SCHEMAS["Visualization"]
             if (
-                not bottom_level_schema_info_set
-                and (visu_schema_info[2], URIRef(visu_schema_info[1])) in all_ns
+                    not bottom_level_schema_info_set
+                    and (visu_schema_info[2], URIRef(visu_schema_info[1])) in all_ns
             ):
                 bottom_level_schema_path = visu_schema_info[0]
                 bottom_level_schema_namespace = visu_schema_info[1]
@@ -203,11 +203,11 @@ class ExeKG:
         return pipeline
 
     def create_data_entity(
-        self,
-        name: str,
-        source_value: str,
-        data_semantics_name: str,
-        data_structure_name: str,
+            self,
+            name: str,
+            source_value: str,
+            data_semantics_name: str,
+            data_structure_name: str,
     ):
         return DataEntity(
             self.bottom_level_schema_namespace + name,
@@ -218,12 +218,12 @@ class ExeKG:
         )
 
     def add_task(
-        self,
-        task_type: str,
-        input_data_entity_dict: dict,
-        method_type: str,
-        data_properties: dict,
-        visualization: bool = False,
+            self,
+            task_type: str,
+            input_data_entity_dict: dict,
+            method_type: str,
+            data_properties: dict,
+            visualization: bool = False,
     ) -> Task:
         namespace_to_use = (
             self.visu_schema_namespace
@@ -296,7 +296,7 @@ class ExeKG:
         return next_task
 
     def add_inputs_to_task(
-        self, task_entity: Task, input_data_entity_dict: dict[str, List[DataEntity]]
+            self, task_entity: Task, input_data_entity_dict: dict[str, List[DataEntity]]
     ) -> None:
         results = list(
             get_input_properties_and_inputs(
@@ -315,10 +315,10 @@ class ExeKG:
             same_input_index = 1
             for input_data_entity in input_data_entity_list:
                 data_entity_iri = (
-                    input_entity_iri
-                    + str(task_type_index)
-                    + "_"
-                    + str(same_input_index)
+                        input_entity_iri
+                        + str(task_type_index)
+                        + "_"
+                        + str(same_input_index)
                 )
                 data_entity = DataEntity(
                     data_entity_iri,
@@ -370,7 +370,7 @@ class ExeKG:
             task_entity.output_dict[output_entity_iri.split("#")[1]] = data_entity
 
     def create_next_task_cli(
-        self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]
+            self, prompt: str, prev_task: Task, existing_data_entity_list: List[DataEntity]
     ) -> Union[None, Task]:
         print(prompt)
         for i, t in enumerate(self.atomic_task_list):
@@ -420,7 +420,7 @@ class ExeKG:
         )
 
         for source, data_semantics_iri, data_structure_iri in zip(
-            source_list, data_semantics_iri_list, data_structure_iri_list
+                source_list, data_semantics_iri_list, data_structure_iri_list
         ):
             data_entity = DataEntity(
                 self.bottom_level_schema_namespace + source,
@@ -526,7 +526,7 @@ class ExeKG:
         all_kgs.serialize(destination=file_path)
 
     def property_value_to_field_value(
-        self, property_value: str
+            self, property_value: str
     ) -> Union[str, DataEntity]:
         if "#" in property_value:
             data_entity = self.parse_data_entity_by_iri(property_value)
@@ -537,7 +537,7 @@ class ExeKG:
         return property_value
 
     def parse_data_entity_by_iri(
-        self, in_out_data_entity_iri: str
+            self, in_out_data_entity_iri: str
     ) -> Optional[DataEntity]:
         query_result = get_first_query_result_if_exists(
             query_entity_parent_iri,
@@ -575,7 +575,7 @@ class ExeKG:
         return data_entity
 
     def parse_task_by_iri(
-        self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
+            self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None
     ) -> Optional[Task]:
         query_result = get_first_query_result_if_exists(
             query_entity_parent_iri,
@@ -642,3 +642,15 @@ class ExeKG:
                 canvas_method = next_task
 
             next_task_iri = next_task.has_next_task
+
+    @staticmethod
+    def input_kg_schema_name():
+        kg_schema_names = list(KG_SCHEMAS.keys())
+        print(
+            "Choose a KG schema to use. Components of the Visualization schema can be used regardless of the chosen schema.")
+        for i, kg_schema_name in enumerate(kg_schema_names):
+            print(f"{i}: {kg_schema_name}")
+        selected_schema_i = int(input())
+        selected_schema_name = kg_schema_names[selected_schema_i]
+
+        return selected_schema_name
