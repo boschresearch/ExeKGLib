@@ -18,11 +18,20 @@ The different implementations of `run_method()` correspond to each of the _Metho
 2. **Statistics and Feature Engineering**: This includes methods for statistical analysis and feature engineering like IQR calculation, mean and std-deviation calculation, etc., which can then form complex methods like outlier detection method and normalization method.
 3. **Machine Learning**: This is a group of methods that support ML algorithms like Linear Regression, MLP, and k-NN and helper functions that perform e.g. data splitting and ML model performance calculation.
 
-## Usage
-For using the library, see the [provided examples](executable_ml_kgs/examples/).
-
 ## Installation
-For instructions on how to install the library, see the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
+See the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
+
+## Usage
+### Creating an executable KG
+#### Via CLI
+1. Run `python kg_construction.py`.
+2. Follow the input prompts.
+
+#### Via code
+See the [provided examples](executable_ml_kgs/examples/).
+
+### Executing a generated KG
+Run `python kg_execution.py [kg_file_path]`.
 
 ## Adding a new ML-related task and method
 To perform this type of library extension, there are 3 required steps:
