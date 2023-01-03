@@ -1,0 +1,33 @@
+@prefix ds: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#> .
+@prefix visu: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+visu:VisuPipeline a ds:Pipeline ;
+    ds:hasInputDataPath "examples/data/breast_cancer_data.csv"^^xsd:string ;
+    ds:hasStartTask visu:CanvasTask1 .
+
+visu:CanvasMethod1 a visu:CanvasMethod .
+
+visu:CanvasTask1 a visu:CanvasTask ;
+    ds:hasNextTask visu:PlotTask1 ;
+    visu:hasCanvasMethod visu:CanvasMethod1 ;
+    visu:hasCanvasName "MyCanvas"^^xsd:string ;
+    visu:hasLayout "1 2"^^ds:intPair .
+
+visu:DataInVector1_1 a visu:DataInVector ;
+    ds:hasReference visu:radius_mean .
+
+visu:LineplotMethod1 a visu:LineplotMethod .
+
+visu:PlotTask1 a visu:PlotTask ;
+    ds:hasInput visu:DataInVector1_1 ;
+    visu:hasLegendName "Radius mean"^^xsd:string ;
+    visu:hasLineStyle "-"^^xsd:string ;
+    visu:hasLineWidth "1"^^xsd:int ;
+    visu:hasPlotMethod visu:LineplotMethod1 .
+
+visu:radius_mean a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "radius_mean"^^xsd:string .
+
