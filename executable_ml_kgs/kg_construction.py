@@ -6,4 +6,4 @@ if __name__ == "__main__":
     kg_schema_name = ExeKG.input_kg_schema_name()
     exe_kg = ExeKG(kg_schema_name=kg_schema_name)
     exe_kg.start_pipeline_creation(pipeline_name, input_data_path)
-    exe_kg.save(f"kg/{pipeline_name}.ttl")
+    exe_kg.save_created_kg(f"kg/{pipeline_name}.ttl")

@@ -157,4 +157,4 @@ if __name__ == "__main__":
         visualization=True,
     )
 
-    exe_kg.save(f"./pipelines/{pipeline_name}.ttl")
+    exe_kg.save_created_kg(f"./pipelines/{pipeline_name}.ttl")

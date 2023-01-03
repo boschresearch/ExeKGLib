@@ -31,4 +31,4 @@ if __name__ == "__main__":
         data_properties=lineplot_task_properties,
     )
 
-    exe_kg.save(f"./pipelines/{pipeline_name}.ttl")
+    exe_kg.save_created_kg(f"./pipelines/{pipeline_name}.ttl")

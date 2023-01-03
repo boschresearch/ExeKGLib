@@ -519,7 +519,7 @@ class ExeKG:
 
             prev_task = next_task
 
-    def save(self, file_path: str) -> None:
+    def save_created_kg(self, file_path: str) -> None:
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path, exist_ok=True)
 
