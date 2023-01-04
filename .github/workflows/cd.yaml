@@ -16,7 +16,6 @@ concurrency:
 jobs:
   cd:
     name: CD
-    if: github.repository == 'boschresearch/ExeKGLib'
     runs-on: ubuntu-latest
     container: ubuntu:latest
 
