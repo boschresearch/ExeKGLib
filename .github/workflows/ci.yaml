@@ -13,7 +13,7 @@ concurrency:
 jobs:
   ci:
     name: CI
-    runs-on: ubuntu:latest
+    runs-on: ubuntu-latest
     container: ubuntu:latest
 
     steps:
