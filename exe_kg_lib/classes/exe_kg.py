@@ -441,6 +441,7 @@ class ExeKG:
             existing_data_entity_list: list of existing data entities that are output entities of previous tasks
 
         Returns:
+            None: in case user wants to end the pipeline creation
             Task: object of the created task
         """
         print("Please choose the next task")
