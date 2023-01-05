@@ -4,8 +4,12 @@ from rdflib import Namespace, Graph
 
 
 class KGSchema:
+    """
+    Stores a Graph object and some metadata corresponding to a KG schema
+    """
+
     def __init__(self, path: str, namespace: str, namespace_prefix: str):
-        self.path = path
+        self.path = path  # path of the KG schema definition, can be local or remote
         self.namespace = Namespace(namespace)
         self.namespace_prefix = namespace_prefix
 

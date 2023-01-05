@@ -1,4 +1,4 @@
-from typing import Optional, Callable, Tuple
+from typing import Optional, Callable, Tuple, List
 
 from rdflib import URIRef, Graph, query, Namespace
 
@@ -62,36 +62,36 @@ def get_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> query.Resul
 
 
 def get_method_properties_and_methods(
-    input_kg, namespace_prefix, entity_parent_iri: str
+        input_kg, namespace_prefix, entity_parent_iri: str
 ) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m . "
         "?m rdfs:subClassOf " + namespace_prefix + ":AtomicMethod . }",
         initBindings={"entity_iri": URIRef(entity_parent_iri)},
-    )  # method property
+    )
 
 
 def get_input_properties_and_inputs(
-    input_kg, namespace_prefix, entity_parent_iri: str
+        input_kg, namespace_prefix, entity_parent_iri: str
 ) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
-        "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
+                                                      "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
         initBindings={"entity_iri": URIRef(entity_parent_iri)},
     )
 
 
 def get_output_properties_and_outputs(
-    input_kg, namespace_prefix, entity_parent_iri: str
+        input_kg, namespace_prefix, entity_parent_iri: str
 ) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasOutput ."
-        "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
+                                                      "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
         initBindings={"entity_iri": URIRef(entity_parent_iri)},
     )
 
@@ -111,20 +111,38 @@ def get_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
     )
 
 
-def get_data_properties_plus_inherited_by_class_iri(input_kg, class_iri: str):
-    property_list = list(get_data_properties_by_entity_iri(class_iri, input_kg))
-    method_parent_classes = list(query_method_parent_classes(input_kg, class_iri))
+def get_data_properties_plus_inherited_by_class_iri(kg: Graph, entity_iri: str) -> List:
+    """
+    Retrieves data properties plus the inherited ones, given an entity IRI
+    Args:
+        kg: Graph object to use when querying
+        entity_iri: IRI of entity to query
+
+    Returns:
+        List: contains rows of data property IRIs and their range
+    """
+    property_list = list(get_data_properties_by_entity_iri(entity_iri, kg))
+    method_parent_classes = list(query_method_parent_classes(kg, entity_iri))
     for method_class_result_row in method_parent_classes:
         property_list += list(
-            get_data_properties_by_entity_iri(method_class_result_row[0], input_kg)
+            get_data_properties_by_entity_iri(method_class_result_row[0], kg)
         )
 
     return property_list
 
 
 def get_pipeline_and_first_task_iri(
-    kg: Graph, namespace_prefix: str
+        kg: Graph, namespace_prefix: str
 ) -> Tuple[str, str, str]:
+    """
+    Retrieves the necessary information needed to start parsing a pipeline
+    Args:
+        kg: Graph object to use when querying
+        namespace_prefix: namespace prefix to use when querying
+
+    Returns:
+        Tuple[str, str, str]: contains the pipeline IRI, the input data path and the first task's IRI
+    """
     # assume one pipeline per file
     query_result = get_first_query_result_if_exists(
         query_pipeline_info,
@@ -141,11 +159,23 @@ def get_pipeline_and_first_task_iri(
 
 
 def get_method_by_task_iri(
-    kg: Graph,
-    namespace_prefix: str,
-    namespace: Namespace,
-    task_iri: str,
+        kg: Graph,
+        namespace_prefix: str,
+        namespace: Namespace,
+        task_iri: str,
 ) -> Optional[Entity]:
+    """
+    Retrieves a task's method, given a task IRI
+    Args:
+        kg: Graph object to use when querying
+        namespace_prefix: namespace prefix to use when querying
+        namespace: namespace to use when querying
+        task_iri: IRI of task to query
+
+    Returns:
+        Optional[Entity]: object containing found method's basic info
+                          is equal to None if method IRI wasn't found in KG
+    """
     query_result = get_first_query_result_if_exists(
         query_method_iri_by_task_iri,
         kg,
@@ -161,7 +191,7 @@ def get_method_by_task_iri(
         query_entity_parent_iri,
         kg,
         method_iri,
-        namespace.Method,
+        namespace.AtomicMethod,
     )
     if query_result is None:
         return None

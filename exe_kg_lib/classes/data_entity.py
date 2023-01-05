@@ -12,16 +12,16 @@ class DataEntity(Entity):
     """
 
     def __init__(
-        self,
-        iri: str,
-        parent_entity: Entity,
-        has_source_value: str = None,
-        has_data_semantics_iri: str = None,
-        has_data_structure_iri: str = None,
-        has_reference: str = None,
+            self,
+            iri: str,
+            parent_entity: Entity,
+            has_source_value: str = None,
+            has_data_semantics_iri: str = None,
+            has_data_structure_iri: str = None,
+            has_reference: str = None,
     ):
         super().__init__(iri, parent_entity)
-        self.has_source = has_source_value
-        self.has_data_semantics = has_data_semantics_iri
-        self.has_data_structure = has_data_structure_iri
-        self.has_reference = has_reference
+        self.has_source = has_source_value  # used as column name to retrieve data from the pipeline's input file
+        self.has_data_semantics = has_data_semantics_iri  # IRI of KG entity of type DataSemantics
+        self.has_data_structure = has_data_structure_iri  # IRI of KG entity of type DataStructure
+        self.has_reference = has_reference  # reference to another data entity in the KG, expecting an IRI

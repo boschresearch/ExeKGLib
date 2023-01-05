@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from rdflib import Namespace
 
@@ -9,6 +9,14 @@ from classes.entity import Entity
 def get_input_for_existing_data_entities(
         existing_data_entity_list: List[DataEntity],
 ) -> List[DataEntity]:
+    """
+    Asks user to choose data entities from an existing list
+    Args:
+        existing_data_entity_list: contains DataEntity objects for the user to choose from
+
+    Returns:
+        List[DataEntity]: contains the chosen DataEntity objects
+    """
     if not existing_data_entity_list:
         return []
 
@@ -30,6 +38,17 @@ def get_input_for_existing_data_entities(
 def get_input_for_new_data_entities(
         data_semantics_list: List[Entity], data_structure_list: List[Entity], namespace: Namespace, data_entity: Entity
 ) -> List[DataEntity]:
+    """
+    Asks user to specify info of new data entities and creates relevant objects
+    Args:
+        data_semantics_list: contains data semantics for the user to choose from
+        data_structure_list: contains data structures for the user to choose from
+        namespace: KG schema namespace to use when initializing the new entities
+        data_entity: Entity object to assign as parent entity of the new entities
+
+    Returns:
+        List[DataEntity]: contains the created DataEntity objects
+    """
     data_entities = []
 
     prompt = "Enter input columns, then 'quit' when done: "
@@ -60,7 +79,12 @@ def get_input_for_new_data_entities(
     return data_entities
 
 
-def input_pipeline_info():
+def input_pipeline_info() -> Tuple[str, str]:
+    """
+    Asks user to provide a name for the pipeline and a path for the input data
+    Returns:
+        Tuple[str, str]: contains the provided strings
+    """
     pipeline_name = input("Enter a name for the pipeline: ")
     input_data_path = input("Enter a path for the input data: ")
 
