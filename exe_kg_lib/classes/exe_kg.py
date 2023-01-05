@@ -123,6 +123,7 @@ class ExeKG:
         self.data_semantics_list = []  # list for storing the available sub-classes of ds:DataSemantics
         self.data_structure_list = []  # list for storing the available sub-classes of ds:DataStructure
 
+        self.existing_data_entity_list = []  # contains existing data entities that are output entities of previous tasks during KG construction
         self.last_created_task = None  # last created pipeline task, for connecting consecutive pipeline tasks during KG construction
 
         self.parse_kgs()
@@ -339,10 +340,11 @@ class ExeKG:
         return next_task
 
     def add_inputs_to_task(
-            self, task_entity: Task, input_data_entity_dict: dict[str, List[DataEntity]]
+            self, task_entity: Task, input_data_entity_dict: Dict[str, List[DataEntity]] = None
     ) -> None:
         """
         Instantiates and adds given input data entities to the given task of self.output_kg
+        if input_data_entity_dict is None, user is asked to specify input data entities
         Args:
             task_entity: the task to add the input to
             input_data_entity_dict: keys -> input entity names corresponding to the given task as defined in the chosen bottom-level KG schema
@@ -362,7 +364,16 @@ class ExeKG:
         task_type_index = self.task_type_dict[task_entity.type] - 1
         for _, input_entity_iri in results:
             input_entity_name = input_entity_iri.split("#")[1]
-            input_data_entity_list = input_data_entity_dict[input_entity_name]
+            if input_data_entity_dict:
+                input_data_entity_list = input_data_entity_dict[input_entity_name]
+            else:
+                # use CLI
+                print(f"Specify input corresponding to {input_entity_name}")
+                input_data_entity_list = get_input_for_existing_data_entities(self.existing_data_entity_list)
+                input_data_entity_list += get_input_for_new_data_entities(
+                    self.data_semantics_list, self.data_structure_list, self.bottom_level_schema.namespace,
+                    self.data_entity
+                )
 
             same_input_index = 1
             for input_data_entity in input_data_entity_list:
@@ -431,14 +442,14 @@ class ExeKG:
                 task_entity,
             )
             task_entity.output_dict[output_entity_iri.split("#")[1]] = data_entity
+            self.existing_data_entity_list.append(data_entity)
 
-    def create_next_task_cli(self, prev_task: Task, existing_data_entity_list: List[DataEntity]) -> Union[None, Task]:
+    def create_next_task_cli(self, prev_task: Task) -> Union[None, Task]:
         """
         Instantiates and adds task (without method) based on user input to self.output_kg
-        Adds task's output data entities to existing_data_entity_list
+        Adds task's output data entities to self.existing_data_entity_list
         Args:
             prev_task: previously added task
-            existing_data_entity_list: list of existing data entities that are output entities of previous tasks
 
         Returns:
             None: in case user wants to end the pipeline creation
@@ -471,55 +482,8 @@ class ExeKG:
 
         task_entity = Task(task_entity.iri, task_entity.parent_entity)  # create Task object from Entity object's info
 
-        # get user's choice of existing data entities to use as input
-        chosen_data_entity_list = get_input_for_existing_data_entities(
-            existing_data_entity_list
-        )
-        for chosen_data_entity in chosen_data_entity_list:
-            # instantiate and attach data entity corresponding to the found input_entity_name
-            add_and_attach_data_entity(
-                self.output_kg,
-                self.data,
-                self.top_level_schema.kg,
-                self.top_level_schema.namespace,
-                chosen_data_entity,
-                self.top_level_schema.namespace.hasInput,
-                task_entity,
-            )
-            task_entity.has_input.append(chosen_data_entity)
-
-        # get user's input for using a new data entity as input
-        (
-            source_list,
-            data_semantics_iri_list,
-            data_structure_iri_list,
-        ) = get_input_for_new_data_entities(
-            self.data_semantics_list, self.data_structure_list
-        )
-
-        for source, data_semantics_iri, data_structure_iri in zip(
-                source_list, data_semantics_iri_list, data_structure_iri_list
-        ):
-            # instantiate and attach given data entity
-            data_entity = DataEntity(
-                self.bottom_level_schema.namespace + source,
-                self.data_entity,
-                source,
-                data_semantics_iri,
-                data_structure_iri,
-            )
-            add_and_attach_data_entity(
-                self.output_kg,
-                self.data,
-                self.top_level_schema.kg,
-                self.top_level_schema.namespace,
-                data_entity,
-                self.top_level_schema.namespace.hasInput,
-                task_entity,
-            )
-            task_entity.has_input.append(data_entity)
-            existing_data_entity_list.append(data_entity)
-
+        # instantiate and add input data entities to the task based on user input
+        self.add_inputs_to_task(task_entity)
         # instantiate and add output data entities to the task, as specified in the KG schema
         self.add_outputs_to_task(task_entity)
 
@@ -605,9 +569,8 @@ class ExeKG:
         )
 
         prev_task = pipeline
-        data_entities_list = pipeline.has_input
         while True:
-            next_task = self.create_next_task_cli(prev_task, data_entities_list)
+            next_task = self.create_next_task_cli(prev_task)
             if next_task is None:
                 break
 

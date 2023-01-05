@@ -1,4 +1,6 @@
-from typing import List, Union, Tuple
+from typing import List
+
+from rdflib import Namespace
 
 from classes.data_entity import DataEntity
 from classes.entity import Entity
@@ -6,7 +8,7 @@ from classes.entity import Entity
 
 def get_input_for_existing_data_entities(
         existing_data_entity_list: List[DataEntity],
-) -> Union[None, List[DataEntity]]:
+) -> List[DataEntity]:
     if not existing_data_entity_list:
         return []
 
@@ -26,36 +28,36 @@ def get_input_for_existing_data_entities(
 
 
 def get_input_for_new_data_entities(
-        data_semantics_list: List[Entity], data_structure_list: List[Entity]
-) -> Tuple[list, list, list]:
-    source_list = []
-    data_semantics_iri_list = []
-    data_structure_iri_list = []
+        data_semantics_list: List[Entity], data_structure_list: List[Entity], namespace: Namespace, data_entity: Entity
+) -> List[DataEntity]:
+    data_entities = []
 
-    prompt = "Enter input columns for the task, enter 'quit' to stop input: "
+    prompt = "Enter input columns, then 'quit' when done: "
     source = input(prompt)
     while source != "quit":
-        source_list.append(source)
+        new_data_entity = DataEntity(
+            namespace + source,
+            data_entity,
+            source
+        )
 
         print(f"Choose data semantics for {source}:")
         for i, t in enumerate(data_semantics_list):
             print("\t{}. {}".format(str(i), t.name))
         chosen_data_semantics_id = int(input())
-        data_semantics_iri_list.append(
-            data_semantics_list[chosen_data_semantics_id].iri
-        )
+        new_data_entity.has_data_semantics = data_semantics_list[chosen_data_semantics_id].iri
 
         print(f"Choose data structure for {source}:")
         for i, t in enumerate(data_structure_list):
             print("\t{}. {}".format(str(i), t.name))
         chosen_data_structure_id = int(input())
-        data_structure_iri_list.append(
-            data_structure_list[chosen_data_structure_id].iri
-        )
+        new_data_entity.has_data_structure = data_structure_list[chosen_data_structure_id].iri
+
+        data_entities.append(new_data_entity)
 
         source = input(prompt)
 
-    return source_list, data_semantics_iri_list, data_structure_iri_list
+    return data_entities
 
 
 def input_pipeline_info():
