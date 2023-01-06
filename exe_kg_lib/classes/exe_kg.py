@@ -1,5 +1,5 @@
 import os
-from typing import Union, List, Dict
+from typing import Union, Dict
 
 import pandas as pd
 from rdflib import Literal
@@ -125,6 +125,7 @@ class ExeKG:
 
         self.existing_data_entity_list = []  # contains existing data entities that are output entities of previous tasks during KG construction
         self.last_created_task = None  # last created pipeline task, for connecting consecutive pipeline tasks during KG construction
+        self.canvas_task_created = False  # indicates if canvas task was created during KG construction, and used for hiding the other Visualization tasks in CLI
 
         self.parse_kgs()
 
@@ -444,19 +445,20 @@ class ExeKG:
             task_entity.output_dict[output_entity_iri.split("#")[1]] = data_entity
             self.existing_data_entity_list.append(data_entity)
 
-    def create_next_task_cli(self, prev_task: Task) -> Union[None, Task]:
+    def create_next_task_cli(self) -> Union[None, Task]:
         """
         Instantiates and adds task (without method) based on user input to self.output_kg
         Adds task's output data entities to self.existing_data_entity_list
-        Args:
-            prev_task: previously added task
-
         Returns:
             None: in case user wants to end the pipeline creation
             Task: object of the created task
         """
         print("Please choose the next task")
         for i, t in enumerate(self.atomic_task_list):
+            if not self.canvas_task_created and t.name == "PlotTask":
+                continue
+            if self.canvas_task_created and t.name == "CanvasTask":
+                continue
             print("\t{}. {}".format(str(i), t.name))
         print("\t{}. End pipeline".format(str(-1)))
         next_task_id = int(input())
@@ -466,7 +468,7 @@ class ExeKG:
         next_task_parent = self.atomic_task_list[next_task_id]
         relation_iri = (
             self.top_level_schema.namespace.hasNextTask
-            if prev_task.type != "Pipeline"
+            if self.last_created_task.type != "Pipeline"
             else self.top_level_schema.namespace.hasStartTask
         )  # use relation depending on the previous task
 
@@ -476,7 +478,7 @@ class ExeKG:
             self.output_kg,
             next_task_parent,
             relation_iri,
-            prev_task,
+            self.last_created_task,
             name_instance(self.task_type_dict, self.method_type_dict, next_task_parent),
         )
 
@@ -486,6 +488,10 @@ class ExeKG:
         self.add_inputs_to_task(task_entity)
         # instantiate and add output data entities to the task, as specified in the KG schema
         self.add_outputs_to_task(task_entity)
+
+        self.last_created_task = task_entity
+        if task_entity.type == "CanvasTask":
+            self.canvas_task_created = True
 
         return task_entity
 
@@ -568,15 +574,14 @@ class ExeKG:
             input_data_path,
         )
 
-        prev_task = pipeline
+        self.last_created_task = pipeline
+
         while True:
-            next_task = self.create_next_task_cli(prev_task)
+            next_task = self.create_next_task_cli()
             if next_task is None:
                 break
 
             self.create_method(next_task)
-
-            prev_task = next_task
 
     def save_created_kg(self, file_path: str) -> None:
         """
@@ -761,6 +766,8 @@ class ExeKG:
         print(
             "Choose a KG schema to use. Components of the Visualization schema can be used regardless of the chosen schema.")
         for i, kg_schema_name in enumerate(kg_schema_names):
+            if kg_schema_name == "Data Science":
+                continue
             print(f"{i}: {kg_schema_name}")
         selected_schema_i = int(input())
         selected_schema_name = kg_schema_names[selected_schema_i]
