@@ -7,7 +7,9 @@
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 [![License](https://img.shields.io/badge/license-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
-Python library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs). Detailed information about the library can be found in [its website](https://boschresearch.github.io/ExeKGLib/) and basic information is shown below.
+Python library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs).
+
+Detailed information (installation, documentation etc.) about the library can be found in [its website](https://boschresearch.github.io/ExeKGLib/) and basic information is shown below.
 
 ## Overview
 
@@ -54,7 +56,7 @@ Run `python kg_execution.py [kg_file_path]`.
 [//]: # (--8<-- [end:usage])
 
 ## Installation
-See the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
+See the [installation page](https://boschresearch.github.io/ExeKGLib/installation/) of the library's website.
 
 ## Adding a new ML-related task and method
 
@@ -65,9 +67,12 @@ To perform this type of library extension, there are 3 required steps:
 2. Addition of new semantic components (entities, properties, etc) to the selected KG schema.
 3. Addition of a Python class to the corresponding module of `exe_kg_lib.classes.tasks` package.
 
-For steps 2 and 3, refer to the [relevant page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/).
+For steps 2 and 3, refer to the [relevant page](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/) of the library's website.
 
 [//]: # (--8<-- [end:extending])
+
+## Documentation
+See the _Code Reference_ and _Development_ sections of the [library's website](https://boschresearch.github.io/ExeKGLib/).
 
 ## External resources
 
