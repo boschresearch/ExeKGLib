@@ -10,6 +10,8 @@
 Library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs).
 
 ## Overview
+
+[//]: # (--8<-- [start:overview])
 The functionality of this Python library can be divided in the below two parts:
 
 1. **Executable KG construction**: An executable KG representing an ML pipeline is constructed as per user's input (programmatically or via CLI) based on the KG schemas. The construction is done by sequentially creating pairs of instances of [ds:AtomicTask](https://nsai-uio.github.io/ExeKGOntology/OnToology/ds_exeKGOntology.ttl/documentation/index-en.html#AtomicTask) and [ds:AtomicMethod](https://nsai-uio.github.io/ExeKGOntology/OnToology/ds_exeKGOntology.ttl/documentation/index-en.html#AtomicMethod) sub-classes, and their properties. The definition of these sub-classes can be found in the [bottom-level KG schemas](#bottom-level-kg-schemas). After each KG component is built, it is validated using the KG schemas and added to an RDFLib `Graph` object. The KG is finally saved in Turtle format.
@@ -24,12 +26,20 @@ The different implementations of `run_method()` correspond to each of the _Metho
 This library is part of the following paper submitted to ESWC 2023:<br>
 _Klironomos A., Zhou B., Tan Z., Zheng Z., Gad-Elrab M., Paulheim H., Kharlamov E.: **ExeKGLib: A Python Library for Machine Learning Analytics based on Knowledge Graphs**_
 
+[//]: # (--8<-- [end:overview])
+
 ## Getting started
+
+[//]: # (--8<-- [start:gettingstarted])
 The library is available as a [PyPi package](https://pypi.org/project/exe-kg-lib/).
 
 To download, run `pip install exe-kg-lib`.
 
+[//]: # (--8<-- [end:gettingstarted])
+
 ## Usage
+
+[//]: # (--8<-- [start:usage])
 ### Creating an executable KG
 #### Via CLI
 1. Run `python kg_construction.py`.
@@ -41,12 +51,14 @@ See the [provided examples](exe_kg_lib/examples/).
 ### Executing a generated KG
 Run `python kg_execution.py [kg_file_path]`.
 
-
+[//]: # (--8<-- [end:usage])
 
 ## Installation
 See the [installation page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/installation/).
 
 ## Adding a new ML-related task and method
+
+[//]: # (--8<-- [start:extending])
 To perform this type of library extension, there are 3 required steps:
 
 1. Selection of a relevant bottom-level KG schema (Statistics, ML, or Visualization) according to the type of the new task and method.
@@ -55,7 +67,11 @@ To perform this type of library extension, there are 3 required steps:
 
 For steps 2 and 3, refer to the [relevant page of the library's documentation site](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/).
 
+[//]: # (--8<-- [end:extending])
+
 ## External resources
+
+[//]: # (--8<-- [start:externalresources])
 ### Top-level KG schemas
 - [Data Science KG schema](https://w3id.org/def/exekg-ds)
 
@@ -75,6 +91,8 @@ The above KG schemas are included in the [ExeKGOntology repository](https://gith
     1. The name of the file has been changed.
     2. In the column names, the spaces have been replaced with `_`.
     3. A new column has been added (`diagnosis_binary`) containing `1` for the rows that the `diagnosis` column has `M`, and `0` for the rest.
+
+[//]: # (--8<-- [end:externalresources])
 
 ## License
 

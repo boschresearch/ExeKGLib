@@ -11,13 +11,12 @@ site_dir: .site
 
 nav:
   - Overview:
-    - Overview: index.md
+    - Description: description.md
+    - Getting Started: getting-started.md
+    - Usage: usage.md
     - Installation: installation.md
-#    - Getting Started: getting-started.md
-#    - Changelog: exported/changelog.md
-#  - Examples:
-#    - Overview: examples/overview.md
-#    - examples/dask-distributed.md
+    - Extending: extending.md
+    - External resources: external-resources.md
   - Code Reference: reference/
   - Development:
     - Adding a new ML-related task and method: adding-new-task-and-method.md

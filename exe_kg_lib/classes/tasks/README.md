@@ -1,5 +1,6 @@
 ## Documentation of `exe_kg_lib.classes.tasks` package
 
+[//]: # (--8<-- [start:content])
 ### Overview
 
 This package contains classes that correspond to entities of type `owl:class` that are `rdfs:subClassOf AtomicTask` in
@@ -42,3 +43,5 @@ The below **naming conventions** must be taken into consideration before extendi
 
 The above conventions are necessary for automatically mapping KG tasks with methods and properties to Python objects
 while parsing the KG.
+
+[//]: # (--8<-- [end:content])
