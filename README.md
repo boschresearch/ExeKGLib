@@ -7,7 +7,7 @@
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 [![License](https://img.shields.io/badge/license-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
-Library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs).
+Python library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs). Detailed information about the library can be found in [its website](https://boschresearch.github.io/ExeKGLib/) and basic information is shown below.
 
 ## Overview
 
