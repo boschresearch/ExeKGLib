@@ -70,9 +70,10 @@ from within the project directory.
 
 ## Step 2: Pre-commit Git Hooks Installation
 
-To ensure compatibility of each future commit with the project's conventions (e.g. code format), some predefined git hooks should be installed by running the following command.
+To ensure compatibility of each future commit with the project's conventions (e.g. code format), some predefined git hooks should be installed by running the following commands.
 
 ```sh
+poetry shell  # use the created poetry environment
 pre-commit install
 ```
 
