@@ -1,14 +1,10 @@
-from typing import Union, Dict
-
-from rdflib import RDF, URIRef, Literal, Graph, Namespace, XSD
+from typing import Dict, Union
 
 from classes.data_entity import DataEntity
 from classes.entity import Entity
 from classes.task import Task
-from utils.query_utils import (
-    get_first_query_result_if_exists,
-    get_data_properties_by_entity_iri,
-)
+from rdflib import RDF, XSD, Graph, Literal, Namespace, URIRef
+from utils.query_utils import get_data_properties_by_entity_iri, get_first_query_result_if_exists
 
 
 def add_instance(kg: Graph, entity_instance: Entity) -> None:
@@ -22,9 +18,7 @@ def add_instance(kg: Graph, entity_instance: Entity) -> None:
         kg.add((entity_instance.iri, RDF.type, entity_instance.parent_entity.iri))
 
 
-def add_relation(
-        kg: Graph, from_entity: Entity, relation_iri: str, to_entity: Entity
-) -> None:
+def add_relation(kg: Graph, from_entity: Entity, relation_iri: str, to_entity: Entity) -> None:
     """
     Adds relation between 2 given entities to KG
     Args:
@@ -42,9 +36,7 @@ def add_relation(
     )
 
 
-def add_literal(
-        kg: Graph, from_entity: Entity, relation_iri: str, literal: Literal
-) -> None:
+def add_literal(kg: Graph, from_entity: Entity, relation_iri: str, literal: Literal) -> None:
     """
     Adds relation between a given entity and a given literal to KG
     Args:
@@ -57,12 +49,12 @@ def add_literal(
 
 
 def add_instance_from_parent_with_relation(
-        namespace: Namespace,
-        kg: Graph,
-        parent_entity: Entity,
-        relation_iri: str,
-        related_entity: Entity,
-        instance_name: str,
+    namespace: Namespace,
+    kg: Graph,
+    parent_entity: Entity,
+    relation_iri: str,
+    related_entity: Entity,
+    instance_name: str,
 ) -> Entity:
     """
     Creates an entity object based on the arguments and calls add_instance() and add_relation() to create a new entity instance and relation
@@ -87,9 +79,9 @@ def add_instance_from_parent_with_relation(
 
 
 def name_instance(
-        task_type_dict: Dict[str, int],
-        method_type_dict: Dict[str, int],
-        parent_entity: Entity,
+    task_type_dict: Dict[str, int],
+    method_type_dict: Dict[str, int],
+    parent_entity: Entity,
 ) -> Union[None, str]:
     """
     Creates a unique name for a new instance by concatenating the parent entity's name (which is the instance type) with a number
@@ -117,11 +109,11 @@ def name_instance(
 
 
 def add_data_entity_instance(
-        kg: Graph,
-        data: Entity,
-        top_level_kg: Graph,
-        top_level_schema_namespace: Namespace,
-        data_entity: DataEntity,
+    kg: Graph,
+    data: Entity,
+    top_level_kg: Graph,
+    top_level_schema_namespace: Namespace,
+    data_entity: DataEntity,
 ) -> None:
     """
     Adds data entity instance to kg with the necessary relations
@@ -172,13 +164,13 @@ def add_data_entity_instance(
 
 
 def add_and_attach_data_entity(
-        kg: Graph,
-        data: Entity,
-        top_level_kg: Graph,
-        top_level_schema_namespace: Namespace,
-        data_entity: DataEntity,
-        relation: URIRef,
-        task_entity: Task,
+    kg: Graph,
+    data: Entity,
+    top_level_kg: Graph,
+    top_level_schema_namespace: Namespace,
+    data_entity: DataEntity,
+    relation: URIRef,
+    task_entity: Task,
 ) -> None:
     """
     Adds data entity instance to kg with the necessary relations, and attaches it to the given task
@@ -196,12 +188,12 @@ def add_and_attach_data_entity(
 
 
 def create_pipeline_task(
-        top_level_schema_namespace: Namespace,
-        bottom_level_schema_namespace: Namespace,
-        parent_entity: Entity,
-        kg: Graph,
-        pipeline_name: str,
-        input_data_path: str,
+    top_level_schema_namespace: Namespace,
+    bottom_level_schema_namespace: Namespace,
+    parent_entity: Entity,
+    kg: Graph,
+    pipeline_name: str,
+    input_data_path: str,
 ) -> Task:
     """
     Adds instance of pipeline task to kg

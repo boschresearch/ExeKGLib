@@ -30,4 +30,3 @@ visu:radius_mean a ds:DataEntity ;
     ds:hasDataSemantics ds:TimeSeries ;
     ds:hasDataStructure ds:Vector ;
     ds:hasSource "radius_mean"^^xsd:string .
-

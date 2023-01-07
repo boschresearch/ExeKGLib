@@ -40,21 +40,21 @@ To add the required semantic components, the following steps should be followed:
     ml:DataIn1NewTask
         rdf:type        owl:Class ;
         rdfs:subClassOf ds:DataEntity .
-   
+
     ...
-   
+
     ml:DataOut1NewTask
         rdf:type        owl:Class ;
-        rdfs:subClassOf ds:DataEntity . 
+        rdfs:subClassOf ds:DataEntity .
 
-    ...  
- 
+    ...
+
     ml:hasNewTaskInput
         rdf:type           owl:ObjectProperty ;
         rdfs:subPropertyOf ds:hasInput ;
         rdfs:domain        ml:NewTask ;
         rdfs:range         ml:DataIn1NewTask, ... .
-   
+
     ml:hasNewTaskOutput
         rdf:type           owl:ObjectProperty ;
         rdfs:subPropertyOf ds:hasOutput ;

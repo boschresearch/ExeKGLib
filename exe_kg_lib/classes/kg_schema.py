@@ -1,6 +1,6 @@
 from typing import Dict
 
-from rdflib import Namespace, Graph
+from rdflib import Graph, Namespace
 
 
 class KGSchema:

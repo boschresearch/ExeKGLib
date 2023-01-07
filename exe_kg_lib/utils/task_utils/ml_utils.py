@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -12,7 +12,7 @@ def concatenation(inputs: List[np.ndarray]) -> pd.DataFrame:
 
 
 def data_splitting(
-        input_x: pd.DataFrame, input_y: np.ndarray, split_ratio: str
+    input_x: pd.DataFrame, input_y: np.ndarray, split_ratio: str
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """split data into training and testing set"""
 
@@ -27,7 +27,7 @@ def data_splitting(
 
 
 def k_nn_train(
-        input_x: np.ndarray, input_y: np.ndarray, n_neighbors: int = 3
+    input_x: np.ndarray, input_y: np.ndarray, n_neighbors: int = 3
 ) -> Tuple[KNeighborsRegressor, np.ndarray]:
     print("n_neighbors = ", n_neighbors)
     model = KNeighborsRegressor(n_neighbors=n_neighbors)
@@ -48,9 +48,7 @@ def k_nn_test(model: KNeighborsRegressor, input_x: np.ndarray) -> np.ndarray:
     return predicted_y
 
 
-def lr_training(
-        input_x: np.ndarray, input_y: np.ndarray
-) -> Tuple[LinearRegression, np.ndarray]:
+def lr_training(input_x: np.ndarray, input_y: np.ndarray) -> Tuple[LinearRegression, np.ndarray]:
     model = LinearRegression()
     model.fit(input_x, input_y)
     predicted_y = model.predict(input_x)
@@ -65,9 +63,7 @@ def lr_testing(model: LinearRegression, input_x: np.ndarray):
     return predict_y
 
 
-def mlp_train(
-        input_x: np.ndarray, input_y: np.ndarray, solver="adam"
-) -> Tuple[MLPRegressor, np.ndarray]:
+def mlp_train(input_x: np.ndarray, input_y: np.ndarray, solver="adam") -> Tuple[MLPRegressor, np.ndarray]:
     model = MLPRegressor(solver=solver)
     model.fit(input_x, input_y)
 
@@ -87,10 +83,10 @@ def mlp_test(model: MLPRegressor, input_x: np.ndarray) -> np.ndarray:
 
 
 def ml_performance_calculation(
-        real_train: np.ndarray = 0,
-        real_test: np.ndarray = 0,
-        predicted_train: np.ndarray = 0,
-        predicted_test: np.ndarray = 0,
+    real_train: np.ndarray = 0,
+    real_test: np.ndarray = 0,
+    predicted_train: np.ndarray = 0,
+    predicted_test: np.ndarray = 0,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     train_err = pd.DataFrame(real_train - predicted_train)
     test_err = pd.DataFrame(real_test - predicted_test)

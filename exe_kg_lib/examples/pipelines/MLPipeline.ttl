@@ -437,4 +437,3 @@ ml:DataOutSplittedTrainDataX1 a ds:DataEntity .
 ml:DataOutTrainModel1 a ds:DataEntity .
 
 ml:DataOutSplittedTrainDataY1 a ds:DataEntity .
-

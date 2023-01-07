@@ -61,4 +61,3 @@ stats:area_mean a ds:DataEntity ;
     ds:hasDataSemantics ds:TimeSeries ;
     ds:hasDataStructure ds:Vector ;
     ds:hasSource "area_mean"^^xsd:string .
-

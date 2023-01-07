@@ -9,18 +9,12 @@ def trend_calculation(
 ) -> np.ndarray:
     """calculate the trend of the data, which is the sliding-window average"""
 
-    def padding_input(
-        input: np.ndarray, half_window_size: int, padding: str = "same"
-    ) -> np.ndarray:
+    def padding_input(input: np.ndarray, half_window_size: int, padding: str = "same") -> np.ndarray:
         """padding the beginning and end of the input data by the beginning or end value"""
         if padding == "same":
             begin_padding = pd.Series([input.iloc[0]] * half_window_size)
             end_padding = pd.Series([input.iloc[len(input) - 1]] * half_window_size)
-            output = (
-                pd.concat([begin_padding, input, end_padding])
-                .reset_index()
-                .drop("index", axis=1)
-            )
+            output = pd.concat([begin_padding, input, end_padding]).reset_index().drop("index", axis=1)
             return output
 
         else:
@@ -59,9 +53,7 @@ def iqr_calculation(input_data: np.ndarray, percent: int = 50) -> np.ndarray:
     return np.percentile(input_data, percent)
 
 
-def outlier_calculation(
-    input: np.ndarray, iq1: float = None, iq3: float = None
-) -> np.ndarray:
+def outlier_calculation(input: np.ndarray, iq1: float = None, iq3: float = None) -> np.ndarray:
     """return the outliers in the data"""
     iq1 = iqr_calculation(input, 25) if (not iq1) else iq1
     iq3 = iqr_calculation(input, 75) if (not iq3) else iq3
@@ -69,9 +61,7 @@ def outlier_calculation(
     iqr = iq3 - iq1
     high_outliers = input < median - 1.5 * iqr
     low_outliers = input > median + 1.5 * iqr
-    outlier_rows = [
-        low_outliers.iloc[i] or high_outliers.iloc[i] for i in range(len(input))
-    ]
+    outlier_rows = [low_outliers.iloc[i] or high_outliers.iloc[i] for i in range(len(input))]
     return outlier_rows
 
 

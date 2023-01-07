@@ -42,19 +42,13 @@ if __name__ == "__main__":
     feature_data_entities = []
     for feature_column in feature_columns:
         feature_data_entities.append(
-            exe_kg.create_data_entity(
-                "feature_" + feature_column, feature_column, "TimeSeries", "Vector"
-            )
+            exe_kg.create_data_entity("feature_" + feature_column, feature_column, "TimeSeries", "Vector")
         )
 
-    label_data_entity = exe_kg.create_data_entity(
-        "label_" + label_column, label_column, "TimeSeries", "Vector"
-    )
+    label_data_entity = exe_kg.create_data_entity("label_" + label_column, label_column, "TimeSeries", "Vector")
 
     pipeline_name = "MLPipeline"
-    pipeline = exe_kg.create_pipeline_task(
-        pipeline_name, input_data_path="examples/data/breast_cancer_data.csv"
-    )
+    pipeline = exe_kg.create_pipeline_task(pipeline_name, input_data_path="examples/data/breast_cancer_data.csv")
 
     concatenate_task = exe_kg.add_task(
         task_type="Concatenation",
@@ -66,9 +60,7 @@ if __name__ == "__main__":
     data_splitting_task = exe_kg.add_task(
         task_type="DataSplitting",
         input_data_entity_dict={
-            "DataInDataSplittingX": [
-                concatenate_task.output_dict["DataOutConcatenatedData"]
-            ],
+            "DataInDataSplittingX": [concatenate_task.output_dict["DataOutConcatenatedData"]],
             "DataInDataSplittingY": [label_data_entity],
         },
         method_type="DataSplittingMethod",

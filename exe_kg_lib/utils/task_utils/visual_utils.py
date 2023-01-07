@@ -20,11 +20,7 @@ def canvas_creation(layout: str) -> Tuple[Figure, Optional[plt.GridSpec]]:
 
     fig = plt.figure(figsize=(7, 5))
 
-    grid = (
-        None
-        if (n_rows == n_cols and n_rows == 1)
-        else plt.GridSpec(n_rows, n_cols, hspace=0.3, wspace=0.3)
-    )
+    grid = None if (n_rows == n_cols and n_rows == 1) else plt.GridSpec(n_rows, n_cols, hspace=0.3, wspace=0.3)
 
     return fig, grid
 
@@ -39,14 +35,23 @@ def line_plot(**kwargs):
     plot_creation("line", **kwargs)
 
 
-def plot_creation(plot_type: str, data: pd.Series, fig: Figure, grid: plt.GridSpec, layout: str, line_width: str,
-                  line_style: str,
-                  legend_name: str, x_lim: str, y_lim: str, x_label: str, y_label: str):
+def plot_creation(
+    plot_type: str,
+    data: pd.Series,
+    fig: Figure,
+    grid: plt.GridSpec,
+    layout: str,
+    line_width: str,
+    line_style: str,
+    legend_name: str,
+    x_lim: str,
+    y_lim: str,
+    x_label: str,
+    y_label: str,
+):
     plot = plt
     if grid is not None:
-        row_start, row_end, col_start, col_end = (
-            int(i) for i in layout.split()
-        )
+        row_start, row_end, col_start, col_end = (int(i) for i in layout.split())
         plot = fig.add_subplot(grid[row_start:row_end, col_start:col_end])
 
     if plot_type == "line":

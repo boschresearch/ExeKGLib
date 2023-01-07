@@ -11,9 +11,7 @@ class TrendCalculationTaskTrendCalculationMethod(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-            self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_data = list(input_dict.values())[0]  # one input expected
         trend_calculation_result = trend_calculation(input_data)

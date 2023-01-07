@@ -12,13 +12,13 @@ class DataEntity(Entity):
     """
 
     def __init__(
-            self,
-            iri: str,
-            parent_entity: Entity,
-            has_source_value: str = None,
-            has_data_semantics_iri: str = None,
-            has_data_structure_iri: str = None,
-            has_reference: str = None,
+        self,
+        iri: str,
+        parent_entity: Entity,
+        has_source_value: str = None,
+        has_data_semantics_iri: str = None,
+        has_data_structure_iri: str = None,
+        has_reference: str = None,
     ):
         super().__init__(iri, parent_entity)
         self.has_source = has_source_value  # used as column name to retrieve data from the pipeline's input file

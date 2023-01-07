@@ -1,8 +1,7 @@
-from typing import Optional, Callable, Tuple, List
-
-from rdflib import URIRef, Graph, query, Namespace
+from typing import Callable, List, Optional, Tuple
 
 from classes.entity import Entity
+from rdflib import Graph, Namespace, URIRef, query
 
 
 def query_method_parent_classes(kg, method_iri):
@@ -14,8 +13,7 @@ def query_method_parent_classes(kg, method_iri):
 
 def query_entity_parent_iri(kg, entity_iri: str, upper_class_uri_ref: URIRef):
     return kg.query(
-        f"SELECT ?t WHERE {{ ?entity rdf:type ?t ."
-        f"                   ?t rdfs:subClassOf* ?upper_class .}}",
+        f"SELECT ?t WHERE {{ ?entity rdf:type ?t ." f"                   ?t rdfs:subClassOf* ?upper_class .}}",
         initBindings={
             "entity": URIRef(entity_iri),
             "upper_class": upper_class_uri_ref,
@@ -61,9 +59,7 @@ def get_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> query.Resul
     )
 
 
-def get_method_properties_and_methods(
-        input_kg, namespace_prefix, entity_parent_iri: str
-) -> query.Result:
+def get_method_properties_and_methods(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m . "
@@ -72,26 +68,22 @@ def get_method_properties_and_methods(
     )
 
 
-def get_input_properties_and_inputs(
-        input_kg, namespace_prefix, entity_parent_iri: str
-) -> query.Result:
+def get_input_properties_and_inputs(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
-                                                      "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
+        "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
         initBindings={"entity_iri": URIRef(entity_parent_iri)},
     )
 
 
-def get_output_properties_and_outputs(
-        input_kg, namespace_prefix, entity_parent_iri: str
-) -> query.Result:
+def get_output_properties_and_outputs(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasOutput ."
-                                                      "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
+        "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . }",
         initBindings={"entity_iri": URIRef(entity_parent_iri)},
     )
 
@@ -124,16 +116,12 @@ def get_data_properties_plus_inherited_by_class_iri(kg: Graph, entity_iri: str) 
     property_list = list(get_data_properties_by_entity_iri(entity_iri, kg))
     method_parent_classes = list(query_method_parent_classes(kg, entity_iri))
     for method_class_result_row in method_parent_classes:
-        property_list += list(
-            get_data_properties_by_entity_iri(method_class_result_row[0], kg)
-        )
+        property_list += list(get_data_properties_by_entity_iri(method_class_result_row[0], kg))
 
     return property_list
 
 
-def get_pipeline_and_first_task_iri(
-        kg: Graph, namespace_prefix: str
-) -> Tuple[str, str, str]:
+def get_pipeline_and_first_task_iri(kg: Graph, namespace_prefix: str) -> Tuple[str, str, str]:
     """
     Retrieves the necessary information needed to start parsing a pipeline
     Args:
@@ -159,10 +147,10 @@ def get_pipeline_and_first_task_iri(
 
 
 def get_method_by_task_iri(
-        kg: Graph,
-        namespace_prefix: str,
-        namespace: Namespace,
-        task_iri: str,
+    kg: Graph,
+    namespace_prefix: str,
+    namespace: Namespace,
+    task_iri: str,
 ) -> Optional[Entity]:
     """
     Retrieves a task's method, given a task IRI

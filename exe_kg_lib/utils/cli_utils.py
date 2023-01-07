@@ -1,13 +1,12 @@
 from typing import List, Tuple
 
-from rdflib import Namespace
-
 from classes.data_entity import DataEntity
 from classes.entity import Entity
+from rdflib import Namespace
 
 
 def get_input_for_existing_data_entities(
-        existing_data_entity_list: List[DataEntity],
+    existing_data_entity_list: List[DataEntity],
 ) -> List[DataEntity]:
     """
     Asks user to choose data entities from an existing list
@@ -24,8 +23,8 @@ def get_input_for_existing_data_entities(
     print("Choose input for the task from existing data entities:")
     while True:
         for i, data_entity in enumerate(existing_data_entity_list):
-            print("\t{}. {}".format(str(i), data_entity.name))
-        print("\t{}. Continue".format(str(-1)))
+            print(f"\t{str(i)}. {data_entity.name}")
+        print(f"\t{str(-1)}. Continue")
         chosen_data_entity_i = int(input())
         if chosen_data_entity_i == -1:
             break
@@ -36,7 +35,7 @@ def get_input_for_existing_data_entities(
 
 
 def get_input_for_new_data_entities(
-        data_semantics_list: List[Entity], data_structure_list: List[Entity], namespace: Namespace, data_entity: Entity
+    data_semantics_list: List[Entity], data_structure_list: List[Entity], namespace: Namespace, data_entity: Entity
 ) -> List[DataEntity]:
     """
     Asks user to specify info of new data entities and creates relevant objects
@@ -54,21 +53,17 @@ def get_input_for_new_data_entities(
     prompt = "Enter input columns, then 'quit' when done: "
     source = input(prompt)
     while source != "quit":
-        new_data_entity = DataEntity(
-            namespace + source,
-            data_entity,
-            source
-        )
+        new_data_entity = DataEntity(namespace + source, data_entity, source)
 
         print(f"Choose data semantics for {source}:")
         for i, t in enumerate(data_semantics_list):
-            print("\t{}. {}".format(str(i), t.name))
+            print(f"\t{str(i)}. {t.name}")
         chosen_data_semantics_id = int(input())
         new_data_entity.has_data_semantics = data_semantics_list[chosen_data_semantics_id].iri
 
         print(f"Choose data structure for {source}:")
         for i, t in enumerate(data_structure_list):
-            print("\t{}. {}".format(str(i), t.name))
+            print(f"\t{str(i)}. {t.name}")
         chosen_data_structure_id = int(input())
         new_data_entity.has_data_structure = data_structure_list[chosen_data_structure_id].iri
 

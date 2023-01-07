@@ -18,21 +18,17 @@ class Task(Entity):
     """
 
     def __init__(
-            self,
-            iri: str,
-            parent_entity: Entity = None,
+        self,
+        iri: str,
+        parent_entity: Entity = None,
     ):
         super().__init__(iri, parent_entity)
         self.has_next_task = None
         self.has_method = None
         self.has_input = []
         self.has_output = []
-        self.input_dict = (
-            {}
-        )  # used for storing input DataEntity objects during KG creation
-        self.output_dict = (
-            {}
-        )  # used for storing output DataEntity objects during KG creation
+        self.input_dict = {}  # used for storing input DataEntity objects during KG creation
+        self.output_dict = {}  # used for storing output DataEntity objects during KG creation
 
     @classmethod
     def from_entity(cls, entity: Entity):
@@ -62,9 +58,7 @@ class Task(Entity):
 
         return out_dict
 
-    def get_inputs(
-            self, dict_to_search: dict, fallback_df: pd.DataFrame
-    ) -> Dict[str, np.ndarray]:
+    def get_inputs(self, dict_to_search: dict, fallback_df: pd.DataFrame) -> Dict[str, np.ndarray]:
         """
         Tries to match the Task's input names with the keys of dict_to_search
         and fills input_dict list with their corresponding values.

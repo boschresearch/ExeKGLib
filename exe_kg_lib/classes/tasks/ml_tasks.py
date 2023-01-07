@@ -1,6 +1,6 @@
-from utils.task_utils.ml_utils import *
 from classes.entity import Entity
 from classes.task import Task
+from utils.task_utils.ml_utils import *
 
 """
 ❗ Important for contributors: See the package's README.md before extending the code's functionality.
@@ -11,14 +11,10 @@ class ConcatenationConcatenationMethod(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         concatenation_result = concatenation(list(input_dict.values()))
-        return self.create_output_dict(
-            {"DataOutConcatenatedData": concatenation_result}
-        )
+        return self.create_output_dict({"DataOutConcatenatedData": concatenation_result})
 
 
 class DataSplittingDataSplittingMethod(Task):
@@ -26,15 +22,11 @@ class DataSplittingDataSplittingMethod(Task):
         super().__init__(iri, parent_entity)
         self.has_split_ratio = None
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_x = input_dict["DataInDataSplittingX"]
         input_y = input_dict["DataInDataSplittingY"]
-        train_x, test_x, train_y, test_y = data_splitting(
-            input_x, input_y, self.has_split_ratio
-        )
+        train_x, test_x, train_y, test_y = data_splitting(input_x, input_y, self.has_split_ratio)
 
         return self.create_output_dict(
             {
@@ -50,26 +42,20 @@ class TrainKNNTrain(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_x = input_dict["DataInTrainX"]
         input_y = input_dict["DataInTrainY"]
         model, predicted_y = k_nn_train(input_x, input_y)
 
-        return self.create_output_dict(
-            {"DataOutTrainModel": model, "DataOutPredictedValueTrain": predicted_y}
-        )
+        return self.create_output_dict({"DataOutTrainModel": model, "DataOutPredictedValueTrain": predicted_y})
 
 
 class TestKNNTest(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         model = input_dict["DataInTestModel"]
         input_x = input_dict["DataInTestX"]
@@ -82,27 +68,21 @@ class TrainLRTrain(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_x = input_dict["DataInTrainX"]
         input_y = input_dict["DataInTrainY"]
 
         model, predicted_y = lr_training(input_x, input_y)
 
-        return self.create_output_dict(
-            {"DataOutModel": model, "DataOutPredictedValueTrain": predicted_y}
-        )
+        return self.create_output_dict({"DataOutModel": model, "DataOutPredictedValueTrain": predicted_y})
 
 
 class TestLRTest(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         model = input_dict["DataInModel"]
         input_x = input_dict["DataInTestX"]
@@ -115,27 +95,21 @@ class TrainMLPTrain(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_x = input_dict["DataInTrainX"]
         input_y = input_dict["DataInTrainY"]
 
         model, predicted_y = mlp_train(input_x, input_y)
 
-        return self.create_output_dict(
-            {"DataOutModel": model, "DataOutPredictedValueTrain": predicted_y}
-        )
+        return self.create_output_dict({"DataOutModel": model, "DataOutPredictedValueTrain": predicted_y})
 
 
 class TestMLPTest(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         model = input_dict["DataInModel"]
         input_x = input_dict["DataInTestX"]
@@ -148,9 +122,7 @@ class PerformanceCalculationPerformanceCalculationMethod(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
 
-    def run_method(
-        self, other_task_output_dict: dict, input_data: pd.DataFrame
-    ) -> dict:
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         real_train_y = input_dict["DataInTrainRealY"]
         real_test_y = input_dict["DataInTestRealY"]
@@ -161,6 +133,4 @@ class PerformanceCalculationPerformanceCalculationMethod(Task):
             real_train_y, real_test_y, predicted_train_y, predicted_test_y
         )
 
-        return self.create_output_dict(
-            {"DataOutMLTrainErr": train_error, "DataOutMLTestErr": test_error}
-        )
+        return self.create_output_dict({"DataOutMLTrainErr": train_error, "DataOutMLTestErr": test_error})

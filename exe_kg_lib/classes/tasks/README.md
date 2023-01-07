@@ -10,8 +10,8 @@ They implement the abstract `run_method()` like so:
 
 1. The input is taken either from outputs of previously executed Tasks (parameter: `other_task_output_dict`) or a
    dataframe (parameter: `input_data`).
-2. An algorithm is executed using the input. 
-   
+2. An algorithm is executed using the input.
+
    There are two conventions:
     - The algorithm is related to ML, Statistics or Visualization, depending on
       the Python file's prefix.

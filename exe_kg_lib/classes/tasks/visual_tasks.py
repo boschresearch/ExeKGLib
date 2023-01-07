@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
-from utils.task_utils.visual_utils import *
 from classes.entity import Entity
 from classes.task import Task
+from utils.task_utils.visual_utils import *
 
 """
 ❗ Important for contributors: See the package's README.md before extending the code's functionality.
@@ -24,9 +24,7 @@ class CanvasTaskCanvasMethod(Task):
 
 
 class PlotTask(Task):
-    def __init__(
-        self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
-    ):
+    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod):
         super().__init__(iri, parent_entity)
         self.fig = canvas_method.fig
         self.grid = canvas_method.grid
@@ -46,9 +44,7 @@ class PlotTask(Task):
 
 
 class PlotTaskScatterplotMethod(PlotTask):
-    def __init__(
-        self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
-    ):
+    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod):
         super().__init__(iri, parent_entity, canvas_method)
         self.has_scatter_size = None
         self.has_scatter_style = None
@@ -74,9 +70,7 @@ class PlotTaskScatterplotMethod(PlotTask):
 
 
 class PlotTaskLineplotMethod(PlotTask):
-    def __init__(
-        self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod
-    ):
+    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod):
         super().__init__(iri, parent_entity, canvas_method)
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
