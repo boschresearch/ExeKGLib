@@ -22,11 +22,9 @@ They implement the abstract `run_method()` like so:
 
 - Each class name is a concatenation of 2 strings:
     1. The name of an `owl:class` that is `rdfs:subClassOf AtomicTask`.
-    2. The name of the an `owl:class` that is `rdfs:subClassOf AtomicMethod` and is associated with the
-       above `owl:class` via a property that is `rdfs:subPropertyOf hasMethod`.
+    2. The name of an `owl:class` that is `rdfs:subClassOf AtomicMethod` and is associated with the above `owl:class` via a property that is `rdfs:subPropertyOf hasMethod`.
 
-  For example, the below KG property associates `CanvasMethod` with `CanvasTask`. So, the corresponding class name will
-  be `CanvasTaskCanvasMethod`.
+    For example, the below KG property associates `CanvasMethod` with `CanvasTask`. So, the corresponding class name will be `CanvasTaskCanvasMethod`.
     ```turtle
     visu:hasCanvasMethod
         a                  owl:ObjectProperty ;
