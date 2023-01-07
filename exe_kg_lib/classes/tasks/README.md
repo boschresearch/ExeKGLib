@@ -18,9 +18,8 @@ They implement the abstract `run_method()` like so:
     - The algorithm's implementation is placed in `utils.task_utils` package in the Python file with the corresponding prefix.
 3. The output is returned as a dictionary with pairs of output name and value.
 
-### Important for contributors
+### Naming conventions
 
-The below **naming conventions** must be taken into consideration before extending the code's functionality.
 - Each class name is a concatenation of 2 strings:
     1. The name of an `owl:class` that is `rdfs:subClassOf AtomicTask`.
     2. The name of the an `owl:class` that is `rdfs:subClassOf AtomicMethod` and is associated with the
@@ -41,7 +40,6 @@ The below **naming conventions** must be taken into consideration before extendi
 
   e.g. `has_split_ratio` field corresponds to `hasSplitRatio` property in the KG.
 
-The above conventions are necessary for automatically mapping KG tasks with methods and properties to Python objects
-while parsing the KG.
+The above conventions are necessary for automatically mapping KG tasks with methods and properties to Python objects while parsing the KG.
 
 [//]: # (--8<-- [end:content])
