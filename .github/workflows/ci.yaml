@@ -62,6 +62,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Commit updated 3rd Party License
+          commit_options: '--no-verify'
           file_pattern: 'third-party-licenses.md'
 
 #      - name: Run tests
