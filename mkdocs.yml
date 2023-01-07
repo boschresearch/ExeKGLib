@@ -11,7 +11,7 @@ site_dir: .site
 
 nav:
   - Overview:
-    - Description: description.md
+    - Description: index.md
     - Getting Started: getting-started.md
     - Usage: usage.md
     - Installation: installation.md
