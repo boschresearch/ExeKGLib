@@ -32,13 +32,13 @@
 <span class=sd>    &quot;&quot;&quot;</span>
 
     <span class=k>def</span> <span class=fm>__init__</span><span class=p>(</span>
-            <span class=bp>self</span><span class=p>,</span>
-            <span class=n>iri</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span>
-            <span class=n>parent_entity</span><span class=p>:</span> <span class=n>Entity</span><span class=p>,</span>
-            <span class=n>has_source_value</span><span class=p>:</span> <span class=nb>str</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
-            <span class=n>has_data_semantics_iri</span><span class=p>:</span> <span class=nb>str</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
-            <span class=n>has_data_structure_iri</span><span class=p>:</span> <span class=nb>str</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
-            <span class=n>has_reference</span><span class=p>:</span> <span class=nb>str</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
+        <span class=bp>self</span><span class=p>,</span>
+        <span class=n>iri</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span>
+        <span class=n>parent_entity</span><span class=p>:</span> <span class=n>Entity</span><span class=p>,</span>
+        <span class=n>has_source_value</span><span class=p>:</span> <span class=nb>str</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
+        <span class=n>has_data_semantics_iri</span><span class=p>:</span> <span class=nb>str</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
+        <span class=n>has_data_structure_iri</span><span class=p>:</span> <span class=nb>str</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
+        <span class=n>has_reference</span><span class=p>:</span> <span class=nb>str</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
     <span class=p>):</span>
         <span class=nb>super</span><span class=p>()</span><span class=o>.</span><span class=fm>__init__</span><span class=p>(</span><span class=n>iri</span><span class=p>,</span> <span class=n>parent_entity</span><span class=p>)</span>
         <span class=bp>self</span><span class=o>.</span><span class=n>has_source</span> <span class=o>=</span> <span class=n>has_source_value</span>  <span class=c1># used as column name to retrieve data from the pipeline&#39;s input file</span>

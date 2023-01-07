@@ -78,13 +78,7 @@
 <span class=normal>87</span>
 <span class=normal>88</span>
 <span class=normal>89</span>
-<span class=normal>90</span>
-<span class=normal>91</span>
-<span class=normal>92</span>
-<span class=normal>93</span>
-<span class=normal>94</span>
-<span class=normal>95</span>
-<span class=normal>96</span></pre></div></td><td class=code><div><pre><span></span><code><span class=k>class</span> <span class=nc>Task</span><span class=p>(</span><span class=n>Entity</span><span class=p>):</span>
+<span class=normal>90</span></pre></div></td><td class=code><div><pre><span></span><code><span class=k>class</span> <span class=nc>Task</span><span class=p>(</span><span class=n>Entity</span><span class=p>):</span>
 <span class=w>    </span><span class=sd>&quot;&quot;&quot;</span>
 <span class=sd>    Abstraction of owl:class Task.</span>
 
@@ -95,21 +89,17 @@
 <span class=sd>    &quot;&quot;&quot;</span>
 
     <span class=k>def</span> <span class=fm>__init__</span><span class=p>(</span>
-            <span class=bp>self</span><span class=p>,</span>
-            <span class=n>iri</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span>
-            <span class=n>parent_entity</span><span class=p>:</span> <span class=n>Entity</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
+        <span class=bp>self</span><span class=p>,</span>
+        <span class=n>iri</span><span class=p>:</span> <span class=nb>str</span><span class=p>,</span>
+        <span class=n>parent_entity</span><span class=p>:</span> <span class=n>Entity</span> <span class=o>=</span> <span class=kc>None</span><span class=p>,</span>
     <span class=p>):</span>
         <span class=nb>super</span><span class=p>()</span><span class=o>.</span><span class=fm>__init__</span><span class=p>(</span><span class=n>iri</span><span class=p>,</span> <span class=n>parent_entity</span><span class=p>)</span>
         <span class=bp>self</span><span class=o>.</span><span class=n>has_next_task</span> <span class=o>=</span> <span class=kc>None</span>
         <span class=bp>self</span><span class=o>.</span><span class=n>has_method</span> <span class=o>=</span> <span class=kc>None</span>
         <span class=bp>self</span><span class=o>.</span><span class=n>has_input</span> <span class=o>=</span> <span class=p>[]</span>
         <span class=bp>self</span><span class=o>.</span><span class=n>has_output</span> <span class=o>=</span> <span class=p>[]</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>input_dict</span> <span class=o>=</span> <span class=p>(</span>
-            <span class=p>{}</span>
-        <span class=p>)</span>  <span class=c1># used for storing input DataEntity objects during KG creation</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>output_dict</span> <span class=o>=</span> <span class=p>(</span>
-            <span class=p>{}</span>
-        <span class=p>)</span>  <span class=c1># used for storing output DataEntity objects during KG creation</span>
+        <span class=bp>self</span><span class=o>.</span><span class=n>input_dict</span> <span class=o>=</span> <span class=p>{}</span>  <span class=c1># used for storing input DataEntity objects during KG creation</span>
+        <span class=bp>self</span><span class=o>.</span><span class=n>output_dict</span> <span class=o>=</span> <span class=p>{}</span>  <span class=c1># used for storing output DataEntity objects during KG creation</span>
 
     <span class=nd>@classmethod</span>
     <span class=k>def</span> <span class=nf>from_entity</span><span class=p>(</span><span class=bp>cls</span><span class=p>,</span> <span class=n>entity</span><span class=p>:</span> <span class=n>Entity</span><span class=p>):</span>
@@ -139,9 +129,7 @@
 
         <span class=k>return</span> <span class=n>out_dict</span>
 
-    <span class=k>def</span> <span class=nf>get_inputs</span><span class=p>(</span>
-            <span class=bp>self</span><span class=p>,</span> <span class=n>dict_to_search</span><span class=p>:</span> <span class=nb>dict</span><span class=p>,</span> <span class=n>fallback_df</span><span class=p>:</span> <span class=n>pd</span><span class=o>.</span><span class=n>DataFrame</span>
-    <span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>np</span><span class=o>.</span><span class=n>ndarray</span><span class=p>]:</span>
+    <span class=k>def</span> <span class=nf>get_inputs</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>dict_to_search</span><span class=p>:</span> <span class=nb>dict</span><span class=p>,</span> <span class=n>fallback_df</span><span class=p>:</span> <span class=n>pd</span><span class=o>.</span><span class=n>DataFrame</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>np</span><span class=o>.</span><span class=n>ndarray</span><span class=p>]:</span>
 <span class=w>        </span><span class=sd>&quot;&quot;&quot;</span>
 <span class=sd>        Tries to match the Task&#39;s input names with the keys of dict_to_search</span>
 <span class=sd>        and fills input_dict list with their corresponding values.</span>
@@ -171,7 +159,11 @@
 <span class=sd>            *args: defined by sub-classes</span>
 <span class=sd>        &quot;&quot;&quot;</span>
         <span class=k>raise</span> <span class=ne>NotImplementedError</span>
-</code></pre></div></td></tr></table></div> </details> <div class="doc doc-children"> <div class="doc doc-object doc-function"> <h3 id=exe_kg_lib.classes.task.Task.create_output_dict class="doc doc-heading"> <code class="highlight language-python"><span class=n>create_output_dict</span><span class=p>(</span><span class=n>keyword_value_dict</span><span class=p>)</span></code> <a href=#exe_kg_lib.classes.task.Task.create_output_dict class=headerlink title="Permanent link">&para;</a></h3> <div class="doc doc-contents "> <p>For each key in keyword_value_dict, checks if the key exists in an output name of the Task. If yes, adds the output name with its value to out_dict.</p> <p><strong>Parameters:</strong></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr> <td><code>keyword_value_dict</code></td> <td> <code>dict</code> </td> <td><p>key-value pairs where key is a keyword to find in an output name of the Task and value is the value corresponding to that output name</p></td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><strong>Returns:</strong></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr> <td><code>dict</code></td> <td> <code>dict</code> </td> <td><p>pairs of Task's output names and corresponding output values</p></td> </tr> </tbody> </table> <details class=quote> <summary>Source code in <code>exe_kg_lib\classes\task.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>41</span>
+</code></pre></div></td></tr></table></div> </details> <div class="doc doc-children"> <div class="doc doc-object doc-function"> <h3 id=exe_kg_lib.classes.task.Task.create_output_dict class="doc doc-heading"> <code class="highlight language-python"><span class=n>create_output_dict</span><span class=p>(</span><span class=n>keyword_value_dict</span><span class=p>)</span></code> <a href=#exe_kg_lib.classes.task.Task.create_output_dict class=headerlink title="Permanent link">&para;</a></h3> <div class="doc doc-contents "> <p>For each key in keyword_value_dict, checks if the key exists in an output name of the Task. If yes, adds the output name with its value to out_dict.</p> <p><strong>Parameters:</strong></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr> <td><code>keyword_value_dict</code></td> <td> <code>dict</code> </td> <td><p>key-value pairs where key is a keyword to find in an output name of the Task and value is the value corresponding to that output name</p></td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><strong>Returns:</strong></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr> <td><code>dict</code></td> <td> <code>dict</code> </td> <td><p>pairs of Task's output names and corresponding output values</p></td> </tr> </tbody> </table> <details class=quote> <summary>Source code in <code>exe_kg_lib\classes\task.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>37</span>
+<span class=normal>38</span>
+<span class=normal>39</span>
+<span class=normal>40</span>
+<span class=normal>41</span>
 <span class=normal>42</span>
 <span class=normal>43</span>
 <span class=normal>44</span>
@@ -189,11 +181,7 @@
 <span class=normal>56</span>
 <span class=normal>57</span>
 <span class=normal>58</span>
-<span class=normal>59</span>
-<span class=normal>60</span>
-<span class=normal>61</span>
-<span class=normal>62</span>
-<span class=normal>63</span></pre></div></td><td class=code><div><pre><span></span><code><span class=k>def</span> <span class=nf>create_output_dict</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>keyword_value_dict</span><span class=p>:</span> <span class=nb>dict</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>dict</span><span class=p>:</span>
+<span class=normal>59</span></pre></div></td><td class=code><div><pre><span></span><code><span class=k>def</span> <span class=nf>create_output_dict</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>keyword_value_dict</span><span class=p>:</span> <span class=nb>dict</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>dict</span><span class=p>:</span>
 <span class=w>    </span><span class=sd>&quot;&quot;&quot;</span>
 <span class=sd>    For each key in keyword_value_dict, checks if the key exists in an output name of the Task.</span>
 <span class=sd>    If yes, adds the output name with its value to out_dict.</span>
@@ -216,7 +204,11 @@
                 <span class=n>out_dict</span><span class=p>[</span><span class=n>output_name</span><span class=p>]</span> <span class=o>=</span> <span class=n>value</span>
 
     <span class=k>return</span> <span class=n>out_dict</span>
-</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=exe_kg_lib.classes.task.Task.get_inputs class="doc doc-heading"> <code class="highlight language-python"><span class=n>get_inputs</span><span class=p>(</span><span class=n>dict_to_search</span><span class=p>,</span> <span class=n>fallback_df</span><span class=p>)</span></code> <a href=#exe_kg_lib.classes.task.Task.get_inputs class=headerlink title="Permanent link">&para;</a></h3> <div class="doc doc-contents "> <p>Tries to match the Task's input names with the keys of dict_to_search and fills input_dict list with their corresponding values. If the matches fail, it retrieves columns of the provided fallback_df</p> <p><strong>Parameters:</strong></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr> <td><code>dict_to_search</code></td> <td> <code>dict</code> </td> <td><p>contains key-value pairs where key is a possible input name and value is its corresponding value</p></td> <td> <em>required</em> </td> </tr> <tr> <td><code>fallback_df</code></td> <td> <code><span title="pandas">pd</span>.<span title="pandas.DataFrame">DataFrame</span></code> </td> <td><p>contains data to return as an alternative</p></td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><strong>Returns:</strong></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr> <td> <code><span title="typing.Dict">Dict</span>[str, <span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>]</code> </td> <td><p>Dict[str, np.ndarray]: pairs of input entity types and corresponding input values</p></td> </tr> </tbody> </table> <details class=quote> <summary>Source code in <code>exe_kg_lib\classes\task.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>65</span>
+</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=exe_kg_lib.classes.task.Task.get_inputs class="doc doc-heading"> <code class="highlight language-python"><span class=n>get_inputs</span><span class=p>(</span><span class=n>dict_to_search</span><span class=p>,</span> <span class=n>fallback_df</span><span class=p>)</span></code> <a href=#exe_kg_lib.classes.task.Task.get_inputs class=headerlink title="Permanent link">&para;</a></h3> <div class="doc doc-contents "> <p>Tries to match the Task's input names with the keys of dict_to_search and fills input_dict list with their corresponding values. If the matches fail, it retrieves columns of the provided fallback_df</p> <p><strong>Parameters:</strong></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr> <td><code>dict_to_search</code></td> <td> <code>dict</code> </td> <td><p>contains key-value pairs where key is a possible input name and value is its corresponding value</p></td> <td> <em>required</em> </td> </tr> <tr> <td><code>fallback_df</code></td> <td> <code><span title="pandas">pd</span>.<span title="pandas.DataFrame">DataFrame</span></code> </td> <td><p>contains data to return as an alternative</p></td> <td> <em>required</em> </td> </tr> </tbody> </table> <p><strong>Returns:</strong></p> <table> <thead> <tr> <th>Type</th> <th>Description</th> </tr> </thead> <tbody> <tr> <td> <code><span title="typing.Dict">Dict</span>[str, <span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span>]</code> </td> <td><p>Dict[str, np.ndarray]: pairs of input entity types and corresponding input values</p></td> </tr> </tbody> </table> <details class=quote> <summary>Source code in <code>exe_kg_lib\classes\task.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>61</span>
+<span class=normal>62</span>
+<span class=normal>63</span>
+<span class=normal>64</span>
+<span class=normal>65</span>
 <span class=normal>66</span>
 <span class=normal>67</span>
 <span class=normal>68</span>
@@ -231,15 +223,7 @@
 <span class=normal>77</span>
 <span class=normal>78</span>
 <span class=normal>79</span>
-<span class=normal>80</span>
-<span class=normal>81</span>
-<span class=normal>82</span>
-<span class=normal>83</span>
-<span class=normal>84</span>
-<span class=normal>85</span>
-<span class=normal>86</span></pre></div></td><td class=code><div><pre><span></span><code><span class=k>def</span> <span class=nf>get_inputs</span><span class=p>(</span>
-        <span class=bp>self</span><span class=p>,</span> <span class=n>dict_to_search</span><span class=p>:</span> <span class=nb>dict</span><span class=p>,</span> <span class=n>fallback_df</span><span class=p>:</span> <span class=n>pd</span><span class=o>.</span><span class=n>DataFrame</span>
-<span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>np</span><span class=o>.</span><span class=n>ndarray</span><span class=p>]:</span>
+<span class=normal>80</span></pre></div></td><td class=code><div><pre><span></span><code><span class=k>def</span> <span class=nf>get_inputs</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>dict_to_search</span><span class=p>:</span> <span class=nb>dict</span><span class=p>,</span> <span class=n>fallback_df</span><span class=p>:</span> <span class=n>pd</span><span class=o>.</span><span class=n>DataFrame</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>Dict</span><span class=p>[</span><span class=nb>str</span><span class=p>,</span> <span class=n>np</span><span class=o>.</span><span class=n>ndarray</span><span class=p>]:</span>
 <span class=w>    </span><span class=sd>&quot;&quot;&quot;</span>
 <span class=sd>    Tries to match the Task&#39;s input names with the keys of dict_to_search</span>
 <span class=sd>    and fills input_dict list with their corresponding values.</span>
@@ -259,15 +243,15 @@
             <span class=n>input_dict</span><span class=p>[</span><span class=nb>input</span><span class=o>.</span><span class=n>type</span><span class=p>]</span> <span class=o>=</span> <span class=n>fallback_df</span><span class=p>[</span><span class=nb>input</span><span class=o>.</span><span class=n>has_source</span><span class=p>]</span>
 
     <span class=k>return</span> <span class=n>input_dict</span>
-</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=exe_kg_lib.classes.task.Task.run_method class="doc doc-heading"> <code class="highlight language-python"><span class=n>run_method</span><span class=p>(</span><span class=o>*</span><span class=n>args</span><span class=p>)</span></code> <span class="doc doc-labels"> <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small> </span> <a href=#exe_kg_lib.classes.task.Task.run_method class=headerlink title="Permanent link">&para;</a></h3> <div class="doc doc-contents "> <p>Abstract method to be implemented by Task sub-classes that are in the bottom of the hierarchy. Executes the logic that is needed to fulfill the Task.</p> <p><strong>Parameters:</strong></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr> <td><code>*args</code></td> <td> </td> <td><p>defined by sub-classes</p></td> <td> <code>()</code> </td> </tr> </tbody> </table> <details class=quote> <summary>Source code in <code>exe_kg_lib\classes\task.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>88</span>
+</code></pre></div></td></tr></table></div> </details> </div> </div> <div class="doc doc-object doc-function"> <h3 id=exe_kg_lib.classes.task.Task.run_method class="doc doc-heading"> <code class="highlight language-python"><span class=n>run_method</span><span class=p>(</span><span class=o>*</span><span class=n>args</span><span class=p>)</span></code> <span class="doc doc-labels"> <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small> </span> <a href=#exe_kg_lib.classes.task.Task.run_method class=headerlink title="Permanent link">&para;</a></h3> <div class="doc doc-contents "> <p>Abstract method to be implemented by Task sub-classes that are in the bottom of the hierarchy. Executes the logic that is needed to fulfill the Task.</p> <p><strong>Parameters:</strong></p> <table> <thead> <tr> <th>Name</th> <th>Type</th> <th>Description</th> <th>Default</th> </tr> </thead> <tbody> <tr> <td><code>*args</code></td> <td> </td> <td><p>defined by sub-classes</p></td> <td> <code>()</code> </td> </tr> </tbody> </table> <details class=quote> <summary>Source code in <code>exe_kg_lib\classes\task.py</code></summary> <div class=highlight><table class=highlighttable><tr><td class=linenos><div class=linenodiv><pre><span></span><span class=normal>82</span>
+<span class=normal>83</span>
+<span class=normal>84</span>
+<span class=normal>85</span>
+<span class=normal>86</span>
+<span class=normal>87</span>
+<span class=normal>88</span>
 <span class=normal>89</span>
-<span class=normal>90</span>
-<span class=normal>91</span>
-<span class=normal>92</span>
-<span class=normal>93</span>
-<span class=normal>94</span>
-<span class=normal>95</span>
-<span class=normal>96</span></pre></div></td><td class=code><div><pre><span></span><code><span class=nd>@abstractmethod</span>
+<span class=normal>90</span></pre></div></td><td class=code><div><pre><span></span><code><span class=nd>@abstractmethod</span>
 <span class=k>def</span> <span class=nf>run_method</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=o>*</span><span class=n>args</span><span class=p>):</span>
 <span class=w>    </span><span class=sd>&quot;&quot;&quot;</span>
 <span class=sd>    Abstract method to be implemented by Task sub-classes that are in the bottom of the hierarchy.</span>
