@@ -114,9 +114,9 @@ class ExeKG:
 
         self.output_kg = Graph(bind_namespaces="rdflib")  # KG to be filled while constructing executable KG
 
-        self.bind_used_namespaces([self.input_kg, self.output_kg])
+        self._bind_used_namespaces([self.input_kg, self.output_kg])
 
-        # below variables are filled in self.parse_kgs()
+        # below variables are filled in self._parse_kgs()
         self.task_type_dict = {}  # dict for uniquely naming each new pipeline task
         self.method_type_dict = {}  # dict for uniquely naming each new pipeline method
         self.atomic_task_list = []  # list for storing the available sub-classes of ds:AtomicTask
@@ -133,9 +133,9 @@ class ExeKG:
         )
         self.canvas_task_created = False  # indicates if canvas task was created during KG construction, and used for hiding the other Visualization tasks in CLI
 
-        self.parse_kgs()
+        self._parse_kgs()
 
-    def bind_used_namespaces(self, kgs: List[Graph]):
+    def _bind_used_namespaces(self, kgs: List[Graph]):
         """
         Binds top-level, bottom-level and Visualization KG schemas' namespaces with their prefixes
         Adds these bindings to the Graphs of kgs list
@@ -153,7 +153,7 @@ class ExeKG:
                 self.visu_schema.namespace,
             )
 
-    def parse_kgs(self) -> None:
+    def _parse_kgs(self) -> None:
         """
         Fills lists with subclasses of top-level KG schema classes and initializes dicts used for unique naming
         """
@@ -282,9 +282,9 @@ class ExeKG:
         next_task = Task.from_entity(added_entity)  # create Task object from Entity object
 
         # instantiate and add given input data entities to the task
-        self.add_inputs_to_task(next_task, input_data_entity_dict)
+        self._add_inputs_to_task(next_task, input_data_entity_dict)
         # instantiate and add output data entities to the task, as specified in the KG schema
-        self.add_outputs_to_task(next_task)
+        self._add_outputs_to_task(next_task)
 
         method_parent = Entity(namespace_to_use + method_type, self.atomic_method)
 
@@ -332,7 +332,9 @@ class ExeKG:
 
         return next_task
 
-    def add_inputs_to_task(self, task_entity: Task, input_data_entity_dict: Dict[str, List[DataEntity]] = None) -> None:
+    def _add_inputs_to_task(
+        self, task_entity: Task, input_data_entity_dict: Dict[str, List[DataEntity]] = None
+    ) -> None:
         """
         Instantiates and adds given input data entities to the given task of self.output_kg
         if input_data_entity_dict is None, user is asked to specify input data entities
@@ -398,7 +400,7 @@ class ExeKG:
                 task_entity.input_dict[input_entity_name] = data_entity
                 same_input_index += 1
 
-    def add_outputs_to_task(self, task_entity: Task) -> None:
+    def _add_outputs_to_task(self, task_entity: Task) -> None:
         """
         Instantiates and adds output data entities to the given task of self.output_kg, based on the task's definition in the KG schema
         Args:
@@ -432,7 +434,7 @@ class ExeKG:
             task_entity.output_dict[output_entity_iri.split("#")[1]] = data_entity
             self.existing_data_entity_list.append(data_entity)
 
-    def create_next_task_cli(self) -> Union[None, Task]:
+    def _create_next_task_cli(self) -> Union[None, Task]:
         """
         Instantiates and adds task (without method) based on user input to self.output_kg
         Adds task's output data entities to self.existing_data_entity_list
@@ -472,9 +474,9 @@ class ExeKG:
         task_entity = Task(task_entity.iri, task_entity.parent_entity)  # create Task object from Entity object's info
 
         # instantiate and add input data entities to the task based on user input
-        self.add_inputs_to_task(task_entity)
+        self._add_inputs_to_task(task_entity)
         # instantiate and add output data entities to the task, as specified in the KG schema
-        self.add_outputs_to_task(task_entity)
+        self._add_outputs_to_task(task_entity)
 
         self.last_created_task = task_entity
         if task_entity.type == "CanvasTask":
@@ -482,7 +484,7 @@ class ExeKG:
 
         return task_entity
 
-    def create_method(self, task_to_attach_to: Entity) -> None:
+    def _create_method(self, task_to_attach_to: Entity) -> None:
         """
         Instantiate and attach method to task of self.output_kg
         Args:
@@ -556,11 +558,11 @@ class ExeKG:
         self.last_created_task = pipeline
 
         while True:
-            next_task = self.create_next_task_cli()
+            next_task = self._create_next_task_cli()
             if next_task is None:
                 break
 
-            self.create_method(next_task)
+            self._create_method(next_task)
 
     def save_created_kg(self, file_path: str) -> None:
         """
@@ -574,7 +576,7 @@ class ExeKG:
         self.output_kg.serialize(destination=file_path)
         print(f"Executable KG saved in {file_path}")
 
-    def property_value_to_field_value(self, property_value: str) -> Union[str, DataEntity]:
+    def _property_value_to_field_value(self, property_value: str) -> Union[str, DataEntity]:
         """
         Converts property value to Python class field value
         If property_value is not a data entity's IRI, it is returned as is
@@ -587,14 +589,14 @@ class ExeKG:
             DataEntity: object containing parsed data entity properties
         """
         if "#" in property_value:
-            data_entity = self.parse_data_entity_by_iri(property_value)
+            data_entity = self._parse_data_entity_by_iri(property_value)
             if data_entity is None:
                 return property_value
             return data_entity
 
         return property_value
 
-    def parse_data_entity_by_iri(self, in_out_data_entity_iri: str) -> Optional[DataEntity]:
+    def _parse_data_entity_by_iri(self, in_out_data_entity_iri: str) -> Optional[DataEntity]:
         """
         Parses an input or output data entity of self.input_kg and stores the parsed info in a Python object
         Args:
@@ -638,12 +640,12 @@ class ExeKG:
             field_name = property_name_to_field_name(str(p))
             if not hasattr(data_entity, field_name) or field_name == "type":
                 continue
-            field_value = self.property_value_to_field_value(str(o))
+            field_value = self._property_value_to_field_value(str(o))
             setattr(data_entity, field_name, field_value)  # set field value dynamically
 
         return data_entity
 
-    def parse_task_by_iri(self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None) -> Task:
+    def _parse_task_by_iri(self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None) -> Task:
         """
         Parses a task of self.input_kg and stores the info in an object of a sub-class of Task
         The sub-class name and the object's fields are mapped dynamically based on the found KG components
@@ -699,7 +701,7 @@ class ExeKG:
             field_name = property_name_to_field_name(str(p))
             if not hasattr(task, field_name) or field_name == "type":
                 continue
-            field_value = self.property_value_to_field_value(str(o))
+            field_value = self._property_value_to_field_value(str(o))
 
             # set field value dynamically
             if field_name == "has_input" or field_name == "has_output":
@@ -720,7 +722,7 @@ class ExeKG:
         canvas_method = None  # stores Task object that corresponds to a task of type CanvasTask
         task_output_dict = {}  # gradually filled with outputs of executed tasks
         while next_task_iri is not None:
-            next_task = self.parse_task_by_iri(next_task_iri, canvas_method)
+            next_task = self._parse_task_by_iri(next_task_iri, canvas_method)
             output = next_task.run_method(task_output_dict, input_data)
             if output:
                 task_output_dict.update(output)
