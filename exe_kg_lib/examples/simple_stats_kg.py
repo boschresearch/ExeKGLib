@@ -5,7 +5,7 @@ if __name__ == "__main__":
     my_data_entity = exe_kg.create_data_entity("area_mean", "area_mean", "TimeSeries", "Vector")
 
     pipeline_name = "StatsPipeline"
-    pipeline = exe_kg.create_pipeline_task(pipeline_name, input_data_path="examples/data/breast_cancer_data.csv")
+    pipeline = exe_kg.create_pipeline_task(pipeline_name, input_data_path="examples/data/data.csv")
 
     normalization_task = exe_kg.add_task(
         task_type="NormalizationTask",
