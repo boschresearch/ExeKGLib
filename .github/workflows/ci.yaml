@@ -48,13 +48,6 @@ jobs:
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@bosch.com"
 
-      - name: Install & run pre-commit hooks
-        env:
-          SKIP: no-commit-to-branch
-        run: |
-          poetry run pre-commit install
-          poetry run pre-commit run --all-files --show-diff-on-failure
-
       - name: Generate 3rd-Party Licenses
         run: poetry run poe export-3rd-party-licenses
 
@@ -64,6 +57,13 @@ jobs:
           commit_message: Commit updated 3rd Party License
           commit_options: '--no-verify'
           file_pattern: 'third-party-licenses.md'
+
+      - name: Install & run pre-commit hooks
+        env:
+          SKIP: no-commit-to-branch
+        run: |
+          poetry run pre-commit install
+          poetry run pre-commit run --all-files --show-diff-on-failure
 
 #      - name: Run tests
 #        run: poetry run poe test
