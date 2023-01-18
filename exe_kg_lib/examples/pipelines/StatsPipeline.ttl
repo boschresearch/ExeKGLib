@@ -4,7 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 stats:StatsPipeline a ds:Pipeline ;
-    ds:hasInputDataPath "examples/data/breast_cancer_data.csv"^^xsd:string ;
+    ds:hasInputDataPath "examples/data/data.csv"^^xsd:string ;
     ds:hasStartTask stats:NormalizationTask1 .
 
 stats:CanvasMethod1 a visu:CanvasMethod .
