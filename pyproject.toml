@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exe-kg-lib"
-version = "1.0.4"
+version = "1.0.5"
 description = "Library for executable ML pipelines represented by KGs."
 license = "AGPL-3.0"
 authors = ["Antonis Klironomos <antonis.klironomos@de.bosch.com>", "Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]

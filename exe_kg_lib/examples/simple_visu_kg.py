@@ -2,10 +2,10 @@ from classes import ExeKG
 
 if __name__ == "__main__":
     exe_kg = ExeKG(kg_schema_name="Visualization")
-    my_data_entity = exe_kg.create_data_entity("radius_mean", "radius_mean", "TimeSeries", "Vector")
+    my_data_entity = exe_kg.create_data_entity("feature_1", "feature_1", "TimeSeries", "Vector")
 
     pipeline_name = "VisuPipeline"
-    pipeline = exe_kg.create_pipeline_task(pipeline_name, input_data_path="examples/data/data.csv")
+    pipeline = exe_kg.create_pipeline_task(pipeline_name, input_data_path="examples/data/dummy_data.csv")
 
     canvas_task_properties = {"hasCanvasName": "MyCanvas", "hasLayout": "1 2"}
     canvas_task = exe_kg.add_task(
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     )
 
     lineplot_task_properties = {
-        "hasLegendName": "Radius mean",
+        "hasLegendName": "Feature 1",
         "hasLineStyle": "-",
         "hasLineWidth": 1,
     }

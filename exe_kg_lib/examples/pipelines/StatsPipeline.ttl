@@ -4,7 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 stats:StatsPipeline a ds:Pipeline ;
-    ds:hasInputDataPath "examples/data/data.csv"^^xsd:string ;
+    ds:hasInputDataPath "examples/data/dummy_data.csv"^^xsd:string ;
     ds:hasStartTask stats:NormalizationTask1 .
 
 stats:CanvasMethod1 a visu:CanvasMethod .
@@ -16,7 +16,7 @@ stats:CanvasTask1 a visu:CanvasTask ;
     visu:hasLayout "1 1"^^ds:intPair .
 
 stats:DataInNormalization1_1 a stats:DataInNormalization ;
-    ds:hasReference stats:area_mean .
+    ds:hasReference stats:feature_1 .
 
 stats:NormalizationMethod1 a stats:NormalizationMethod .
 
@@ -29,7 +29,7 @@ stats:NormalizationTask1 a stats:NormalizationTask ;
 stats:PlotTask1 a visu:PlotTask ;
     ds:hasInput visu:DataInVector1_1 ;
     ds:hasNextTask stats:PlotTask2 ;
-    visu:hasLegendName "Area mean before normalization"^^xsd:string ;
+    visu:hasLegendName "Feature 1 before normalization"^^xsd:string ;
     visu:hasLineStyle "o"^^xsd:string ;
     visu:hasLineWidth "1"^^xsd:int ;
     visu:hasPlotMethod stats:ScatterplotMethod1 ;
@@ -38,7 +38,7 @@ stats:PlotTask1 a visu:PlotTask ;
 
 stats:PlotTask2 a visu:PlotTask ;
     ds:hasInput visu:DataInVector2_1 ;
-    visu:hasLegendName "Normalized area mean"^^xsd:string ;
+    visu:hasLegendName "Normalized feature 1"^^xsd:string ;
     visu:hasLineStyle "o"^^xsd:string ;
     visu:hasLineWidth "1"^^xsd:int ;
     visu:hasPlotMethod stats:ScatterplotMethod2 ;
@@ -50,14 +50,14 @@ stats:ScatterplotMethod1 a visu:ScatterplotMethod .
 stats:ScatterplotMethod2 a visu:ScatterplotMethod .
 
 visu:DataInVector1_1 a visu:DataInVector ;
-    ds:hasReference stats:area_mean .
+    ds:hasReference stats:feature_1 .
 
 visu:DataInVector2_1 a visu:DataInVector ;
     ds:hasReference stats:DataOutNormalization1 .
 
 stats:DataOutNormalization1 a ds:DataEntity .
 
-stats:area_mean a ds:DataEntity ;
+stats:feature_1 a ds:DataEntity ;
     ds:hasDataSemantics ds:TimeSeries ;
     ds:hasDataStructure ds:Vector ;
-    ds:hasSource "area_mean"^^xsd:string .
+    ds:hasSource "feature_1"^^xsd:string .
