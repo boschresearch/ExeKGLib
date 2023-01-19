@@ -1,0 +1,196 @@
+@prefix ds: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#> .
+@prefix ml: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#> .
+@prefix visu: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ml:MLPipeline a ds:Pipeline ;
+    ds:hasInputDataPath "../examples/data/dummy_data.csv"^^xsd:string ;
+    ds:hasStartTask ml:Concatenation1 .
+
+ml:CanvasMethod1 a visu:CanvasMethod .
+
+ml:CanvasTask1 a visu:CanvasTask ;
+    ds:hasNextTask ml:PlotTask1 ;
+    visu:hasCanvasMethod ml:CanvasMethod1 ;
+    visu:hasCanvasName "MyCanvas"^^xsd:string ;
+    visu:hasLayout "1 1"^^ds:intPair .
+
+ml:Concatenation1 a ml:Concatenation ;
+    ds:hasInput ml:DataInConcatenation1_1,
+        ml:DataInConcatenation1_2,
+        ml:DataInConcatenation1_3,
+        ml:DataInConcatenation1_4,
+        ml:DataInConcatenation1_5 ;
+    ds:hasNextTask ml:DataSplitting1 ;
+    ds:hasOutput ml:DataOutConcatenatedData1 ;
+    ml:hasConcatenationMethod ml:ConcatenationMethod1 .
+
+ml:ConcatenationMethod1 a ml:ConcatenationMethod .
+
+ml:DataInConcatenation1_1 a ml:DataInConcatenation ;
+    ds:hasReference ml:feature_1 .
+
+ml:DataInConcatenation1_2 a ml:DataInConcatenation ;
+    ds:hasReference ml:feature_2 .
+
+ml:DataInConcatenation1_3 a ml:DataInConcatenation ;
+    ds:hasReference ml:feature_3 .
+
+ml:DataInConcatenation1_4 a ml:DataInConcatenation ;
+    ds:hasReference ml:feature_4 .
+
+ml:DataInConcatenation1_5 a ml:DataInConcatenation ;
+    ds:hasReference ml:feature_5 .
+
+ml:DataInDataSplittingX1_1 a ml:DataInDataSplittingX ;
+    ds:hasReference ml:DataOutConcatenatedData1 .
+
+ml:DataInDataSplittingY1_1 a ml:DataInDataSplittingY ;
+    ds:hasReference ml:label .
+
+ml:DataInTestModel1_1 a ml:DataInTestModel ;
+    ds:hasReference ml:DataOutTrainModel1 .
+
+ml:DataInTestPredictedY1_1 a ml:DataInTestPredictedY ;
+    ds:hasReference ml:DataOutPredictedValueTest1 .
+
+ml:DataInTestRealY1_1 a ml:DataInTestRealY ;
+    ds:hasReference ml:DataOutSplittedTestDataY1 .
+
+ml:DataInTestX1_1 a ml:DataInTestX ;
+    ds:hasReference ml:DataOutSplittedTestDataX1 .
+
+ml:DataInTrainPredictedY1_1 a ml:DataInTrainPredictedY ;
+    ds:hasReference ml:DataOutPredictedValueTrain1 .
+
+ml:DataInTrainRealY1_1 a ml:DataInTrainRealY ;
+    ds:hasReference ml:DataOutSplittedTrainDataY1 .
+
+ml:DataInTrainX1_1 a ml:DataInTrainX ;
+    ds:hasReference ml:DataOutSplittedTrainDataX1 .
+
+ml:DataInTrainY1_1 a ml:DataInTrainY ;
+    ds:hasReference ml:DataOutSplittedTrainDataY1 .
+
+ml:DataSplitting1 a ml:DataSplitting ;
+    ds:hasInput ml:DataInDataSplittingX1_1,
+        ml:DataInDataSplittingY1_1 ;
+    ds:hasNextTask ml:Train1 ;
+    ds:hasOutput ml:DataOutSplittedTestDataX1,
+        ml:DataOutSplittedTestDataY1,
+        ml:DataOutSplittedTrainDataX1,
+        ml:DataOutSplittedTrainDataY1 ;
+    ml:hasDataSplittingMethod ml:DataSplittingMethod1 ;
+    ml:hasSplitRatio "0.8"^^xsd:float .
+
+ml:DataSplittingMethod1 a ml:DataSplittingMethod .
+
+ml:KNNTest1 a ml:KNNTest .
+
+ml:KNNTrain1 a ml:KNNTrain .
+
+ml:PerformanceCalculation1 a ml:PerformanceCalculation ;
+    ds:hasInput ml:DataInTestPredictedY1_1,
+        ml:DataInTestRealY1_1,
+        ml:DataInTrainPredictedY1_1,
+        ml:DataInTrainRealY1_1 ;
+    ds:hasNextTask ml:CanvasTask1 ;
+    ds:hasOutput ml:DataOutMLTestErr1,
+        ml:DataOutMLTrainErr1 ;
+    ml:hasPerformanceCalculationMethod ml:PerformanceCalculationMethod1 .
+
+ml:PerformanceCalculationMethod1 a ml:PerformanceCalculationMethod .
+
+ml:PlotTask1 a visu:PlotTask ;
+    ds:hasInput visu:DataInVector1_1 ;
+    ds:hasNextTask ml:PlotTask2 ;
+    visu:hasLegendName "Train error"^^xsd:string ;
+    visu:hasLineStyle "o"^^xsd:string ;
+    visu:hasLineWidth "1"^^xsd:int ;
+    visu:hasPlotMethod ml:ScatterplotMethod1 ;
+    visu:hasScatterSize "1"^^xsd:int ;
+    visu:hasScatterStyle "o"^^xsd:string .
+
+ml:PlotTask2 a visu:PlotTask ;
+    ds:hasInput visu:DataInVector2_1 ;
+    visu:hasLegendName "Test error"^^xsd:string ;
+    visu:hasLineStyle "o"^^xsd:string ;
+    visu:hasLineWidth "1"^^xsd:int ;
+    visu:hasPlotMethod ml:ScatterplotMethod2 ;
+    visu:hasScatterSize "1"^^xsd:int ;
+    visu:hasScatterStyle "o"^^xsd:string .
+
+ml:ScatterplotMethod1 a visu:ScatterplotMethod .
+
+ml:ScatterplotMethod2 a visu:ScatterplotMethod .
+
+ml:Test1 a ml:Test ;
+    ds:hasInput ml:DataInTestModel1_1,
+        ml:DataInTestX1_1 ;
+    ds:hasNextTask ml:PerformanceCalculation1 ;
+    ds:hasOutput ml:DataOutPredictedValueTest1 ;
+    ml:hasTestMethod ml:KNNTest1 .
+
+ml:Train1 a ml:Train ;
+    ds:hasInput ml:DataInTrainX1_1,
+        ml:DataInTrainY1_1 ;
+    ds:hasNextTask ml:Test1 ;
+    ds:hasOutput ml:DataOutPredictedValueTrain1,
+        ml:DataOutTrainModel1 ;
+    ml:hasTrainMethod ml:KNNTrain1 .
+
+ml:feature_1 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_1"^^xsd:string .
+
+ml:feature_2 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_2"^^xsd:string .
+
+ml:feature_3 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_3"^^xsd:string .
+
+ml:feature_4 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_4"^^xsd:string .
+
+ml:feature_5 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_5"^^xsd:string .
+
+ml:label a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "label"^^xsd:string .
+
+visu:DataInVector1_1 a visu:DataInVector ;
+    ds:hasReference ml:DataOutMLTrainErr1 .
+
+visu:DataInVector2_1 a visu:DataInVector ;
+    ds:hasReference ml:DataOutMLTestErr1 .
+
+ml:DataOutConcatenatedData1 a ds:DataEntity .
+
+ml:DataOutMLTestErr1 a ds:DataEntity .
+
+ml:DataOutMLTrainErr1 a ds:DataEntity .
+
+ml:DataOutPredictedValueTest1 a ds:DataEntity .
+
+ml:DataOutPredictedValueTrain1 a ds:DataEntity .
+
+ml:DataOutSplittedTestDataX1 a ds:DataEntity .
+
+ml:DataOutSplittedTestDataY1 a ds:DataEntity .
+
+ml:DataOutSplittedTrainDataX1 a ds:DataEntity .
+
+ml:DataOutTrainModel1 a ds:DataEntity .
+
+ml:DataOutSplittedTrainDataY1 a ds:DataEntity .

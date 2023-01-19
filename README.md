@@ -48,7 +48,7 @@ To download, run `pip install exe-kg-lib`.
 2. Follow the input prompts.
 
 #### Via code
-See the [provided examples](exe_kg_lib/examples/).
+See the [provided examples](examples/).
 
 ### Executing a generated KG
 Run `python kg_execution.py [kg_file_path]`.
@@ -87,6 +87,10 @@ See the _Code Reference_ and _Development_ sections of the [library's website](h
 
 The above KG schemas are included in the [ExeKGOntology repository](https://github.com/nsai-uio/ExeKGOntology).
 
+### Dataset used in code examples
+This dataset (located in `exe_kg_lib/examples/data/dummy_data.csv`) was generated using the `sklearn.datasets.make_classification()` function of the [scikit-learn Python library](https://scikit-learn.org/).
+
+[//]: # (--8<-- [end:externalresources])
 
 ## License
 
