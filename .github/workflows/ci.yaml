@@ -68,15 +68,15 @@ jobs:
 #      - name: Run tests
 #        run: poetry run poe test
 #
-#      - name: Code Coverage Summary
-#        uses: irongut/CodeCoverageSummary@v1.3.0
-#        with:
-#          filename: coverage.xml
-#          format: markdown
-#          output: both
+      - name: Code Coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage.xml
+          format: markdown
+          output: both
 
-#      - name: Build docs
-#        run: poetry run poe docs
+      - name: Build docs
+        run: poetry run poe docs
 
       - name: Deploy temporary docs
         if: github.event_name == 'pull_request'
