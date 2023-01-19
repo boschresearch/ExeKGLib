@@ -68,12 +68,12 @@ jobs:
 #      - name: Run tests
 #        run: poetry run poe test
 #
-      - name: Code Coverage Summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: coverage.xml
-          format: markdown
-          output: both
+#      - name: Code Coverage Summary
+#        uses: irongut/CodeCoverageSummary@v1.3.0
+#        with:
+#          filename: coverage.xml
+#          format: markdown
+#          output: both
 
       - name: Build docs
         run: poetry run poe docs
@@ -86,18 +86,18 @@ jobs:
             --alias pr-${{ github.event.number }} \
             --version-postfix pr-${{ github.event.number }}
 
-      - name: Write PR note
-        if: github.event_name == 'pull_request'
-        run: |
-          COVERAGE=$(cat code-coverage-results.md)
-          cat <<EOT>> pr-note.md
-          ## :rotating_light: Test Coverage
-
-          $COVERAGE
-          EOT
-
-      - name: Add PR note
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2.3.1
-        with:
-          path: pr-note.md
+#      - name: Write PR note
+#        if: github.event_name == 'pull_request'
+#        run: |
+#          COVERAGE=$(cat code-coverage-results.md)
+#          cat <<EOT>> pr-note.md
+#          ## :rotating_light: Test Coverage
+#
+#          $COVERAGE
+#          EOT
+#
+#      - name: Add PR note
+#        if: github.event_name == 'pull_request'
+#        uses: marocchino/sticky-pull-request-comment@v2.3.1
+#        with:
+#          path: pr-note.md
