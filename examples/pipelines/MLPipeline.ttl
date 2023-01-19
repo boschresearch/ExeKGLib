@@ -4,7 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ml:MLPipeline a ds:Pipeline ;
-    ds:hasInputDataPath "examples/data/dummy_data.csv"^^xsd:string ;
+    ds:hasInputDataPath "../examples/data/dummy_data.csv"^^xsd:string ;
     ds:hasStartTask ml:Concatenation1 .
 
 ml:CanvasMethod1 a visu:CanvasMethod .

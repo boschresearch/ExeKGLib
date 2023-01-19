@@ -7,12 +7,27 @@ if __name__ == "__main__":
 
     feature_data_entities = []
     for feature_column in feature_columns:
-        feature_data_entities.append(exe_kg.create_data_entity(feature_column, feature_column, "TimeSeries", "Vector"))
+        feature_data_entities.append(
+            exe_kg.create_data_entity(
+                name=feature_column,
+                source_value=feature_column,
+                data_semantics_name="TimeSeries",
+                data_structure_name="Vector",
+            )
+        )
 
-    label_data_entity = exe_kg.create_data_entity(label_column, label_column, "TimeSeries", "Vector")
+    label_data_entity = exe_kg.create_data_entity(
+        name=label_column,
+        source_value=label_column,
+        data_semantics_name="TimeSeries",
+        data_structure_name="Vector",
+    )
 
     pipeline_name = "MLPipeline"
-    pipeline = exe_kg.create_pipeline_task(pipeline_name, input_data_path="examples/data/dummy_data.csv")
+    pipeline = exe_kg.create_pipeline_task(
+        pipeline_name,
+        input_data_path="../examples/data/dummy_data.csv",  # relative to kg_execution.py
+    )
 
     concatenate_task = exe_kg.add_task(
         task_type="Concatenation",

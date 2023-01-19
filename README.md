@@ -48,7 +48,7 @@ To download, run `pip install exe-kg-lib`.
 2. Follow the input prompts.
 
 #### Via code
-See the [provided examples](exe_kg_lib/examples/).
+See the [provided examples](examples/).
 
 ### Executing a generated KG
 Run `python kg_execution.py [kg_file_path]`.

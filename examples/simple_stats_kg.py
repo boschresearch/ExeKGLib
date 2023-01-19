@@ -2,10 +2,18 @@ from classes import ExeKG
 
 if __name__ == "__main__":
     exe_kg = ExeKG(kg_schema_name="Statistics")
-    my_data_entity = exe_kg.create_data_entity("feature_1", "feature_1", "TimeSeries", "Vector")
+    my_data_entity = exe_kg.create_data_entity(
+        name="feature_1",
+        source_value="feature_1",
+        data_semantics_name="TimeSeries",
+        data_structure_name="Vector",
+    )
 
     pipeline_name = "StatsPipeline"
-    pipeline = exe_kg.create_pipeline_task(pipeline_name, input_data_path="examples/data/dummy_data.csv")
+    pipeline = exe_kg.create_pipeline_task(
+        pipeline_name,
+        input_data_path="../examples/data/dummy_data.csv",  # relative to kg_execution.py
+    )
 
     normalization_task = exe_kg.add_task(
         task_type="NormalizationTask",
