@@ -4,7 +4,6 @@
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
 ![Poetry](https://img.shields.io/badge/poetry-v1.2.2-blue)
 [![Code style: black][black-badge]][black]
-![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 [![License](https://img.shields.io/badge/license-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 Python library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs).
