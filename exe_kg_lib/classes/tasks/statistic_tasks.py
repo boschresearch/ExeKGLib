@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
 from classes.entity import Entity
 from classes.task import Task
 from utils.task_utils.statistic_utils import *

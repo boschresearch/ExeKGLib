@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
 from classes import ExeKG
 from utils.cli_utils import input_pipeline_info
 
