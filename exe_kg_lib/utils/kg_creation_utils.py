@@ -4,7 +4,8 @@ from classes.data_entity import DataEntity
 from classes.entity import Entity
 from classes.task import Task
 from rdflib import RDF, XSD, Graph, Literal, Namespace, URIRef
-from utils.query_utils import get_data_properties_by_entity_iri, get_first_query_result_if_exists
+from utils.query_utils import (get_data_properties_by_entity_iri,
+                               get_first_query_result_if_exists)
 
 
 def add_instance(kg: Graph, entity_instance: Entity) -> None:

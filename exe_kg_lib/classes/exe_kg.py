@@ -3,21 +3,17 @@ from typing import Dict, Union
 
 import pandas as pd
 from rdflib import Literal
-from utils.cli_utils import get_input_for_existing_data_entities, get_input_for_new_data_entities
-from utils.kg_creation_utils import (
-    add_and_attach_data_entity,
-    add_data_entity_instance,
-    add_instance_from_parent_with_relation,
-    add_literal,
-    create_pipeline_task,
-    name_instance,
-)
+from utils.cli_utils import (get_input_for_existing_data_entities,
+                             get_input_for_new_data_entities)
+from utils.kg_creation_utils import (add_and_attach_data_entity,
+                                     add_data_entity_instance,
+                                     add_instance_from_parent_with_relation,
+                                     add_literal, create_pipeline_task,
+                                     name_instance)
 from utils.query_utils import *
-from utils.query_utils import (
-    get_data_properties_plus_inherited_by_class_iri,
-    get_method_by_task_iri,
-    get_pipeline_and_first_task_iri,
-)
+from utils.query_utils import (get_data_properties_plus_inherited_by_class_iri,
+                               get_method_by_task_iri,
+                               get_pipeline_and_first_task_iri)
 from utils.string_utils import property_name_to_field_name
 
 from .data_entity import DataEntity
