@@ -57,4 +57,4 @@ jobs:
 
       - name: Build and deploy docs
         if: github.ref == 'refs/heads/main'
-        run: mkdocs gh-deploy
+        run: poetry run mkdocs gh-deploy
