@@ -1,6 +1,0 @@
-[virtualenvs]
-in-project = true
-
-[repositories]
-[repositories.production]
-url = "https://artifactory.boschdevcloud.com/artifactory/api/pypi/lab000135-bios-bcai-pypi-local"
