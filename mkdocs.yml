@@ -24,9 +24,7 @@ nav:
     - Contributing: contributing.md
 #    - Coverage: exported/coverage/report.html
 #    - Tests: exported/tests/report.html
-  - License:
-    - ExeKGLib: license.md
-    - Third-Party Libraries: third-party-licenses.md
+  - License: license.md
 
 theme:
   name: material

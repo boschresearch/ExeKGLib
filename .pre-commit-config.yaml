@@ -13,10 +13,7 @@ repos:
       - id: check-yaml
         args: ["--unsafe"]
       - id: end-of-file-fixer
-        exclude: third-party-licenses.md
-      #      - id: no-commit-to-branch # default: main, master
       - id: trailing-whitespace
-        exclude: third-party-licenses.md
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.19.2
@@ -32,7 +29,6 @@ repos:
         language: system
         name: Format files
         types: [python]
-        exclude: third-party-licenses.md
 #      - id: lint
 #        entry: poetry run poe lint
 #        language: system
