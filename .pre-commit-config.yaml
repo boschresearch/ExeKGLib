@@ -29,8 +29,3 @@ repos:
         language: system
         name: Format files
         types: [python]
-#      - id: lint
-#        entry: poetry run poe lint
-#        language: system
-#        name: Lint code
-#        types: [python]
