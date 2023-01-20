@@ -54,3 +54,6 @@ jobs:
         run: |
           poetry run pre-commit install
           poetry run pre-commit run --all-files --show-diff-on-failure
+
+      - name: Build and deploy docs
+        run: mkdocs gh-deploy
