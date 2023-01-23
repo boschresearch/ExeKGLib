@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
 """Generate code reference using `mkdocs-gen-files` and `mkdocs-literate-nav`.
 
 This script is run when mkdocs builds the documentation, and automatically creates
