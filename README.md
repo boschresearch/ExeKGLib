@@ -41,16 +41,19 @@ To download, run `pip install exe-kg-lib`.
 ## Usage
 
 [//]: # (--8<-- [start:usage])
-### Creating an executable KG
+### Fetching examples to working directory
+Run `typer exe_kg_lib.cli.main run get-examples`.
+
+### Creating an ML pipeline
 #### Via CLI
-1. Run `python kg_construction.py`.
+1. Run `typer exe_kg_lib.cli.main run create-pipeline`.
 2. Follow the input prompts.
 
 #### Via code
 See the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples).
 
-### Executing a generated KG
-Run `python kg_execution.py [kg_file_path]`.
+### Executing an ML pipeline
+Run `typer exe_kg_lib.cli.main run run-pipeline <pipeline_path>`.
 
 [//]: # (--8<-- [end:usage])
 

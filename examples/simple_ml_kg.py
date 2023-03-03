@@ -29,7 +29,7 @@ if __name__ == "__main__":
     pipeline_name = "MLPipeline"
     pipeline = exe_kg.create_pipeline_task(
         pipeline_name,
-        input_data_path="../examples/data/dummy_data.csv",  # relative to kg_execution.py
+        input_data_path="./examples/data/dummy_data.csv",
     )
 
     concatenate_task = exe_kg.add_task(
