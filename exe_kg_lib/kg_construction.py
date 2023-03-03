@@ -1,8 +1,8 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-from classes import ExeKG
-from utils.cli_utils import input_pipeline_info
+from exe_kg_lib import ExeKG
+from exe_kg_lib.utils.cli_utils import input_pipeline_info
 
 if __name__ == "__main__":
     pipeline_name, input_data_path = input_pipeline_info()

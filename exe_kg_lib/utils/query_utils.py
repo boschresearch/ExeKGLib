@@ -3,8 +3,9 @@
 
 from typing import Callable, List, Optional, Tuple
 
-from classes.entity import Entity
 from rdflib import Graph, Namespace, URIRef, query
+
+from ..classes.entity import Entity
 
 
 def query_method_parent_classes(kg, method_iri):

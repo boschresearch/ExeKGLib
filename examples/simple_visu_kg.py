@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-from classes import ExeKG
+from exe_kg_lib import ExeKG
 
 if __name__ == "__main__":
     exe_kg = ExeKG(kg_schema_name="Visualization")

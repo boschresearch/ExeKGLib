@@ -3,7 +3,7 @@
 
 import sys
 
-from classes import ExeKG
+from exe_kg_lib import ExeKG
 
 if __name__ == "__main__":
     try:

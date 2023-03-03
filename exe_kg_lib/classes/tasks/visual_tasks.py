@@ -3,9 +3,9 @@
 
 from abc import abstractmethod
 
-from classes.entity import Entity
-from classes.task import Task
-from utils.task_utils.visual_utils import *
+from ...utils.task_utils.visual_utils import *
+from ..entity import Entity
+from ..task import Task
 
 """
 ❗ Important for contributors: See the package's README.md before extending the code's functionality.
