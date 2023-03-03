@@ -96,3 +96,31 @@ args = [
   { name = "check", type = "boolean", help = "Only check" },
   { name = "files", positional = true, multiple = true, default = "**/*.py", help = "List of files (optional)" },
 ]
+
+[tool.poe.tasks.bump-version-tag]
+shell = """
+poetry version ${rule}
+VERSION=$(poetry version | cut -d' ' -f2 | tr -d '\n')
+git tag -a "${VERSION}" -m "Version ${VERSION}"
+git push --follow-tags
+"""
+help = "Bump Poetry version and create Git tag."
+args = [
+  { name = "rule", positional = true, help = "Version bump rule." },
+]
+
+[tool.poe.tasks.bump-version-tag-with-semantic-rule]
+shell = """
+HEAD_COMMIT_CONTENT=$(git log -1)
+
+RULE="patch"
+if [[ $HEAD_COMMIT_CONTENT == *"MAJOR_CHANGE"* ]]; then
+  RULE="major"
+elif [[ $HEAD_COMMIT_CONTENT == *"MINOR_CHANGE"* ]]; then
+  RULE="minor"
+fi
+
+poetry run poe bump-version-tag ${RULE}
+"""
+help = "Bump Poetry version after semantically checking HEAD commit message and create Git tag."
+args = []
