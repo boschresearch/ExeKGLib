@@ -52,6 +52,14 @@ See the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/
 ### Executing a generated KG
 Run `python kg_execution.py [kg_file_path]`.
 
+### Visualizing a generated KG
+#### Prerequisites
+- **Neo4j version**: `4.4.*`
+- **Plugins**: APOC, Neosemantics (n10s)
+#### Steps
+1. Instantiate a Neo4j Graph DB and start it.
+2. Modify [this line of the provided visualization script](examples/neo4j_visualization.cypher#L18) and run it.
+
 [//]: # (--8<-- [end:usage])
 
 ## Installation
