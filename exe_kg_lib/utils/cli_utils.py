@@ -3,9 +3,10 @@
 
 from typing import List, Tuple
 
-from classes.data_entity import DataEntity
-from classes.entity import Entity
 from rdflib import Namespace
+
+from ..classes.data_entity import DataEntity
+from ..classes.entity import Entity
 
 
 def get_input_for_existing_data_entities(

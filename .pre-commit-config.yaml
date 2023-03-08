@@ -21,6 +21,7 @@ repos:
       - id: check-dependabot
       - id: check-github-actions
       - id: check-github-workflows
+        exclude: .github/workflows/combine-prs.yml
 
   - repo: local
     hooks:

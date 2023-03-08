@@ -3,7 +3,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 visu:VisuPipeline a ds:Pipeline ;
-    ds:hasInputDataPath "../examples/data/dummy_data.csv"^^xsd:string ;
+    ds:hasInputDataPath "./examples/data/dummy_data.csv"^^xsd:string ;
     ds:hasStartTask visu:CanvasTask1 .
 
 visu:CanvasMethod1 a visu:CanvasMethod .

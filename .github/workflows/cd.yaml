@@ -45,30 +45,25 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
+      - name: Bump Poetry version and create Git tag
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: poetry run poe bump-version-tag-with-semantic-rule
+
+      - name: Build and deploy package
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: poetry publish --build
+
 #      - name: Configure git
 #        run: |
 #          git config --add --global safe.directory "$GITHUB_WORKSPACE"
 #          git config user.name "${GITHUB_ACTOR}"
 #          git config user.email "${GITHUB_ACTOR}@de.bosch.com"
 
-#      - name: Bump patch version
-#        run: poetry run poe bump-version-tag patch
-
 #      - name: Deploy docs
 #        run: |
 #          poetry run poe test
 #          poetry run poe docs
 #          poetry run poe deploy-docs --push --alias latest
-
-#      - name: Deploy package
-#        run: |
-#          poetry run poe deploy-package \
-#            --repository production \
-#            --username ${{ secrets.ARTIFACTORY_RESOURCE_USER }} \
-#            --password ${{ secrets.ARTIFACTORY_RESOURCE_TOKEN }}
-
-#      - name: Push version tag
-#        run: poetry run poe push-latest-version-tag
 
   update_release_draft:
     name: Update release notes
