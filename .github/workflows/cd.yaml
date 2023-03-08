@@ -45,6 +45,12 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
+      - name: Configure git
+        run: |
+          git config --add --global safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@de.bosch.com"
+
       - name: Bump Poetry version and create Git tag
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: poetry run poe bump-version-tag-with-semantic-rule
@@ -52,12 +58,6 @@ jobs:
       - name: Build and deploy package
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: poetry publish --build
-
-#      - name: Configure git
-#        run: |
-#          git config --add --global safe.directory "$GITHUB_WORKSPACE"
-#          git config user.name "${GITHUB_ACTOR}"
-#          git config user.email "${GITHUB_ACTOR}@de.bosch.com"
 
 #      - name: Deploy docs
 #        run: |
