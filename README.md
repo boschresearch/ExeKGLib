@@ -55,6 +55,14 @@ See the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/
 ### Executing an ML pipeline
 Run `typer exe_kg_lib.cli.main run run-pipeline <pipeline_path>`.
 
+### Visualizing a generated KG
+#### Prerequisites
+- **Neo4j version**: `4.4.*`
+- **Plugins**: APOC, Neosemantics (n10s)
+#### Steps
+1. Instantiate a Neo4j Graph DB and start it.
+2. Modify [this line of the provided visualization script](examples/neo4j_visualization.cypher#L18) and run it.
+
 [//]: # (--8<-- [end:usage])
 
 ## Installation
