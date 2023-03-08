@@ -56,8 +56,10 @@ jobs:
         run: poetry run poe bump-version-tag-with-semantic-rule
 
       - name: Build and deploy package
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: poetry publish --build
+        run: poetry publish --build --username __token__ --password $PYPI_TOKEN
 
 #      - name: Deploy docs
 #        run: |
