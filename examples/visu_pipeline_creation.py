@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-from classes import ExeKG
+from exe_kg_lib import ExeKG
 
 if __name__ == "__main__":
     exe_kg = ExeKG(kg_schema_name="Visualization")
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     pipeline_name = "VisuPipeline"
     pipeline = exe_kg.create_pipeline_task(
         pipeline_name,
-        input_data_path="../examples/data/dummy_data.csv",  # relative to kg_execution.py
+        input_data_path="./examples/data/dummy_data.csv",
     )
 
     canvas_task_properties = {"hasCanvasName": "MyCanvas", "hasLayout": "1 2"}
