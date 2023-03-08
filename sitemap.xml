@@ -2,152 +2,142 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/contributing/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/extending/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/external-resources/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/getting-started/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/installation/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/license/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/tasks-package-documentation/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/usage/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>None</loc>
-         <lastmod>2023-03-03</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://boschresearch.github.io/ExeKGLib/reference/kg_construction/</loc>
-         <lastmod>2023-03-03</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://boschresearch.github.io/ExeKGLib/reference/kg_execution/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/classes/data_entity/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/classes/entity/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/classes/exe_kg/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/classes/kg_schema/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/classes/task/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/classes/tasks/ml_tasks/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/classes/tasks/statistic_tasks/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/classes/tasks/visual_tasks/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/cli/main/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/utils/cli_utils/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/utils/kg_creation_utils/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/utils/query_utils/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/utils/string_utils/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/utils/task_utils/ml_utils/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/utils/task_utils/statistic_utils/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://boschresearch.github.io/ExeKGLib/reference/utils/task_utils/visual_utils/</loc>
-         <lastmod>2023-03-03</lastmod>
+         <lastmod>2023-03-08</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
