@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exe-kg-lib"
-version = "1.0.8"
+version = "1.0.0" # not used when bumping version via poe bump-version-tag or cd.yaml
 description = "Library for executable ML pipelines represented by KGs."
 license = "AGPL-3.0"
 authors = ["Antonis Klironomos <antonis.klironomos@de.bosch.com>", "Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
@@ -99,6 +99,8 @@ args = [
 
 [tool.poe.tasks.bump-version-tag]
 shell = """
+GIT_LATEST_TAG=$(git describe --tags --abbrev=0)
+poetry version $GIT_LATEST_TAG
 poetry version ${rule}
 VERSION=$(poetry version | cut -d' ' -f2 | tr -d '\n')
 git tag -a "${VERSION}" -m "Version ${VERSION}"
