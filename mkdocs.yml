@@ -1,12 +1,13 @@
-# Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
 
-site_name: "executable-ml-kgs"
+site_name: "ExeKGLib"
 site_author: "Mohamed Gad-Elrab"
-site_description: "Library for excutable ML pipelines KGs."
-site_url: "https://pages.github.boschdevcloud.com/bcai-internal/executable-ml-kgs"
+site_description: "Library for executable ML pipelines represented by KGs."
+site_url: "https://boschresearch.github.io/ExeKGLib"
 
-repo_name: "bcai-internal/executable-ml-kgs"
-repo_url: "https://github.boschdevcloud.com/bcai-internal/executable-ml-kgs"
+repo_name: "boschresearch/ExeKGLib"
+repo_url: "https://github.com/boschresearch/ExeKGLib"
 edit_uri: "edit/main/docs"
 
 site_dir: .site
@@ -14,17 +15,19 @@ site_dir: .site
 nav:
   - Overview:
     - Overview: index.md
-    - Installation: installation.md
     - Getting Started: getting-started.md
-    - Changelog: exported/changelog.md
+    - Usage: usage.md
+    - Installation: installation.md
+    - Extending: extending.md
+    - External resources: external-resources.md
   - Code Reference: reference/
   - Development:
+    - Adding a new ML-related task and method: adding-new-task-and-method.md
+    - Documentation of exe_kg_lib.classes.tasks package: tasks-package-documentation.md
     - Contributing: contributing.md
-    - Coverage: exported/coverage/report.html
-    - Tests: exported/tests/report.html
-  - License:
-    - executable_ml_kgs: license.md
-    - Third-Party Libraries: exported/third-party-licenses.md
+#    - Coverage: exported/coverage/report.html
+#    - Tests: exported/tests/report.html
+  - License: license.md
 
 theme:
   name: material
@@ -92,6 +95,10 @@ markdown_extensions:
 
 plugins:
   - gen-files:
+#      'exclude' throws a "Config value" warnings, as it is a custom property
+      exclude:
+        - "/examples"
+        - "__init__"
       scripts:
         - docs/generate-code-reference.py
   - git-revision-date-localized:

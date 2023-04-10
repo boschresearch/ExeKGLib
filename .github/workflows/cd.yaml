@@ -1,4 +1,5 @@
-# Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
 
 name: Continuous Deployment
 
@@ -18,7 +19,6 @@ concurrency:
 jobs:
   cd:
     name: CD
-    if: github.repository == 'bcai-internal/executable-ml-kgs'
     runs-on: [self-hosted, Linux]
     container: ubuntu:latest
 
@@ -52,26 +52,23 @@ jobs:
         run: |
           git config --add --global safe.directory "$GITHUB_WORKSPACE"
           git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@bosch.com"
+          git config user.email "${GITHUB_ACTOR}@de.bosch.com"
 
-      - name: Bump patch version
-        run: poetry run poe bump-version-tag patch
+      - name: Bump Poetry version and create Git tag
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: poetry run poe bump-version-tag-with-semantic-rule
+
+      # - name: Build and deploy package
+      #   env:
+      #     PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   run: poetry publish --build --username __token__ --password $PYPI_TOKEN
 
 #      - name: Deploy docs
 #        run: |
 #          poetry run poe test
 #          poetry run poe docs
 #          poetry run poe deploy-docs --push --alias latest
-
-#      - name: Deploy package
-#        run: |
-#          poetry run poe deploy-package \
-#            --repository production \
-#            --username ${{ secrets.ARTIFACTORY_RESOURCE_USER }} \
-#            --password ${{ secrets.ARTIFACTORY_RESOURCE_TOKEN }}
-
-      - name: Push version tag
-        run: poetry run poe push-latest-version-tag
 
   update_release_draft:
     name: Update release notes
@@ -82,6 +79,6 @@ jobs:
       - name: Set GHE_HOST
         run: echo "GHE_HOST=${GITHUB_SERVER_URL##https:\/\/}" >> $GITHUB_ENV
 
-      - uses: release-drafter/release-drafter@v5.21.0
+      - uses: release-drafter/release-drafter@v5.23.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

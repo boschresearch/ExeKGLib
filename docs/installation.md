@@ -44,9 +44,9 @@ before ranting! :pray:
     conda deactivate
     ```
 
-## Step 1: Actual Installation
+## Step 1: Dependency Installation
 
-The final project installation should be piece of :cake: in most cases by running
+The installation of the project's dependencies should be piece of :cake: in most cases by running
 
 ```sh
 poetry install
@@ -67,6 +67,15 @@ from within the project directory.
     | :------------------------------------ | :---------------------------------------------- |
     | _"I get a `ConnectionError`"_         | Maybe you have proxy issues.                    |
     | _"I destroyed my poetry environment"_ | Delete the `.venv` folder and create a new env. |
+
+## Step 2: Pre-commit Git Hooks Installation
+
+To ensure compatibility of each future commit with the project's conventions (e.g. code format), some predefined git hooks should be installed by running the following commands.
+
+```sh
+poetry shell  # use the created poetry environment
+pre-commit install
+```
 
 <!-- URLs -->
 [poetry]: https://python-poetry.org/

@@ -1,7 +1,3 @@
-<!---
-  Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
--->
-
 # Contributing
 
 ## TL;DR: 10 Steps To Your First Pull Request
@@ -10,12 +6,9 @@ Ok, this is a long document so let's TL;DR this. The following recipe quickly ou
 successful contribution in the form of a pull request.
 
 1. First, create an issue in our [issue tracker][issues] and describe the contribution you intend to make.
-2. We use feature branches. So before you start coding, create a fork and a local feature branch, on which you will make
-   your changes. We use the following template for naming feature branches: `"feature/"<Short description>`
-   Here is an example for a valid feature branch name: `feature/enhance-documentation`
-   ([More about our branching conventions](#branching-conventions))
+2. Before you start coding, create a fork and a local branch, on which you will make
+   your changes.
 3. Make the changes in your local git repository and commit.
-   ([More about our commit message conventions](#commit-message-conventions))
 4. When you'd like to share your code and/or start a pull request to get feedback, push your commits to the repository.
 5. Open the _Branches_ view in GitHub. Your newly pushed branch should show up there. Usually, all repositories have an
    associated build job which will pick up your new branch and build it once you open a PR.
@@ -27,7 +20,6 @@ successful contribution in the form of a pull request.
    reviewers as easy as possible by explaining what you did and why. The description can be formatted as markdown, so
    feel free to format, add code examples, link to specific lines of code or even add sketches or diagrams. You can also
    @-mention anyone on GitHub to inform them of the PR (usually we do that by prefixing the @-mention with `/CC` or `/FYI`).
-   ([More on our conventions for communicating within pull requests](#conventions-for-communicating-in-pull-requests))
 9. Every pull request will be reviewed and approved by at least one maintainer (see `README.md`) before it is merged.
 10. Add at least one of the maintainers as reviewer.
 
@@ -98,28 +90,6 @@ And if you're following the test first principle, it's always quite rewarding to
 turn green, once the implementation is complete. Finally, only adequate tests will empower you to continuously improve
 your codebase with refactoring, as this provides the reassurance that you didn't break anything accidentally.
 
-### Branching Conventions
-
-The following convention applies for naming feature branches:
-
-    feature/<description>
-
-Here is an example for a valid feature branch name:
-
-    feature/add-missing-docstrings
-
-### Commit Message Conventions
-
-We follow the [conventional commits][conventionalcommits] specification to add human and machine readable meaning to
-commit messages. In general, commit messages should briefly describe the change introduced with the commit and ideally
-contain the issue id(s) the changes refer to. Here are some examples of good commit messages:
-
-    "feat(docs): added installation instructions for getting started (#1)"
-    "fix(module-a): Added missing arguments in docstrings (#2)"
-
-Following this convention automatically associates the commit, and thus the branch and pull request that it belongs to
-with the given issue and vice versa.
-
 ### Writing Documentation
 
 We follow these principles when documenting code:
@@ -140,45 +110,6 @@ more than just an easy interface to git: it is a powerful collaboration and comm
 suited to share knowledge and onboard new contributors. So if you are new to te community, submitting pull requests is
 an excellent way for you to engage with us and for us to help you get started. Discussions and the Q&A that often
 accompanies pull requests are archived and linkable and we thus use them to disseminate knowledge about our codebase.
-
-#### Conventions for Communicating in Pull Requests
-
-These articles ([1][anatomy-of-a-perfect-pull-request], [2][code-review-love]) summarize how (and how not) to
-communicate in pull requests. Apart from the social aspects of interactions, we follow a couple of conventions for
-signaling, i.e. using the various technical means of communicating in pull requests that are afforded to us by GitHub.
-
-Below are common signals and how you use our platform to set them.
-
-| Signal                                                        | Description                                                                                                                                           |
-| :------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Add s.o. as reviewer**                                      | _"I'd like you to review my PR and I will not merge w/o your approval!"_                                                                              |
-| **Approve a PR**                                              | _"I'm ok with merging this PR. If there are open tasks, I expect these to be finished before merging and I trust you to do this w/o another review!"_ |
-| **PR Needs Work**                                             | _"I am not ok with merging this PR and I require changes to be made. I will re-review this PR after changes are made!"_                               |
-| **@-mention s.o. in PR description with /CC prefix**          | _"I'd like you to have a look at this PR but I'm not asking for your formal approval!"_                                                               |
-| **@-mention s.o. in PR description with /FYI prefix**         | _"Just so you know, we're working on this!"_                                                                                                          |
-| **@-mention s.o. in comment as part of question**             | _"Can you please reply to my question with a comment?"_                                                                                               |
-| **Reviewer adds task to PR**                                  | _"This needs to be fixed before I merge this PR!"_                                                                                                    |
-| **Author of PR adds task in response to comment of reviewer** | _"I will finish this** task before merging!"_                                                                                                         |
-| **Mark task as completed**                                    | _"This task is finished and I have pushed the changes!"_                                                                                              |
-| **Add like**                                                  | _"I agree with the statemens made in the liked comment!"_                                                                                             |
-| **Add link to issue**                                         | _"I wil not make the change in this PR but will take care of it later!"_                                                                              |
-
-Generally speaking, when signalling, try to
-
-- be respectful,
-- be concise,
-- be specific,
-- clearly state your expectation and
-- use links where possible (to files, lines in files, commits, pull requests, people, issues, other comments, …)
-
-#### Definition of Done
-
-We use the following checklist to determine if a PR is ready to merge:
-
-- The last build is _green_
-- If new code was added or if a bug was fixed, corresponding tests have been added
-- All tasks added by reviewers are resolved
-- At least one maintainer has approved the PR and none has signaled _Needs Work_
 
 #### General Tips
 
@@ -210,6 +141,6 @@ _May the source be with you!_
 [code-review-love]: https://mtlynch.io/code-review-love/
 [conventionalcommits]: https://www.conventionalcommits.org/
 [innersourcecommons]: https://innersourcecommons.org/
-[issues]: https://github.boschdevcloud.com/bcai-internal/executable-ml-kgs/issues
+[issues]: https://github.com/boschresearch/ExeKGLib/issues
 [markdown]: https://github.github.com/gfm/
 [mermaid]: https://mermaid-js.github.io/mermaid

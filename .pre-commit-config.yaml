@@ -1,4 +1,5 @@
-# Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
 
 minimum_pre_commit_version: "2.20.0"
 repos:
@@ -15,7 +16,6 @@ repos:
       - id: check-yaml
         args: ["--unsafe"]
       - id: end-of-file-fixer
-#      - id: no-commit-to-branch # default: main, master
       - id: trailing-whitespace
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
@@ -24,6 +24,7 @@ repos:
       - id: check-dependabot
       - id: check-github-actions
       - id: check-github-workflows
+        exclude: .github/workflows/combine-prs.yml
 
   - repo: local
     hooks:
@@ -32,8 +33,3 @@ repos:
         language: system
         name: Format files
         types: [python]
-#      - id: lint
-#        entry: poetry run poe lint
-#        language: system
-#        name: Lint code
-#        types: [python]

@@ -1,11 +1,9 @@
-# Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
-
 [tool.poetry]
-name = "executable-ml-kgs"
-version = "0.0.0" # Don't touch: Versions are dynamically generated from git tags
-description = "Library for executable ML pipelines KGs."
+name = "exe-kg-lib"
+version = "1.0.0" # not used when bumping version via poe bump-version-tag or cd.yaml
+description = "Library for executable ML pipelines represented by KGs."
 license = "All rights reserved"
-authors = ["Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
+authors = ["Antonis Klironomos <antonis.klironomos@de.bosch.com>", "Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
 
 classifiers = [
   "Development Status :: 1 - Planning",
@@ -17,11 +15,11 @@ classifiers = [
   "Topic :: Software Development",
 ]
 
-homepage = "https://github.boschdevcloud.com/bcai-internal/executable-ml-kgs"
+homepage = "https://boschresearch.github.io/ExeKGLib"
 include = ["README.md", "pyproject.toml"]
-maintainers = ["Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
+maintainers = ["Antonis Klironomos <antonis.klironomos@de.bosch.com>", "Mohamed Gad-Elrab <mohamed.gad-elrab@de.bosch.com>"]
 readme = "README.md"
-repository = "https://github.boschdevcloud.com/bcai-internal/executable-ml-kgs"
+repository = "https://github.com/boschresearch/ExeKGLib"
 
 [build-system]
 requires = ["poetry-core>=1.3.2"]
@@ -32,44 +30,31 @@ python = "^3.8"
 typer = "^0.7.0"
 pandas = "^1.5.2"
 scikit-learn = "^1.1.3"
-black = {extras = ["d"], version = "^22.10.0"}
+black = {extras = ["d"], version = ">=22.10,<24.0"}
 matplotlib = "^3.6.2"
 rdflib = "^6.2.0"
+mkdocs = "^1.4.2"
+typer-cli = "^0.0.13"
 
 [tool.poetry.group.dev.dependencies]
-bandit = "^1.7.4"
-black = "^22.10.0"
-dunamai = "^1.14.1"
+black = ">=22.10,<24.0"
 genbadge = {extras = ["coverage", "tests"], version = "^1.1.0"}
-git-changelog = "^0.6.0"
 isort = {extras = ["colors"], version = "^5.10.1"}
-mike = "^1.1.2"
 mkdocs-gen-files = "^0.4.0"
 mkdocs-git-revision-date-localized-plugin = "^1.1.0"
-mkdocs-literate-nav = "^0.5.0"
-mkdocs-material = "^8.5.10"
+mkdocs-literate-nav = ">=0.5,<0.7"
+mkdocs-material = ">=8.5.10,<10.0.0"
 mkdocs-minify-plugin = "^0.6.2"
 mkdocstrings-python = "^0.8.2"
-mypy = "^0.991"
-pip-licenses = "^4.0.1"
-poethepoet = "^0.16.5"
-pre-commit = "^2.20.0"
-pydocstyle = "^6.1.1"
-pyflakes = "^3.0.1"
-pylint = "^2.15.7"
+poethepoet = ">=0.16.5,<0.19.0"
+pre-commit = ">=2.20,<4.0"
 pytest = ">=7.2.0"
 pytest-cov = "^4.0.0"
 pytest-html = "^3.2.0"
 pytest-xdist = "^3.0.2"
 pyupgrade = "^3.2.3"
 
-[tool.poetry.scripts]
-executable-ml-kgs = "executable_ml_kgs.cli.main:app"
-
 # Tools config
-[tool.bandit]
-exclude_dirs = [".venv"]
-
 [tool.black]
 line-length = 120
 
@@ -80,28 +65,7 @@ skip_empty = true
 
 [tool.coverage.run]
 branch = true
-source = ["executable_ml_kgs"]
-
-[tool.isort]
-line_length = 120
-profile = "black"
-
-[tool.mypy]
-ignore_missing_imports = true
-pretty = true
-show_error_context = true
-show_traceback = true
-
-[tool.pydocstyle]
-add_ignore = [
-  "D104", # Missing docstring in public package
-  "D202", # No blank lines allowed after function docstring
-  "D413", # Missing blank line after last section
-]
-convention = "google"
-
-[tool.pylint.format]
-max-line-length = 120
+source = ["exe_kg_lib"]
 
 [tool.pytest.ini_options]
 addopts = [
@@ -116,98 +80,10 @@ addopts = [
   "-ra",
 ]
 
-[tool.pylint.logging]
-logging-format-style = "new"
-
-[tool.pylint.master]
-fail-under = 8
-
-[tool.pylint.messages_control]
-disable = ["logging-fstring-interpolation", "unspecified-encoding"]
-
-[tool.pylint.reports]
-output-format = "colorized"
-
 # Task runner config
 [tool.poe]
 shell_interpreter = "bash"
 verbosity = 1
-
-[tool.poe.tasks.bump-version-tag]
-shell = """
-  set -e
-  git fetch --all --tags
-  VERSION_OLD=$(dunamai from git --format "{base}")
-  if [[ $(git status --porcelain pyproject.toml) ]]; then
-    echo "You have uncommitted changes in pyproject.toml. Stopping.";
-    exit 1;
-  fi
-  poetry version --quiet $VERSION_OLD
-  poetry version ${part}
-  VERSION_NEW=$(poetry version --short)
-  git checkout pyproject.toml
-  TAG_NEW=v$VERSION_NEW
-  git tag $TAG_NEW ${release:+ --annotate --message="Bump from $VERSION_OLD to $VERSION_NEW"}
-  """
-help = """Bump version. This creates a new git tag based on the desired version part.
-                          Note that the task does not actually push the tag.
-                          You can do this manually e.g. by running 'poe push-latest-version-tag'."""
-args = [
-  { name = "part", positional = true, required = true, help = "Part of version being bumped. Allowed values: patch, minor, major." },
-  { name = "release", type = "boolean", help = "Wether this is a release. Then, the tag will be annotated." },
-]
-
-[tool.poe.tasks.clean]
-cmd = """
-  rm -rf \
-    .coverage \
-    .mypy_cache \
-    .pytest_cache \
-    .site \
-    **/__pycache__ \
-    coverage.xml \
-    dist \
-    docs/exported \
-    docs/index.md \
-    pytest.xml
-  """
-help = "Clean up all temporary files."
-
-[tool.poe.tasks.deploy-docs]
-shell = """
-  VERSION=$(dunamai from git --format "{base}")
-  MAJOR=$(echo $VERSION | cut -d. -f1)
-  MINOR=$(echo $VERSION | cut -d. -f2)
-  mike deploy ${push:+ --force --push} --no-redirect --update-aliases $MAJOR.$MINOR${version_postfix} ${alias}
-  """
-help = "Deploy docs (to GitHub pages if using the --push flag) (needs completed docs task)."
-args = [
-  { name = "alias", required = true, help = "Version alias." },
-  { name = "push", type = "boolean", help = "Wether to push the docs." },
-  { name = "version-postfix", default = "", help = "Optional information appended to version." },
-]
-
-[tool.poe.tasks.deploy-package]
-shell = """
-  VERSION=$(dunamai from git --format "{base}")
-  if [[ $(git status --porcelain pyproject.toml) ]]; then
-    echo "You have uncommitted changes in pyproject.toml. Stopping.";
-    exit 1;
-  fi
-  poetry version --quiet $VERSION
-  poetry publish --build --repository ${repository} --username ${username} --password ${password}
-  git checkout pyproject.toml
-  """
-help = "Deploy package to an artifactory repository."
-args = [
-  { name = "password", required = true, help = "Repository password / access token." },
-  { name = "repository", required = true, help = "Repository to use (needs to be configured in poetry.toml)." },
-  { name = "username", required = true, help = "Repository user name." },
-]
-
-[tool.poe.tasks.docs]
-sequence = [{ ref = "_export-docs-artifacts" }, { cmd = "mkdocs build" }]
-help = "Build docs (needs completed test task)."
 
 [tool.poe.tasks.format]
 sequence = [
@@ -221,71 +97,32 @@ args = [
   { name = "files", positional = true, multiple = true, default = "**/*.py", help = "List of files (optional)" },
 ]
 
-[tool.poe.tasks.lint]
-sequence = [
-  { cmd = "bandit --severity-level medium --recursive --configfile pyproject.toml ${files}" },
-  { cmd = "pydocstyle --explain --source ${files}" },
-  { cmd = "pyflakes ${files}" },
-  { cmd = "mypy ${files}" },
-  { cmd = "pylint ${files}" },
-]
-help = "Lint Python files with bandit, pydocstyle, pyflakes, mypy & pylint."
+[tool.poe.tasks.bump-version-tag]
+shell = """
+GIT_LATEST_TAG=$(git describe --tags --abbrev=0)
+poetry version $GIT_LATEST_TAG
+poetry version ${rule}
+VERSION=$(poetry version | cut -d' ' -f2 | tr -d '\n')
+git tag -a "${VERSION}" -m "Version ${VERSION}"
+git push --follow-tags
+"""
+help = "Bump Poetry version and create Git tag."
 args = [
-  { name = "files", positional = true, multiple = true, default = "executable_ml_kgs tests", help = "List of files or directories (optional)" },
+  { name = "rule", positional = true, help = "Version bump rule." },
 ]
 
-[tool.poe.tasks.push-latest-version-tag]
-shell = "git push origin v$(dunamai from git --format \"{base}\")"
-help = "Push the latest version tag."
+[tool.poe.tasks.bump-version-tag-with-semantic-rule]
+shell = """
+HEAD_COMMIT_CONTENT=$(git log -1)
 
-[tool.poe.tasks.release]
-sequence = [
-  { ref = "test" },
-  { ref = "bump-version-tag --release ${part}" },
-  { ref = "docs" },
-  { ref = "deploy-docs --push --alias stable" },
-  { cmd = "mike set-default --push stable" },
-  { ref = "deploy-package --repository production --username ${username} --password ${password}" },
-  { ref = "push-latest-version-tag" },
-]
-help = """Make a new (stable) release. This will create and push a new tag based on the version,
-                          test, build & deploy the docs."""
-args = [
-  { name = "part", positional = true, default = "minor", help = "Release type. Allowed values: patch, minor, major." },
-  { name = "password", required = true, help = "The repository password / access token." },
-  { name = "username", required = true, help = "Repository user name." },
-]
+RULE="patch"
+if [[ $HEAD_COMMIT_CONTENT == *"MAJOR_CHANGE"* ]]; then
+  RULE="major"
+elif [[ $HEAD_COMMIT_CONTENT == *"MINOR_CHANGE"* ]]; then
+  RULE="minor"
+fi
 
-[tool.poe.tasks.test]
-sequence = [
-  { cmd = "pytest" },
-  { cmd = "coverage xml" },
-  { cmd = "coverage html --directory docs/exported/coverage" },
-  { shell = "mv docs/exported/coverage/index.html docs/exported/coverage/report.html" },
-  { cmd = "coverage report" },
-]
-help = "Run pytest & compute test coverage."
-
-[tool.poe.tasks._export-docs-artifacts]
-sequence = [
-#   { cmd = "git-changelog . --output docs/exported/changelog.md --style conventional --template angular" },
-#   { cmd = "genbadge coverage --input-file coverage.xml --output-file docs/exported/coverage/badge.svg" },
-#   { cmd = "genbadge tests --input-file pytest.xml --output-file docs/exported/tests/badge.svg" },
-  { ref = "_export-licenses" },
-  { shell = "poe --help > docs/exported/poe-options.txt" },
-]
-
-[tool.poe.tasks._export-licenses]
-cmd = """
-  pip-licenses --format markdown --with-authors --with-urls --with-description \
-    --output-file docs/exported/third-party-licenses.md
-  """
-
-
-[tool.poe.tasks.export-3rd-party-licenses]
-sequence = [
-    {cmd = """
-      pip-licenses --format markdown --with-authors --with-urls --with-description \
-        --output-file ./third-party-licenses.md
-        """}
-      ]
+poetry run poe bump-version-tag ${RULE}
+"""
+help = "Bump Poetry version after semantically checking HEAD commit message and create Git tag."
+args = []

@@ -1,4 +1,5 @@
-# Copyright (c) 2022 Robert Bosch GmbH and its subsidiaries. All rights reserved.
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
 
 """Generate code reference using `mkdocs-gen-files` and `mkdocs-literate-nav`.
 
@@ -10,10 +11,12 @@ from pathlib import Path
 
 import mkdocs_gen_files
 
-PACKAGE_IMPORT_NAME = "executable_ml_kgs"
+PACKAGE_IMPORT_NAME = "exe_kg_lib"
 
 nav = mkdocs_gen_files.Nav()
 nav[PACKAGE_IMPORT_NAME] = "index.md"
+
+excludes = mkdocs_gen_files.config["plugins"]["gen-files"].config["exclude"]
 
 for path in sorted(Path(PACKAGE_IMPORT_NAME).glob("**/*.py")):
     relative_path = path.relative_to(PACKAGE_IMPORT_NAME)
@@ -21,9 +24,10 @@ for path in sorted(Path(PACKAGE_IMPORT_NAME).glob("**/*.py")):
     doc_path = relative_path.with_suffix(".md")
     full_doc_path = Path("reference", doc_path)
 
-    parts = module_path.parts
-    if "__init__" in parts:
+    if any([exclude in str(full_doc_path) for exclude in excludes]):
         continue
+
+    parts = module_path.parts
     nav[parts] = doc_path.as_posix()
 
     with mkdocs_gen_files.open(full_doc_path, "w") as file:
