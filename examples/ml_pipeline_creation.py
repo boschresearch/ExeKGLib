@@ -4,7 +4,7 @@
 from exe_kg_lib import ExeKG
 
 if __name__ == "__main__":
-    exe_kg = ExeKG(kg_schema_name="Machine Learning")
+    exe_kg = ExeKG()
     feature_columns = ["feature_1", "feature_2", "feature_3", "feature_4", "feature_5"]
     label_column = "label"
 
@@ -33,20 +33,22 @@ if __name__ == "__main__":
     )
 
     concatenate_task = exe_kg.add_task(
-        task_type="Concatenation",
+        kg_schema_short="ml",
+        task="Concatenation",
         input_data_entity_dict={"DataInConcatenation": feature_data_entities},
-        method_type="ConcatenationMethod",
-        data_properties={},
+        method="ConcatenationMethod",
+        properties_dict={},
     )
 
     data_splitting_task = exe_kg.add_task(
-        task_type="DataSplitting",
+        kg_schema_short="ml",
+        task="DataSplitting",
         input_data_entity_dict={
             "DataInDataSplittingX": [concatenate_task.output_dict["DataOutConcatenatedData"]],
             "DataInDataSplittingY": [label_data_entity],
         },
-        method_type="DataSplittingMethod",
-        data_properties={"hasSplitRatio": 0.8},
+        method="DataSplittingMethod",
+        properties_dict={"hasSplitRatio": 0.8},
     )
 
     train_x = data_splitting_task.output_dict["DataOutSplittedTrainDataX"]
@@ -55,80 +57,83 @@ if __name__ == "__main__":
     test_real_y = data_splitting_task.output_dict["DataOutSplittedTestDataY"]
 
     knn_train_task = exe_kg.add_task(
-        task_type="Train",
+        kg_schema_short="ml",
+        task="Train",
         input_data_entity_dict={
             "DataInTrainX": [train_x],
             "DataInTrainY": [train_real_y],
         },
-        method_type="KNNTrain",
-        data_properties={},
+        method="KNNTrain",
+        properties_dict={},
     )
     model = knn_train_task.output_dict["DataOutTrainModel"]
     train_predicted_y = knn_train_task.output_dict["DataOutPredictedValueTrain"]
 
     knn_test_task = exe_kg.add_task(
-        task_type="Test",
+        kg_schema_short="ml",
+        task="Test",
         input_data_entity_dict={
             "DataInTestModel": [model],
             "DataInTestX": [test_x],
         },
-        method_type="KNNTest",
-        data_properties={},
+        method="KNNTest",
+        properties_dict={},
     )
     test_predicted_y = knn_test_task.output_dict["DataOutPredictedValueTest"]
 
     performance_calc_task = exe_kg.add_task(
-        task_type="PerformanceCalculation",
+        kg_schema_short="ml",
+        task="PerformanceCalculation",
         input_data_entity_dict={
             "DataInTrainRealY": [train_real_y],
             "DataInTrainPredictedY": [train_predicted_y],
             "DataInTestRealY": [test_real_y],
             "DataInTestPredictedY": [test_predicted_y],
         },
-        method_type="PerformanceCalculationMethod",
-        data_properties={},
+        method="PerformanceCalculationMethod",
+        properties_dict={},
     )
     train_error = performance_calc_task.output_dict["DataOutMLTrainErr"]
     test_error = performance_calc_task.output_dict["DataOutMLTestErr"]
 
     canvas_task = exe_kg.add_task(
-        task_type="CanvasTask",
+        kg_schema_short="visu",
+        task="CanvasTask",
         input_data_entity_dict={},
-        method_type="CanvasMethod",
-        data_properties={"hasCanvasName": "MyCanvas", "hasLayout": "1 1"},
-        visualization=True,
+        method="CanvasMethod",
+        properties_dict={"hasCanvasName": "MyCanvas", "hasLayout": "1 1"},
     )
 
     train_error_lineplot_task = exe_kg.add_task(
-        task_type="PlotTask",
+        kg_schema_short="visu",
+        task="PlotTask",
         input_data_entity_dict={
             "DataInVector": [train_error],
         },
-        method_type="ScatterplotMethod",
-        data_properties={
+        method="ScatterplotMethod",
+        properties_dict={
             "hasLegendName": "Train error",
             "hasLineStyle": "o",
             "hasScatterStyle": "o",
             "hasLineWidth": 1,
             "hasScatterSize": 1,
         },
-        visualization=True,
     )
 
     test_error_lineplot_task = exe_kg.add_task(
-        task_type="PlotTask",
+        kg_schema_short="visu",
+        task="PlotTask",
         input_data_entity_dict={
             "DataInVector": [test_error],
         },
-        method_type="ScatterplotMethod",
-        data_properties={
+        method="ScatterplotMethod",
+        properties_dict={
             "hasLegendName": "Test error",
             "hasLineStyle": "o",
             "hasScatterStyle": "o",
             "hasLineWidth": 1,
             "hasScatterSize": 1,
         },
-        visualization=True,
     )
 
     exe_kg.save_created_kg(f"./pipelines/{pipeline_name}.ttl")

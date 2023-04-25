@@ -194,7 +194,6 @@ def add_and_attach_data_entity(
 
 def create_pipeline_task(
     top_level_schema_namespace: Namespace,
-    bottom_level_schema_namespace: Namespace,
     parent_entity: Entity,
     kg: Graph,
     pipeline_name: str,
@@ -213,7 +212,7 @@ def create_pipeline_task(
     Returns:
         Task: created pipeline task
     """
-    pipeline = Task(bottom_level_schema_namespace + pipeline_name, parent_entity)
+    pipeline = Task(top_level_schema_namespace + pipeline_name, parent_entity)
     add_instance(kg, pipeline)
 
     input_data_path_literal = Literal(lexical_or_value=input_data_path, datatype=XSD.string)

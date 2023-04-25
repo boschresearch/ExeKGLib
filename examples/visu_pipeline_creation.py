@@ -4,7 +4,7 @@
 from exe_kg_lib import ExeKG
 
 if __name__ == "__main__":
-    exe_kg = ExeKG(kg_schema_name="Visualization")
+    exe_kg = ExeKG()
     my_data_entity = exe_kg.create_data_entity(
         name="feature_1",
         source_value="feature_1",
@@ -19,10 +19,11 @@ if __name__ == "__main__":
 
     canvas_task_properties = {"hasCanvasName": "MyCanvas", "hasLayout": "1 2"}
     canvas_task = exe_kg.add_task(
-        task_type="CanvasTask",
+        kg_schema_short="visu",
+        task="CanvasTask",
         input_data_entity_dict={},
-        method_type="CanvasMethod",
-        data_properties=canvas_task_properties,
+        method="CanvasMethod",
+        properties_dict=canvas_task_properties,
     )
 
     lineplot_task_properties = {
@@ -31,10 +32,11 @@ if __name__ == "__main__":
         "hasLineWidth": 1,
     }
     lineplot_task = exe_kg.add_task(
-        task_type="PlotTask",
+        kg_schema_short="visu",
+        task="PlotTask",
         input_data_entity_dict={"DataInVector": [my_data_entity]},
-        method_type="LineplotMethod",
-        data_properties=lineplot_task_properties,
+        method="LineplotMethod",
+        properties_dict=lineplot_task_properties,
     )
 
     exe_kg.save_created_kg(f"./pipelines/{pipeline_name}.ttl")

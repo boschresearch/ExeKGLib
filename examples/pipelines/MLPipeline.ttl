@@ -3,17 +3,39 @@
 @prefix visu: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ml:MLPipeline a ds:Pipeline ;
+ds:MLPipeline a ds:Pipeline ;
     ds:hasInputDataPath "./examples/data/dummy_data.csv"^^xsd:string ;
     ds:hasStartTask ml:Concatenation1 .
 
-ml:CanvasMethod1 a visu:CanvasMethod .
+ds:feature_1 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_1"^^xsd:string .
 
-ml:CanvasTask1 a visu:CanvasTask ;
-    ds:hasNextTask ml:PlotTask1 ;
-    visu:hasCanvasMethod ml:CanvasMethod1 ;
-    visu:hasCanvasName "MyCanvas"^^xsd:string ;
-    visu:hasLayout "1 1"^^ds:intPair .
+ds:feature_2 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_2"^^xsd:string .
+
+ds:feature_3 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_3"^^xsd:string .
+
+ds:feature_4 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_4"^^xsd:string .
+
+ds:feature_5 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_5"^^xsd:string .
+
+ds:label a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "label"^^xsd:string .
 
 ml:Concatenation1 a ml:Concatenation ;
     ds:hasInput ml:DataInConcatenation1_1,
@@ -28,25 +50,25 @@ ml:Concatenation1 a ml:Concatenation ;
 ml:ConcatenationMethod1 a ml:ConcatenationMethod .
 
 ml:DataInConcatenation1_1 a ml:DataInConcatenation ;
-    ds:hasReference ml:feature_1 .
+    ds:hasReference ds:feature_1 .
 
 ml:DataInConcatenation1_2 a ml:DataInConcatenation ;
-    ds:hasReference ml:feature_2 .
+    ds:hasReference ds:feature_2 .
 
 ml:DataInConcatenation1_3 a ml:DataInConcatenation ;
-    ds:hasReference ml:feature_3 .
+    ds:hasReference ds:feature_3 .
 
 ml:DataInConcatenation1_4 a ml:DataInConcatenation ;
-    ds:hasReference ml:feature_4 .
+    ds:hasReference ds:feature_4 .
 
 ml:DataInConcatenation1_5 a ml:DataInConcatenation ;
-    ds:hasReference ml:feature_5 .
+    ds:hasReference ds:feature_5 .
 
 ml:DataInDataSplittingX1_1 a ml:DataInDataSplittingX ;
     ds:hasReference ml:DataOutConcatenatedData1 .
 
 ml:DataInDataSplittingY1_1 a ml:DataInDataSplittingY ;
-    ds:hasReference ml:label .
+    ds:hasReference ds:label .
 
 ml:DataInTestModel1_1 a ml:DataInTestModel ;
     ds:hasReference ml:DataOutTrainModel1 .
@@ -94,35 +116,12 @@ ml:PerformanceCalculation1 a ml:PerformanceCalculation ;
         ml:DataInTestRealY1_1,
         ml:DataInTrainPredictedY1_1,
         ml:DataInTrainRealY1_1 ;
-    ds:hasNextTask ml:CanvasTask1 ;
+    ds:hasNextTask visu:CanvasTask1 ;
     ds:hasOutput ml:DataOutMLTestErr1,
         ml:DataOutMLTrainErr1 ;
     ml:hasPerformanceCalculationMethod ml:PerformanceCalculationMethod1 .
 
 ml:PerformanceCalculationMethod1 a ml:PerformanceCalculationMethod .
-
-ml:PlotTask1 a visu:PlotTask ;
-    ds:hasInput visu:DataInVector1_1 ;
-    ds:hasNextTask ml:PlotTask2 ;
-    visu:hasLegendName "Train error"^^xsd:string ;
-    visu:hasLineStyle "o"^^xsd:string ;
-    visu:hasLineWidth "1"^^xsd:int ;
-    visu:hasPlotMethod ml:ScatterplotMethod1 ;
-    visu:hasScatterSize "1"^^xsd:int ;
-    visu:hasScatterStyle "o"^^xsd:string .
-
-ml:PlotTask2 a visu:PlotTask ;
-    ds:hasInput visu:DataInVector2_1 ;
-    visu:hasLegendName "Test error"^^xsd:string ;
-    visu:hasLineStyle "o"^^xsd:string ;
-    visu:hasLineWidth "1"^^xsd:int ;
-    visu:hasPlotMethod ml:ScatterplotMethod2 ;
-    visu:hasScatterSize "1"^^xsd:int ;
-    visu:hasScatterStyle "o"^^xsd:string .
-
-ml:ScatterplotMethod1 a visu:ScatterplotMethod .
-
-ml:ScatterplotMethod2 a visu:ScatterplotMethod .
 
 ml:Test1 a ml:Test ;
     ds:hasInput ml:DataInTestModel1_1,
@@ -139,41 +138,42 @@ ml:Train1 a ml:Train ;
         ml:DataOutTrainModel1 ;
     ml:hasTrainMethod ml:KNNTrain1 .
 
-ml:feature_1 a ds:DataEntity ;
-    ds:hasDataSemantics ds:TimeSeries ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasSource "feature_1"^^xsd:string .
+visu:CanvasMethod1 a visu:CanvasMethod .
 
-ml:feature_2 a ds:DataEntity ;
-    ds:hasDataSemantics ds:TimeSeries ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasSource "feature_2"^^xsd:string .
-
-ml:feature_3 a ds:DataEntity ;
-    ds:hasDataSemantics ds:TimeSeries ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasSource "feature_3"^^xsd:string .
-
-ml:feature_4 a ds:DataEntity ;
-    ds:hasDataSemantics ds:TimeSeries ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasSource "feature_4"^^xsd:string .
-
-ml:feature_5 a ds:DataEntity ;
-    ds:hasDataSemantics ds:TimeSeries ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasSource "feature_5"^^xsd:string .
-
-ml:label a ds:DataEntity ;
-    ds:hasDataSemantics ds:TimeSeries ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasSource "label"^^xsd:string .
+visu:CanvasTask1 a visu:CanvasTask ;
+    ds:hasNextTask visu:PlotTask1 ;
+    visu:hasCanvasMethod visu:CanvasMethod1 ;
+    visu:hasCanvasName "MyCanvas"^^xsd:string ;
+    visu:hasLayout "1 1"^^ds:intPair .
 
 visu:DataInVector1_1 a visu:DataInVector ;
     ds:hasReference ml:DataOutMLTrainErr1 .
 
 visu:DataInVector2_1 a visu:DataInVector ;
     ds:hasReference ml:DataOutMLTestErr1 .
+
+visu:PlotTask1 a visu:PlotTask ;
+    ds:hasInput visu:DataInVector1_1 ;
+    ds:hasNextTask visu:PlotTask2 ;
+    visu:hasLegendName "Train error"^^xsd:string ;
+    visu:hasLineStyle "o"^^xsd:string ;
+    visu:hasLineWidth "1"^^xsd:int ;
+    visu:hasPlotMethod visu:ScatterplotMethod1 ;
+    visu:hasScatterSize "1"^^xsd:int ;
+    visu:hasScatterStyle "o"^^xsd:string .
+
+visu:PlotTask2 a visu:PlotTask ;
+    ds:hasInput visu:DataInVector2_1 ;
+    visu:hasLegendName "Test error"^^xsd:string ;
+    visu:hasLineStyle "o"^^xsd:string ;
+    visu:hasLineWidth "1"^^xsd:int ;
+    visu:hasPlotMethod visu:ScatterplotMethod2 ;
+    visu:hasScatterSize "1"^^xsd:int ;
+    visu:hasScatterStyle "o"^^xsd:string .
+
+visu:ScatterplotMethod1 a visu:ScatterplotMethod .
+
+visu:ScatterplotMethod2 a visu:ScatterplotMethod .
 
 ml:DataOutConcatenatedData1 a ds:DataEntity .
 

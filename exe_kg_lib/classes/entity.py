@@ -21,7 +21,7 @@ class Entity:
 
     @staticmethod
     def get_namespace(iri: str) -> str:
-        return iri.split("#")[0]
+        return iri.split("#")[0] + "#"
 
     @staticmethod
     def get_descriptor(iri: str) -> str:

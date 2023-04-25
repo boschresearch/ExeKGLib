@@ -17,9 +17,8 @@ app = typer.Typer(name="ML pipeline creation and execution", no_args_is_help=Tru
 @app.command()
 def create_pipeline():
     pipeline_name, input_data_path = input_pipeline_info()
-    kg_schema_name = ExeKG.input_kg_schema_name()
 
-    exe_kg = ExeKG(kg_schema_name=kg_schema_name)
+    exe_kg = ExeKG()
     exe_kg.start_pipeline_creation(pipeline_name, input_data_path)
     exe_kg.save_created_kg(f"pipelines/{pipeline_name}.ttl")
 
