@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
 site_name: "ExeKGLib"
 site_author: "Mohamed Gad-Elrab"
 site_description: "Library for executable ML pipelines represented by KGs."
@@ -12,7 +15,7 @@ site_dir: .site
 nav:
   - Overview:
     - Overview: index.md
-    - Getting Started: getting-started.md
+    - Ready-to-use ML-related tasks and methods: supported-methods.md
     - Usage: usage.md
     - Installation: installation.md
     - Extending: extending.md

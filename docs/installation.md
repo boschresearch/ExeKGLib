@@ -2,7 +2,14 @@
 
 # Installation
 
-## Step 0: `poetry`
+## Installing with pip
+
+<!-- markdownlint-disable-next-line MD041 -->
+--8<-- "README.md:installation"
+
+## Installing from source code
+
+### Step 0: `poetry`
 
 This project is managed by [`poetry`][poetry], a Python packaging and dependency management tool.
 This means, however, that `poetry` needs to be installed _before_ you can install this project.
@@ -44,7 +51,7 @@ before ranting! :pray:
     conda deactivate
     ```
 
-## Step 1: Dependency Installation
+### Step 1: Dependency Installation
 
 The installation of the project's dependencies should be piece of :cake: in most cases by running
 
@@ -68,7 +75,7 @@ from within the project directory.
     | _"I get a `ConnectionError`"_         | Maybe you have proxy issues.                    |
     | _"I destroyed my poetry environment"_ | Delete the `.venv` folder and create a new env. |
 
-## Step 2: Pre-commit Git Hooks Installation
+### Step 2: Pre-commit Git Hooks Installation
 
 To ensure compatibility of each future commit with the project's conventions (e.g. code format), some predefined git hooks should be installed by running the following commands.
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
 minimum_pre_commit_version: "2.20.0"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
