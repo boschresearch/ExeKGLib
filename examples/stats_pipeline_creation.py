@@ -4,7 +4,7 @@
 from exe_kg_lib import ExeKG
 
 if __name__ == "__main__":
-    exe_kg = ExeKG(kg_schema_name="Statistics")
+    exe_kg = ExeKG()
     my_data_entity = exe_kg.create_data_entity(
         name="feature_1",
         source_value="feature_1",
@@ -19,51 +19,52 @@ if __name__ == "__main__":
     )
 
     normalization_task = exe_kg.add_task(
-        task_type="NormalizationTask",
+        kg_schema_short="stats",
+        task="NormalizationTask",
         input_data_entity_dict={"DataInNormalization": [my_data_entity]},
-        method_type="NormalizationMethod",
-        data_properties={},
+        method="NormalizationMethod",
+        properties_dict={},
     )
     norm_output = normalization_task.output_dict["DataOutNormalization"]
 
     canvas_task = exe_kg.add_task(
-        task_type="CanvasTask",
+        kg_schema_short="visu",
+        task="CanvasTask",
         input_data_entity_dict={},
-        method_type="CanvasMethod",
-        data_properties={"hasCanvasName": "MyCanvas", "hasLayout": "1 1"},
-        visualization=True,
+        method="CanvasMethod",
+        properties_dict={"hasCanvasName": "MyCanvas", "hasLayout": "1 1"},
     )
 
     feature_1_scatterplot_task = exe_kg.add_task(
-        task_type="PlotTask",
+        kg_schema_short="visu",
+        task="PlotTask",
         input_data_entity_dict={
             "DataInVector": [my_data_entity],
         },
-        method_type="ScatterplotMethod",
-        data_properties={
+        method="ScatterplotMethod",
+        properties_dict={
             "hasLegendName": "Feature 1 before normalization",
             "hasLineStyle": "o",
             "hasScatterStyle": "o",
             "hasLineWidth": 1,
             "hasScatterSize": 1,
         },
-        visualization=True,
     )
 
     norm_output_scatterplot_task = exe_kg.add_task(
-        task_type="PlotTask",
+        kg_schema_short="visu",
+        task="PlotTask",
         input_data_entity_dict={
             "DataInVector": [norm_output],
         },
-        method_type="ScatterplotMethod",
-        data_properties={
+        method="ScatterplotMethod",
+        properties_dict={
             "hasLegendName": "Normalized feature 1",
             "hasLineStyle": "o",
             "hasScatterStyle": "o",
             "hasLineWidth": 1,
             "hasScatterSize": 1,
         },
-        visualization=True,
     )
 
     exe_kg.save_created_kg(f"./pipelines/{pipeline_name}.ttl")

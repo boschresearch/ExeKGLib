@@ -2,9 +2,14 @@
 @prefix visu: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-visu:VisuPipeline a ds:Pipeline ;
+ds:VisuPipeline a ds:Pipeline ;
     ds:hasInputDataPath "./examples/data/dummy_data.csv"^^xsd:string ;
     ds:hasStartTask visu:CanvasTask1 .
+
+ds:feature_1 a ds:DataEntity ;
+    ds:hasDataSemantics ds:TimeSeries ;
+    ds:hasDataStructure ds:Vector ;
+    ds:hasSource "feature_1"^^xsd:string .
 
 visu:CanvasMethod1 a visu:CanvasMethod .
 
@@ -15,7 +20,7 @@ visu:CanvasTask1 a visu:CanvasTask ;
     visu:hasLayout "1 2"^^ds:intPair .
 
 visu:DataInVector1_1 a visu:DataInVector ;
-    ds:hasReference visu:feature_1 .
+    ds:hasReference ds:feature_1 .
 
 visu:LineplotMethod1 a visu:LineplotMethod .
 
@@ -25,8 +30,3 @@ visu:PlotTask1 a visu:PlotTask ;
     visu:hasLineStyle "-"^^xsd:string ;
     visu:hasLineWidth "1"^^xsd:int ;
     visu:hasPlotMethod visu:LineplotMethod1 .
-
-visu:feature_1 a ds:DataEntity ;
-    ds:hasDataSemantics ds:TimeSeries ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasSource "feature_1"^^xsd:string .
