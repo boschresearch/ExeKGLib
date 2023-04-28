@@ -54,8 +54,6 @@ class ExeKG:
         """
 
         Args:
-            kg_schema_name: name of chosen bottom-level KG schema to use in case of KG construction (must be equal to one of KG_SCHEMAS keys)
-                            acts as switch for KG construction mode (if filled, mode is on)
             input_exe_kg_path: path of KG to be executed
                                acts as switch for KG execution mode (if filled, mode is on)
         """

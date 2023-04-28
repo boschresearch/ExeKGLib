@@ -203,7 +203,6 @@ def create_pipeline_task(
     Adds instance of pipeline task to kg
     Args:
         top_level_schema_namespace: namespace of the top-level KG schema
-        bottom_level_schema_namespace: namespace of the bottom-level KG schema
         parent_entity: parent entity of pipeline instance
         kg: Graph object to add to
         pipeline_name: name for the pipeline
