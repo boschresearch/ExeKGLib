@@ -1,5 +1,4 @@
 # ExeKGLib
-# ExeKGLib
 
 ![PyPI](https://img.shields.io/pypi/v/exe-kg-lib)
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
@@ -29,7 +28,7 @@ _Klironomos A., Zhou B., Tan Z., Zheng Z., Gad-Elrab M., Paulheim H., Kharlamov 
 
 Detailed information (installation, documentation etc.) about **ExeKGLib** can be found in [its website](https://boschresearch.github.io/ExeKGLib/) and basic information is shown below.
 
-To download, run `pip install exe-kg-lib`.
+## Installation
 
 [//]: # (--8<-- [start:installation])
 To install, run `pip install exe-kg-lib`.
@@ -43,7 +42,7 @@ For detailed installation instructions, refer to the [installation page](https:/
 <details>
   <summary>Click to expand</summary>
 
-[//]: # (--8<-- [start:supportedmethods])
+<!-- --8<-- [start:supportedmethods] -->
 | KG schema (abbreviation) | Task                      | Method                       | Properties                                                                                    | Input (data structure)                                                                                                                                           | Output (data structure)                                                                                                                                                                    | Implemented by Python class                          |
 | ------------------------ | ------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
 | Machine Learning (ML)    | Train                     | KNNTrain                     | \-                                                                                            | DataInTrainX (Matrix or Vector)<br>DataInTrainY (Matrix or Vector)                                                                                               | DataOutPredictedValueTrain (Matrix or Vector)<br>DataOutTrainModel (SingleValue)                                                                                                           | TrainKNNTrain                                        |

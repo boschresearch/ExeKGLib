@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0
 
 site_name: "ExeKGLib"
-site_author: "Mohamed Gad-Elrab"
+site_author: "Antonis Klironomos & Mohamed Gad-Elrab"
 site_description: "Library for executable ML pipelines represented by KGs."
 site_url: "https://boschresearch.github.io/ExeKGLib"
 

@@ -50,16 +50,15 @@ KG_SCHEMAS = {
 
 
 class ExeKG:
-    def __init__(self, kg_schema_name: str = None, input_exe_kg_path: str = None):
+    def __init__(self, input_exe_kg_path: str = None):
         """
 
         Args:
-            kg_schema_name: name of chosen bottom-level KG schema to use in case of KG construction (must be equal to one of KG_SCHEMAS keys)
-                            acts as switch for KG construction mode (if filled, mode is on)
             input_exe_kg_path: path of KG to be executed
                                acts as switch for KG execution mode (if filled, mode is on)
         """
         self.top_level_schema = KGSchema.from_schema_info(KG_SCHEMAS["Data Science"])  # top-level KG schema
+        self.bottom_level_schemata = {}
 
         # top-level KG schema entities
         self.atomic_task = Entity(self.top_level_schema.namespace.AtomicTask)
@@ -78,38 +77,33 @@ class ExeKG:
             bottom_level_schema_info_set = False  # flag indicating that a bottom-level schema was found
             for schema_name, schema_info in KG_SCHEMAS.items():  # search for used bottom-level schema
                 if (
-                    schema_name == "Data Science" or schema_name == "Visualization"
+                    schema_name == "Data Science"  # or schema_name == "Visualization"
                 ):  # skip top-level KG schema and Visualization schema that is always used
                     continue
 
                 if (schema_info["namespace_prefix"], URIRef(schema_info["namespace"])) in all_ns:
                     # bottom-level schema found
-                    self.bottom_level_schema = KGSchema.from_schema_info(schema_info)
+                    self.bottom_level_schemata[schema_info["namespace_prefix"]] = KGSchema.from_schema_info(schema_info)
                     bottom_level_schema_info_set = True
-                    break
-
-            visu_schema_info = KG_SCHEMAS["Visualization"]
-            if (
-                not bottom_level_schema_info_set
-                and (visu_schema_info["namespace_prefix"], URIRef(visu_schema_info["namespace"])) in all_ns
-            ):  # Visualization schema is considered the bottom-level schema ONLY IF no other bottom-level schema was found
-                self.bottom_level_schema = KGSchema.from_schema_info(visu_schema_info)
-                bottom_level_schema_info_set = True
 
             if not bottom_level_schema_info_set:  # no bottom-level schema found, input executable KG is invalid
                 print("Input executable KG did not have any bottom level KG schemas")
                 exit(1)
         else:  # KG construction mode
-            # bottom-level schema used as compatibility guide for constructing executable KG
-            self.bottom_level_schema = KGSchema.from_schema_info(KG_SCHEMAS[kg_schema_name])
+            for schema_name, schema_info in KG_SCHEMAS.items():  # search for used bottom-level schema
+                if (
+                    schema_name == "Data Science"  # or schema_name == "Visualization"
+                ):  # skip top-level KG schema and Visualization schema that is always used
+                    continue
 
-        self.visu_schema = KGSchema.from_schema_info(
-            KG_SCHEMAS["Visualization"]
-        )  # Visualization KG schema, always used
+                self.bottom_level_schemata[schema_info["namespace_prefix"]] = KGSchema.from_schema_info(schema_info)
 
-        self.input_kg += (
-            self.top_level_schema.kg + self.bottom_level_schema.kg + self.visu_schema.kg
-        )  # combine all KG schemas in input KG
+        bottom_level_schemata_kgs = [kg_schema.kg for kg_schema in self.bottom_level_schemata.values()]
+
+        self.input_kg += self.top_level_schema.kg  # + self.visu_schema.kg  # combine all KG schemas in input KG
+
+        for bottom_level_schema_kg in bottom_level_schemata_kgs:
+            self.input_kg += bottom_level_schema_kg
 
         self.output_kg = Graph(bind_namespaces="rdflib")  # KG to be filled while constructing executable KG
 
@@ -143,14 +137,11 @@ class ExeKG:
         """
         for kg in kgs:
             kg.bind(self.top_level_schema.namespace_prefix, self.top_level_schema.namespace)
-            kg.bind(
-                self.bottom_level_schema.namespace_prefix,
-                self.bottom_level_schema.namespace,
-            )
-            kg.bind(
-                self.visu_schema.namespace_prefix,
-                self.visu_schema.namespace,
-            )
+            for bottom_level_kg_schema in self.bottom_level_schemata.values():
+                kg.bind(
+                    bottom_level_kg_schema.namespace_prefix,
+                    bottom_level_kg_schema.namespace,
+                )
 
     def _parse_kgs(self) -> None:
         """
@@ -199,7 +190,6 @@ class ExeKG:
         """
         pipeline = create_pipeline_task(
             self.top_level_schema.namespace,
-            self.bottom_level_schema.namespace,
             self.pipeline,
             self.output_kg,
             pipeline_name,
@@ -227,7 +217,7 @@ class ExeKG:
             DataEntity: object initialized with the given parameter values
         """
         return DataEntity(
-            self.bottom_level_schema.namespace + name,
+            self.top_level_schema.namespace + name,
             self.data_entity,
             source_value,
             self.top_level_schema.namespace + data_semantics_name,
@@ -236,31 +226,28 @@ class ExeKG:
 
     def add_task(
         self,
-        task_type: str,
+        kg_schema_short: str,
+        task: str,
         input_data_entity_dict: Dict[str, List[DataEntity]],
-        method_type: str,
-        data_properties: Dict[str, Union[str, int, float]],
-        visualization: bool = False,
+        method: str,
+        properties_dict: Dict[str, Union[str, int, float]],
     ) -> Task:
         """
         Instantiates and adds a new task entity to self.output_kg
-        Components added to the task during creation: input and output entities, and a method with data properties
+        Components attached to the task during creation: input and output data entities, and a method with properties
         Args:
-            task_type: type of the task
-            input_data_entity_dict: keys -> input entity names corresponding to the given task_type as defined in the chosen bottom-level KG schema
-                                    values -> list of corresponding data entities to be added as input to the task
-            method_type: type of the task's method
-            data_properties: keys -> data property names corresponding to the given method_type as defined in the chosen bottom-level KG schema
-                             values -> list of corresponding values to be added as property values to the task
-            visualization: if True, the namespace prefix of Visualization KG schema is used during creation of the task
-                           else, the namespace prefix of the chosen bottom-level KG schema is used
+            kg_schema_short: abbreviated name of the KG schema in which the task and method belong
+            task: task name
+            input_data_entity_dict: keys -> input names of the specified task
+                                    values -> lists of DataEntity objects to be added as input to the task
+            method: method name
+            properties_dict: keys -> property names of the specified method
+                             values -> values to be added as parameters to the method
 
         Returns:
             Task: object of the created task
         """
-        namespace_to_use = (
-            self.visu_schema.namespace if visualization else self.bottom_level_schema.namespace
-        )  # use appropriate namespace for the task
+        kg_schema_to_use = self.bottom_level_schemata[kg_schema_short]
 
         relation_iri = (
             self.top_level_schema.namespace.hasNextTask
@@ -269,9 +256,9 @@ class ExeKG:
         )  # use relation depending on the previous task
 
         # instantiate task and link it with the previous one
-        parent_task = Task(namespace_to_use + task_type, self.atomic_task)
+        parent_task = Task(kg_schema_to_use.namespace + task, self.atomic_task)
         added_entity = add_instance_from_parent_with_relation(
-            self.bottom_level_schema.namespace,
+            kg_schema_to_use.namespace,
             self.output_kg,
             parent_task,
             relation_iri,
@@ -281,11 +268,11 @@ class ExeKG:
         next_task = Task.from_entity(added_entity)  # create Task object from Entity object
 
         # instantiate and add given input data entities to the task
-        self._add_inputs_to_task(next_task, input_data_entity_dict)
+        self._add_inputs_to_task(kg_schema_to_use.namespace, next_task, input_data_entity_dict)
         # instantiate and add output data entities to the task, as specified in the KG schema
         self._add_outputs_to_task(next_task)
 
-        method_parent = Entity(namespace_to_use + method_type, self.atomic_method)
+        method_parent = Entity(kg_schema_to_use.namespace + method, self.atomic_method)
 
         # fetch compatible methods and their properties from KG schema
         results = list(
@@ -297,15 +284,15 @@ class ExeKG:
         )
 
         chosen_property_method = next(
-            filter(lambda pair: pair[1].split("#")[1] == method_type, results), None
+            filter(lambda pair: pair[1].split("#")[1] == method, results), None
         )  # match given method_type with query result
         if chosen_property_method is None:
-            print(f"Property connecting task of type {task_type} with method of type {method_type} not found")
+            print(f"Property connecting task of type {task} with method of type {method} not found")
             exit(1)
 
         # instantiate method and link it with the task using the appropriate chosen_property_method[0] relation
         add_instance_from_parent_with_relation(
-            self.bottom_level_schema.namespace,
+            kg_schema_to_use.namespace,
             self.output_kg,
             method_parent,
             chosen_property_method[0],
@@ -322,7 +309,7 @@ class ExeKG:
             property_name = property_iri.split("#")[1]
             range_iri = pair[1]
             input_property = Literal(
-                lexical_or_value=data_properties[property_name],
+                lexical_or_value=properties_dict[property_name],
                 datatype=range_iri,
             )
             add_literal(self.output_kg, next_task, property_iri, input_property)
@@ -332,7 +319,10 @@ class ExeKG:
         return next_task
 
     def _add_inputs_to_task(
-        self, task_entity: Task, input_data_entity_dict: Dict[str, List[DataEntity]] = None
+        self,
+        namespace: Namespace,
+        task_entity: Task,
+        input_data_entity_dict: Dict[str, List[DataEntity]] = None,
     ) -> None:
         """
         Instantiates and adds given input data entities to the given task of self.output_kg
@@ -365,7 +355,7 @@ class ExeKG:
                 input_data_entity_list += get_input_for_new_data_entities(
                     self.data_semantics_list,
                     self.data_structure_list,
-                    self.bottom_level_schema.namespace,
+                    namespace,
                     self.data_entity,
                 )
 
@@ -462,7 +452,7 @@ class ExeKG:
 
         # instantiate task and link it with the previous one
         task_entity = add_instance_from_parent_with_relation(
-            self.bottom_level_schema.namespace,
+            next_task_parent.namespace,
             self.output_kg,
             next_task_parent,
             relation_iri,
@@ -473,7 +463,7 @@ class ExeKG:
         task_entity = Task(task_entity.iri, task_entity.parent_entity)  # create Task object from Entity object's info
 
         # instantiate and add input data entities to the task based on user input
-        self._add_inputs_to_task(task_entity)
+        self._add_inputs_to_task(next_task_parent.namespace, task_entity)
         # instantiate and add output data entities to the task, as specified in the KG schema
         self._add_outputs_to_task(task_entity)
 
@@ -514,7 +504,7 @@ class ExeKG:
         )
         # instantiate method and link it with the task using the appropriate selected_property_and_method[0] relation
         add_instance_from_parent_with_relation(
-            self.bottom_level_schema.namespace,
+            task_to_attach_to.namespace,
             self.output_kg,
             method_parent,
             selected_property_and_method[0],
@@ -547,7 +537,6 @@ class ExeKG:
         """
         pipeline = create_pipeline_task(
             self.top_level_schema.namespace,
-            self.bottom_level_schema.namespace,
             self.pipeline,
             self.output_kg,
             pipeline_name,
@@ -730,23 +719,3 @@ class ExeKG:
                 canvas_method = next_task
 
             next_task_iri = next_task.has_next_task
-
-    @staticmethod
-    def input_kg_schema_name() -> str:
-        """
-        Prompts the user to choose a schema by presenting the available schemas' names
-        Returns:
-            str: chosen schema name
-        """
-        kg_schema_names = list(KG_SCHEMAS.keys())
-        print(
-            "Choose a KG schema to use. Components of the Visualization schema can be used regardless of the chosen schema."
-        )
-        for i, kg_schema_name in enumerate(kg_schema_names):
-            if kg_schema_name == "Data Science":
-                continue
-            print(f"{i}: {kg_schema_name}")
-        selected_schema_i = int(input())
-        selected_schema_name = kg_schema_names[selected_schema_i]
-
-        return selected_schema_name
