@@ -74,7 +74,8 @@ For detailed installation instructions, refer to the [installation page](https:/
 - **Step-by-step via CLI**: Run `typer exe_kg_lib.cli.main run create-pipeline`.
 
 ### Executing an ML pipeline
-Run `typer exe_kg_lib.cli.main run run-pipeline <pipeline_path>`.
+- **Via code**: See [example code](https://github.com/boschresearch/ExeKGLib/blob/21e4df0e7de89c27748c8b61759652b7edf7d9b8/exe_kg_lib/cli/main.py#L28-L29).
+- **Via CLI**: Run `typer exe_kg_lib.cli.main run run-pipeline <pipeline_path>`.
 
 [//]: # (--8<-- [end:usage])
 
