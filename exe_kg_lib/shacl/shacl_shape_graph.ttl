@@ -1,0 +1,796 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
+# This is a SHACL shape graph defining the constraints of executable KGs that are produced using ExeKGLib.
+# This graph was initially generated using sheXer Python library (see ./base_shape_graph_generator.py) and then manually adapted to ExeKGLib's needs.
+
+@prefix : <http://weso.es/shapes/> .
+@prefix ds: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#> .
+@prefix ml: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix stats: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl#> .
+@prefix visu: <https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AtomicTask a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:path ds:hasNextTask ] ;
+    sh:targetClass ds:AtomicTask .
+
+:Concatenation a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:Concatenation ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasOutput ],
+        [ a sh:PropertyShape ;
+            sh:minCount 2 ;
+            sh:node :DataInConcatenation ;
+            sh:path ds:hasInput ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :ConcatenationMethod ;
+            sh:path ml:hasConcatenationMethod ] ;
+    sh:targetClass ml:Concatenation .
+
+:DataInDataSplittingX a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataInDataSplittingX ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass ml:DataInDataSplittingX .
+
+:DataInDataSplittingY a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataInDataSplittingY ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass ml:DataInDataSplittingY .
+
+:DataInTestModel a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataInTestModel ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:SingleValue ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass ml:DataInTestModel .
+
+:DataInTestPredictedY a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataInTestPredictedY ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataInTestPredictedY .
+
+:DataInTestRealY a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataInTestRealY ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass ml:DataInTestRealY .
+
+:DataInTestX a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataInTestX ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataInTestX .
+
+:DataInTrainPredictedY a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataInTrainPredictedY ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass ml:DataInTrainPredictedY .
+
+:DataInTrainRealY a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataInTrainRealY ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass ml:DataInTrainRealY .
+
+:DataInTrainX a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataInTrainX ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass ml:DataInTrainX .
+
+:DataInTrainY a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataInTrainY ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass ml:DataInTrainY .
+
+:DatatypeProperty a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:minCount 1 ;
+            sh:node :Class ;
+            sh:path rdfs:domain ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:path rdfs:range ],
+        [ a sh:PropertyShape ;
+            sh:in ( owl:DatatypeProperty ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass owl:DatatypeProperty .
+
+:LineplotMethod a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( visu:LineplotMethod ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasLegendName ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasLineStyle ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:int ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasLineWidth ] ;
+    sh:targetClass visu:LineplotMethod .
+
+:NormalizationTask a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( stats:NormalizationTask ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataInNormalization ;
+            sh:path ds:hasInput ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :NormalizationMethod ;
+            sh:path stats:hasNormalizationMethod ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasOutput ] ;
+    sh:targetClass stats:NormalizationTask .
+
+:Ontology a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( owl:Ontology ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass owl:Ontology .
+
+:Pipeline a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path ds:hasInputDataPath ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :AtomicTask ;
+            sh:path ds:hasStartTask ],
+        [ a sh:PropertyShape ;
+            sh:in ( ds:Pipeline ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ds:Pipeline .
+
+:ScatterplotMethod a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( visu:ScatterplotMethod ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:int ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasLineWidth ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasScatterStyle ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:int ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasScatterSize ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasLegendName ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasLineStyle ] ;
+    sh:targetClass visu:ScatterplotMethod .
+
+:CanvasMethod a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( visu:CanvasMethod ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasCanvasName ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:pattern "[0-9] [0-9]" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path visu:hasLayout ] ;
+    sh:targetClass visu:CanvasMethod .
+
+:ConcatenationMethod a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:ConcatenationMethod ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:ConcatenationMethod .
+
+:DataInConcatenation a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataInConcatenation ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataInConcatenation .
+
+:DataInNormalization a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( stats:DataInNormalization ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass stats:DataInNormalization .
+
+:DataInVector a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( visu:DataInVector ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Vector ) ;
+            sh:path ( [ sh:zeroOrMorePath ds:hasReference ] ds:hasDataStructure ) ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasReference ] ;
+    sh:targetClass visu:DataInVector .
+
+:DataSplitting a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataSplitting ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataSplittingMethod ;
+            sh:path ml:hasDataSplittingMethod ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 4 ;
+            sh:minCount 4 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasOutput ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 2 ;
+            sh:nodeKind sh:IRI ;
+            sh:path ds:hasInput ] ;
+    sh:targetClass ml:DataSplitting .
+
+:DataSplittingMethod a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:dataType xsd:float ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path ml:hasSplitRatio ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataSplittingMethod ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataSplittingMethod .
+
+:KNNTest a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:KNNTest ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:KNNTest .
+
+:KNNTrain a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:KNNTrain ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:KNNTrain .
+
+:NormalizationMethod a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( stats:NormalizationMethod ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass stats:NormalizationMethod .
+
+:ObjectProperty a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:node :ObjectProperty ;
+            sh:path rdfs:subPropertyOf ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :Class ;
+            sh:path rdfs:domain ],
+        [ a sh:PropertyShape ;
+            sh:minCount 1 ;
+            sh:node :Class ;
+            sh:path rdfs:range ],
+        [ a sh:PropertyShape ;
+            sh:in ( owl:ObjectProperty ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass owl:ObjectProperty .
+
+:PerformanceCalculation a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 2 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasOutput ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:PerformanceCalculation ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :PerformanceCalculationMethod ;
+            sh:path ml:hasPerformanceCalculationMethod ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 4 ;
+            sh:minCount 4 ;
+            sh:nodeKind sh:IRI ;
+            sh:path ds:hasInput ] ;
+    sh:targetClass ml:PerformanceCalculation .
+
+:PerformanceCalculationMethod a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:PerformanceCalculationMethod ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:PerformanceCalculationMethod .
+
+:Test a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:Test ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 2 ;
+            sh:nodeKind sh:IRI ;
+            sh:path ds:hasInput ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :KNNTest ;
+            sh:path ml:hasTestMethod ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasOutput ] ;
+    sh:targetClass ml:Test .
+
+:Train a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 2 ;
+            sh:nodeKind sh:IRI ;
+            sh:path ds:hasInput ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:Train ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 2 ;
+            sh:node :DataEntity ;
+            sh:path ds:hasOutput ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :KNNTrain ;
+            sh:path ml:hasTrainMethod ] ;
+    sh:targetClass ml:Train .
+
+:CanvasTask a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( visu:CanvasTask ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:node :CanvasMethod ;
+            sh:path visu:hasCanvasMethod ] ;
+    sh:targetClass visu:CanvasTask .
+
+:PlotTask a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:path visu:hasPlotMethod ],
+        [ a sh:PropertyShape ;
+            sh:in ( visu:PlotTask ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:minCount 1 ;
+            sh:node :DataInVector ;
+            sh:path ds:hasInput ] ;
+    sh:targetClass visu:PlotTask .
+
+:Class a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:node :Class ;
+            sh:path rdfs:subClassOf ],
+        [ a sh:PropertyShape ;
+            sh:in ( owl:Class ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass owl:Class .
+
+:DataEntity a sh:NodeShape ;
+    sh:or (
+        [
+            sh:maxCount 2 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ds:hasDataStructure ;
+        ]
+        [
+            sh:maxCount 1 ;
+            sh:in ( ds:SingleValue ) ;
+            sh:path ds:hasDataStructure ;
+        ]
+    ) ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:in ( ds:TimeSeries );
+            sh:path ds:hasDataSemantics ],
+        [ a sh:PropertyShape ;
+            sh:dataType xsd:string ;
+            sh:maxCount 1 ;
+            sh:path ds:hasSource ],
+        [ a sh:PropertyShape ;
+            sh:in ( ds:DataEntity ) ;
+            sh:maxCount 1 ;
+            sh:path ( ds:hasReference rdf:type [ sh:zeroOrMorePath rdfs:subClassOf ] ) ] ;
+    sh:targetClass ds:DataEntity .
+
+:DataOutMLTestErr a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Vector ) ;
+            sh:path ds:hasDataStructure ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutMLTestErr ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataOutMLTestErr .
+
+:DataOutMLTrainErr a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Vector ) ;
+            sh:path ds:hasDataStructure ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutMLTrainErr ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataOutMLTrainErr .
+
+:DataOutNormalization a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( stats:DataOutNormalization ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Vector ) ;
+            sh:path ds:hasDataStructure ] ;
+    sh:targetClass stats:DataOutNormalization .
+
+:DataOutPredictedValueTrain a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ds:hasDataStructure ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutPredictedValueTrain ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataOutPredictedValueTrain .
+
+:DataOutSplittedTestDataX a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutSplittedTestDataX ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ds:hasDataStructure ] ;
+    sh:targetClass ml:DataOutSplittedTestDataX .
+
+:DataOutSplittedTestDataY a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ds:hasDataStructure ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutSplittedTestDataY ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataOutSplittedTestDataY .
+
+:DataOutSplittedTrainDataX a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutSplittedTrainDataX ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ds:hasDataStructure ] ;
+    sh:targetClass ml:DataOutSplittedTrainDataX .
+
+:DataOutTrainModel a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:SingleValue ) ;
+            sh:path ds:hasDataStructure ],
+        [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutTrainModel ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ] ;
+    sh:targetClass ml:DataOutTrainModel .
+
+:DataOutConcatenatedData a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutConcatenatedData ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ) ;
+            sh:path ds:hasDataStructure ] ;
+    sh:targetClass ml:DataOutConcatenatedData .
+
+:DataOutPredictedValueTest a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutPredictedValueTest ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ds:hasDataStructure ] ;
+    sh:targetClass ml:DataOutPredictedValueTest .
+
+:DataOutSplittedTrainDataY a sh:NodeShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( ml:DataOutSplittedTrainDataY ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path rdf:type ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 2 ;
+            sh:minCount 1 ;
+            sh:in ( ds:Matrix ds:Vector ) ;
+            sh:path ds:hasDataStructure ] ;
+    sh:targetClass ml:DataOutSplittedTrainDataY .

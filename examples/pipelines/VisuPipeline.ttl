@@ -11,22 +11,23 @@ ds:feature_1 a ds:DataEntity ;
     ds:hasDataStructure ds:Vector ;
     ds:hasSource "feature_1"^^xsd:string .
 
-visu:CanvasMethod1 a visu:CanvasMethod .
+visu:CanvasMethod1 a visu:CanvasMethod ;
+    visu:hasCanvasName "MyCanvas"^^xsd:string ;
+    visu:hasLayout "1 2"^^xsd:string .
 
 visu:CanvasTask1 a visu:CanvasTask ;
     ds:hasNextTask visu:PlotTask1 ;
-    visu:hasCanvasMethod visu:CanvasMethod1 ;
-    visu:hasCanvasName "MyCanvas"^^xsd:string ;
-    visu:hasLayout "1 2"^^ds:intPair .
+    visu:hasCanvasMethod visu:CanvasMethod1 .
 
 visu:DataInVector1_1 a visu:DataInVector ;
+    ds:hasDataStructure ds:Vector ;
     ds:hasReference ds:feature_1 .
 
-visu:LineplotMethod1 a visu:LineplotMethod .
+visu:LineplotMethod1 a visu:LineplotMethod ;
+    visu:hasLegendName "Feature 1"^^xsd:string ;
+    visu:hasLineStyle "-"^^xsd:string ;
+    visu:hasLineWidth "1"^^xsd:int .
 
 visu:PlotTask1 a visu:PlotTask ;
     ds:hasInput visu:DataInVector1_1 ;
-    visu:hasLegendName "Feature 1"^^xsd:string ;
-    visu:hasLineStyle "-"^^xsd:string ;
-    visu:hasLineWidth "1"^^xsd:int ;
     visu:hasPlotMethod visu:LineplotMethod1 .
