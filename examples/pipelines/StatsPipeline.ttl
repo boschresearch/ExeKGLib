@@ -8,6 +8,7 @@ ds:StatsPipeline a ds:Pipeline ;
     ds:hasStartTask stats:NormalizationTask1 .
 
 stats:DataInNormalization1_1 a stats:DataInNormalization ;
+    ds:hasDataStructure ds:Vector ;
     ds:hasReference ds:feature_1 .
 
 stats:NormalizationMethod1 a stats:NormalizationMethod .
@@ -18,46 +19,49 @@ stats:NormalizationTask1 a stats:NormalizationTask ;
     ds:hasOutput stats:DataOutNormalization1 ;
     stats:hasNormalizationMethod stats:NormalizationMethod1 .
 
-visu:CanvasMethod1 a visu:CanvasMethod .
+visu:CanvasMethod1 a visu:CanvasMethod ;
+    visu:hasCanvasName "MyCanvas"^^xsd:string ;
+    visu:hasLayout "1 1"^^xsd:string .
 
 visu:CanvasTask1 a visu:CanvasTask ;
     ds:hasNextTask visu:PlotTask1 ;
-    visu:hasCanvasMethod visu:CanvasMethod1 ;
-    visu:hasCanvasName "MyCanvas"^^xsd:string ;
-    visu:hasLayout "1 1"^^ds:intPair .
+    visu:hasCanvasMethod visu:CanvasMethod1 .
 
 visu:DataInVector1_1 a visu:DataInVector ;
+    ds:hasDataStructure ds:Vector ;
     ds:hasReference ds:feature_1 .
 
 visu:DataInVector2_1 a visu:DataInVector ;
+    ds:hasDataStructure ds:Vector ;
     ds:hasReference stats:DataOutNormalization1 .
 
 visu:PlotTask1 a visu:PlotTask ;
     ds:hasInput visu:DataInVector1_1 ;
     ds:hasNextTask visu:PlotTask2 ;
-    visu:hasLegendName "Feature 1 before normalization"^^xsd:string ;
-    visu:hasLineStyle "o"^^xsd:string ;
-    visu:hasLineWidth "1"^^xsd:int ;
-    visu:hasPlotMethod visu:ScatterplotMethod1 ;
-    visu:hasScatterSize "1"^^xsd:int ;
-    visu:hasScatterStyle "o"^^xsd:string .
+    visu:hasPlotMethod visu:ScatterplotMethod1 .
 
 visu:PlotTask2 a visu:PlotTask ;
     ds:hasInput visu:DataInVector2_1 ;
-    visu:hasLegendName "Normalized feature 1"^^xsd:string ;
+    visu:hasPlotMethod visu:ScatterplotMethod2 .
+
+visu:ScatterplotMethod1 a visu:ScatterplotMethod ;
+    visu:hasLegendName "Feature 1 before normalization"^^xsd:string ;
     visu:hasLineStyle "o"^^xsd:string ;
     visu:hasLineWidth "1"^^xsd:int ;
-    visu:hasPlotMethod visu:ScatterplotMethod2 ;
     visu:hasScatterSize "1"^^xsd:int ;
     visu:hasScatterStyle "o"^^xsd:string .
 
-visu:ScatterplotMethod1 a visu:ScatterplotMethod .
-
-visu:ScatterplotMethod2 a visu:ScatterplotMethod .
+visu:ScatterplotMethod2 a visu:ScatterplotMethod ;
+    visu:hasLegendName "Normalized feature 1"^^xsd:string ;
+    visu:hasLineStyle "o"^^xsd:string ;
+    visu:hasLineWidth "1"^^xsd:int ;
+    visu:hasScatterSize "1"^^xsd:int ;
+    visu:hasScatterStyle "o"^^xsd:string .
 
 ds:feature_1 a ds:DataEntity ;
     ds:hasDataSemantics ds:TimeSeries ;
     ds:hasDataStructure ds:Vector ;
     ds:hasSource "feature_1"^^xsd:string .
 
-stats:DataOutNormalization1 a ds:DataEntity .
+stats:DataOutNormalization1 a stats:DataOutNormalization ;
+    ds:hasDataStructure ds:Vector .

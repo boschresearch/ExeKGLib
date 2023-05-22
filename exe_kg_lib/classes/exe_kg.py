@@ -1,11 +1,14 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+import itertools
 import os
 from typing import Dict, Union
 
 import pandas as pd
 from rdflib import Literal
+
+from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 
 from ..utils.cli_utils import (get_input_for_existing_data_entities,
                                get_input_for_new_data_entities)
@@ -73,6 +76,7 @@ class ExeKG:
         self.input_kg = Graph(bind_namespaces="rdflib")
         if input_exe_kg_path:  # KG execution mode
             self.input_kg.parse(input_exe_kg_path, format="n3")  # parse input executable KG
+            check_kg_executability(self.input_kg)
             all_ns = [n for n in self.input_kg.namespace_manager.namespaces()]
             bottom_level_schema_info_set = False  # flag indicating that a bottom-level schema was found
             for schema_name, schema_info in KG_SCHEMAS.items():  # search for used bottom-level schema
@@ -291,7 +295,7 @@ class ExeKG:
             exit(1)
 
         # instantiate method and link it with the task using the appropriate chosen_property_method[0] relation
-        add_instance_from_parent_with_relation(
+        method_entity = add_instance_from_parent_with_relation(
             kg_schema_to_use.namespace,
             self.output_kg,
             method_parent,
@@ -312,7 +316,7 @@ class ExeKG:
                 lexical_or_value=properties_dict[property_name],
                 datatype=range_iri,
             )
-            add_literal(self.output_kg, next_task, property_iri, input_property)
+            add_literal(self.output_kg, method_entity, property_iri, input_property)
 
         self.last_created_task = next_task  # store created task
 
@@ -332,6 +336,9 @@ class ExeKG:
             input_data_entity_dict: keys -> input entity names corresponding to the given task as defined in the chosen bottom-level KG schema
                                     values -> list of corresponding data entities to be added as input to the task
         """
+
+        use_cli = input_data_entity_dict is None
+
         # fetch compatible inputs from KG schema
         results = list(
             get_input_properties_and_inputs(
@@ -344,9 +351,9 @@ class ExeKG:
         # task_type_index was incremented when creating the task entity
         # reset the index to match the currently created task's index
         task_type_index = self.task_type_dict[task_entity.type] - 1
-        for _, input_entity_iri in results:
+        for _, input_entity_iri, data_structure_iri in results:
             input_entity_name = input_entity_iri.split("#")[1]
-            if input_data_entity_dict:
+            if not use_cli:
                 input_data_entity_list = input_data_entity_dict[input_entity_name]
             else:
                 # use CLI
@@ -376,6 +383,7 @@ class ExeKG:
                     data_entity_iri,
                     DataEntity(input_entity_iri, self.data_entity),
                     has_reference=input_data_entity.iri,
+                    has_data_structure_iri=data_structure_iri,
                 )
                 add_and_attach_data_entity(
                     self.output_kg,
@@ -388,6 +396,9 @@ class ExeKG:
                 )
                 task_entity.input_dict[input_entity_name] = data_entity
                 same_input_index += 1
+
+                if use_cli:
+                    check_kg_executability(self.output_kg)
 
     def _add_outputs_to_task(self, task_entity: Task) -> None:
         """
@@ -407,21 +418,25 @@ class ExeKG:
         # task_type_index was incremented when creating the task entity
         # reset the index to match the currently created task's index
         task_type_index = self.task_type_dict[task_entity.type] - 1
-        for output_property, output_entity_iri in results:
+        for output_property, output_parent_entity_iri, data_structure_iri in results:
             # instantiate and add data entity
-            data_entity_iri = output_entity_iri + str(task_type_index)
-            data_entity = DataEntity(data_entity_iri, self.data_entity)
+            output_data_entity_iri = output_parent_entity_iri + str(task_type_index)
+            output_data_entity = DataEntity(
+                output_data_entity_iri,
+                DataEntity(output_parent_entity_iri, self.data_entity),
+                has_data_structure_iri=data_structure_iri,
+            )
             add_and_attach_data_entity(
                 self.output_kg,
                 self.data,
                 self.top_level_schema.kg,
                 self.top_level_schema.namespace,
-                data_entity,
+                output_data_entity,
                 self.top_level_schema.namespace.hasOutput,
                 task_entity,
             )
-            task_entity.output_dict[output_entity_iri.split("#")[1]] = data_entity
-            self.existing_data_entity_list.append(data_entity)
+            task_entity.output_dict[output_parent_entity_iri.split("#")[1]] = output_data_entity
+            self.existing_data_entity_list.append(output_data_entity)
 
     def _create_next_task_cli(self) -> Union[None, Task]:
         """
@@ -528,6 +543,8 @@ class ExeKG:
                 )
                 add_literal(self.output_kg, task_to_attach_to, property_instance, input_property)
 
+        check_kg_executability(self.output_kg)
+
     def start_pipeline_creation(self, pipeline_name: str, input_data_path: str) -> None:
         """
         Handles the pipeline creation through CLI
@@ -558,6 +575,8 @@ class ExeKG:
         Args:
             file_path: path of the output file
         """
+        check_kg_executability(self.output_kg)
+
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path, exist_ok=True)
 
@@ -684,7 +703,10 @@ class ExeKG:
         else:
             task = Class(task_iri, Task(task_parent_iri))
 
-        for s, p, o in self.input_kg.triples((URIRef(task_iri), None, None)):
+        task_related_triples = self.input_kg.triples((URIRef(task_iri), None, None))
+        method_related_triples = self.input_kg.triples((URIRef(method.iri), None, None))
+
+        for s, p, o in itertools.chain(task_related_triples, method_related_triples):
             # parse property name and value
             field_name = property_name_to_field_name(str(p))
             if not hasattr(task, field_name) or field_name == "type":
