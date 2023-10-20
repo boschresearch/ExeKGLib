@@ -21,8 +21,7 @@ The coding interface is demonstrated with [three sample Python files](https://gi
 
 Under the hood, **ExeKGLib** uses well-known Python libraries for data processing and visualization and performing predictions such as [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), and [scikit-learn](https://scikit-learn.org/).
 
-**ExeKGLib** is part of the following paper submitted to ISWC 2023:<br>
-_Klironomos A., Zhou B., Tan Z., Zheng Z., Gad-Elrab M., Paulheim H., Kharlamov E.: **ExeKGLib: A Python Library for Machine Learning Analytics based on Knowledge Graphs**_
+**ExeKGLib** is described in the following paper published as part of ESWC 2023: <br>[Klironomos A., Zhou B., Tan Z., Zheng Z., Gad-Elrab M., Paulheim H., Kharlamov E. _**ExeKGLib: Knowledge Graphs-Empowered Machine Learning Analytics**_](https://link.springer.com/chapter/10.1007/978-3-031-43458-7_23)
 
 [//]: # (--8<-- [end:overview])
 
