@@ -1,11 +1,14 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+import importlib
 from abc import abstractmethod
 from typing import Dict
 
 import numpy as np
 import pandas as pd
+
+from exe_kg_lib.utils.string_utils import camel_to_snake
 
 from .entity import Entity
 
@@ -26,10 +29,12 @@ class Task(Entity):
         parent_entity: Entity = None,
     ):
         super().__init__(iri, parent_entity)
-        self.has_next_task = None
-        self.has_method = None
-        self.has_input = []
-        self.has_output = []
+        self.next_task = None
+        self.method_module = None
+        self.method_module_chain = None
+        self.method_params_dict = {}  # used for storing method parameters during KG execution
+        self.inputs = []
+        self.outputs = []
         self.input_dict = {}  # used for storing input DataEntity objects during KG creation
         self.output_dict = {}  # used for storing output DataEntity objects during KG creation
 
@@ -48,11 +53,11 @@ class Task(Entity):
         Returns:
             dict: pairs of Task's output names and corresponding output values
         """
-        if len(self.has_output) == 0:
+        if len(self.outputs) == 0:
             # assume one output and use task name as key
             return {self.name: list(keyword_value_dict.values())[0]}
 
-        output_names = [has_output_elem.name for has_output_elem in self.has_output]
+        output_names = [has_output_elem.name for has_output_elem in self.outputs]
         out_dict = {}
         for output_name in output_names:
             for key, value in keyword_value_dict.items():
@@ -74,13 +79,32 @@ class Task(Entity):
             Dict[str, np.ndarray]: pairs of input entity types and corresponding input values
         """
         input_dict = {}
-        for input in self.has_input:
+        for input in self.inputs:
             try:
-                input_dict[input.type] = dict_to_search[input.has_reference]
+                input_dict[input.type] = dict_to_search[input.reference]
             except KeyError:
-                input_dict[input.type] = fallback_df[input.has_source]
+                input_dict[input.type] = fallback_df[input.source]
 
         return input_dict
+
+    def resolve_module(self, module_name_to_snakecase=False):
+        """
+        Resolves the module that contains the method to be executed.
+        """
+        if self.method_module_chain is not None:
+            method_module_chain = self.method_module_chain
+            if module_name_to_snakecase:
+                module_name = self.method_module_chain.split(".")[-1]
+                module_name_snake = camel_to_snake(module_name)
+                method_module_chain = ".".join(self.method_module_chain.split(".")[:-1] + [module_name_snake])
+
+            method_module_chain_parents = ".".join(method_module_chain.split(".")[:-1])
+            method_module_chain_child = method_module_chain.split(".")[-1]
+            module_container = importlib.import_module(method_module_chain_parents)
+            module = getattr(module_container, method_module_chain_child)
+            return module
+
+        print(f"Method module chain not defined for task {self.name}.")
 
     @abstractmethod
     def run_method(self, *args):

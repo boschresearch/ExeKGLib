@@ -131,40 +131,40 @@ def add_data_entity_instance(
     """
     add_instance(kg, data_entity)
 
-    if data_entity.has_source:
+    if data_entity.source:
         has_source_iri, range_iri = get_first_query_result_if_exists(
-            get_data_properties_by_entity_iri, data.iri, top_level_kg
+            get_data_properties_by_entity_iri, data_entity.parent_entity.iri, top_level_kg
         )
 
         source_literal = Literal(
-            lexical_or_value=data_entity.has_source,
+            lexical_or_value=data_entity.source,
             datatype=range_iri,
         )
 
         add_literal(kg, data_entity, has_source_iri, source_literal)
 
-    if data_entity.has_data_structure:
+    if data_entity.data_structure:
         add_relation(
             kg,
             data_entity,
             top_level_schema_namespace.hasDataStructure,
-            Entity(data_entity.has_data_structure),
+            Entity(data_entity.data_structure),
         )
 
-    if data_entity.has_data_semantics:
+    if data_entity.data_semantics:
         add_relation(
             kg,
             data_entity,
             top_level_schema_namespace.hasDataSemantics,
-            Entity(data_entity.has_data_semantics),
+            Entity(data_entity.data_semantics),
         )
 
-    if data_entity.has_reference:
+    if data_entity.reference:
         add_relation(
             kg,
             data_entity,
             top_level_schema_namespace.hasReference,
-            Entity(data_entity.has_reference),
+            Entity(data_entity.reference),
         )
 
 

@@ -5,23 +5,75 @@ from typing import Callable, List, Optional, Tuple
 
 from rdflib import Graph, Namespace, URIRef, query
 
+from exe_kg_lib.utils.string_utils import camel_to_snake
+
 from ..classes.entity import Entity
 
 
-def query_method_parent_classes(kg, method_iri):
+def query_parent_classes(kg, entity_iri):
     return kg.query(
-        f"SELECT ?c WHERE {{ ?method rdfs:subClassOf ?c . }}",
-        initBindings={"method": URIRef(method_iri)},
+        f"SELECT ?c WHERE {{ ?entity rdfs:subClassOf ?c . }}",
+        initBindings={"entity": URIRef(entity_iri)},
     )
 
 
-def query_entity_parent_iri(kg, entity_iri: str, upper_class_uri_ref: URIRef):
+def query_instance_parent_iri(kg, entity_iri: str, upper_class_uri_ref: URIRef):
     return kg.query(
         f"SELECT ?t WHERE {{ ?entity rdf:type ?t ." f"                   ?t rdfs:subClassOf* ?upper_class .}}",
         initBindings={
             "entity": URIRef(entity_iri),
             "upper_class": upper_class_uri_ref,
         },
+    )
+
+
+def query_top_level_task_iri(kg, task_iri: str, namespace_prefix: str):
+    return kg.query(
+        f"SELECT ?t2 WHERE {{ ?t1 rdfs:subClassOf* ?t2 ."
+        f"                    ?t2 rdfs:subClassOf {namespace_prefix}:Task . "
+        f"                    FILTER(?t2 != {namespace_prefix}:AtomicTask) . }}",
+        initBindings={
+            "t1": URIRef(task_iri),
+        },
+    )
+
+
+def query_hierarchy_chain(kg, entity_iri: str, namespace_prefix: str):
+    # retrieve the longest paths from method_iri to Method
+    # return kg.query(
+    #     f"SELECT ?m1 ?m2 WHERE {{ ?m1 rdfs:subClassOf* ?m2 ."
+    #     f"                         ?m2 rdfs:subClassOf* ?m3 ."
+    #     f"                    ?m3 rdfs:subClassOf* {namespace_prefix}:Method .}} ",
+    #     # f"                    FILTER(?m2 != {namespace_prefix}:AtomicMethod) . }}",
+    #     initBindings={
+    #         "m1": URIRef(method_iri),
+    #     },
+    # )
+    return kg.query(
+        f"SELECT ?m2 WHERE {{ ?m1 rdfs:subClassOf+ ?m2 . }}",
+        initBindings={
+            "m1": URIRef(entity_iri),
+        },
+    )
+    # return kg.query(
+    #     f"SELECT ?m1 ?m2 WHERE {{ ?m1 rdfs:subClassOf* ?m2 ."
+    #     # f"                         ?m2 rdfs:subClassOf* ?m3 ."
+    #     f"                    ?m2 rdfs:subClassOf* {namespace_prefix}:Method .}} ",
+    #     # f"                    FILTER(?m2 != {namespace_prefix}:AtomicMethod) . }}",
+    #     initBindings={
+    #         "m1": URIRef(method_iri),
+    #     },
+    # )
+
+
+def query_module_iri_by_method_iri(
+    kg,
+    method_iri: str,
+    namespace_prefix,
+):
+    return kg.query(
+        f"SELECT ?module WHERE {{ ?method {namespace_prefix}:hasModule ?module . }}",
+        initBindings={"method": URIRef(method_iri)},
     )
 
 
@@ -39,6 +91,14 @@ def query_method_iri_by_task_iri(kg, namespace_prefix, task_iri: str):
         f"SELECT ?m WHERE {{ ?task ?m_property ?m ."
         f"                   ?m_property rdfs:subPropertyOf* {namespace_prefix}:hasMethod .}}",
         initBindings={"task": URIRef(task_iri)},
+    )
+
+
+def query_linked_task_and_property(kg, namespace_prefix, method_iri: str):
+    return kg.query(
+        f"SELECT ?task WHERE {{ ?task ?m_property ?m ."
+        f"                      ?task rdfs:subPropertyOf* {namespace_prefix}:AtomicTask .}}",
+        initBindings={"m": URIRef(method_iri)},
     )
 
 
@@ -109,6 +169,46 @@ def get_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
     )
 
 
+def get_input_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+    return kg.query(
+        f"""
+        SELECT ?s ?p ?o
+        WHERE {{
+            {{ ?s ?p ?o . FILTER(?p = {namespace_prefix}:hasInput) }}
+            UNION
+            {{ ?s ?p ?o . ?p rdfs:subPropertyOf* {namespace_prefix}:hasInput . }}
+        }}
+        """,
+        initBindings={"s": URIRef(entity_iri)},
+    )
+
+
+def get_output_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+    return kg.query(
+        f"""
+        SELECT ?s ?p ?o
+        WHERE {{
+            {{ ?s ?p ?o . FILTER(?p = {namespace_prefix}:hasOutput) }}
+            UNION
+            {{ ?s ?p ?o . ?p rdfs:subPropertyOf* {namespace_prefix}:hasOutput . }}
+        }}
+        """,
+        initBindings={"s": URIRef(entity_iri)},
+    )
+
+
+def get_parameters_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+    return kg.query(
+        f"""
+        SELECT ?s ?p ?o
+        WHERE {{
+            {{ ?s ?p ?o . ?p rdfs:subPropertyOf* {namespace_prefix}:hasParameter . }}
+        }}
+        """,
+        initBindings={"s": URIRef(entity_iri)},
+    )
+
+
 def get_data_properties_plus_inherited_by_class_iri(kg: Graph, entity_iri: str) -> List:
     """
     Retrieves data properties plus the inherited ones, given an entity IRI
@@ -120,7 +220,7 @@ def get_data_properties_plus_inherited_by_class_iri(kg: Graph, entity_iri: str) 
         List: contains rows of data property IRIs and their range
     """
     property_list = list(get_data_properties_by_entity_iri(entity_iri, kg))
-    method_parent_classes = list(query_method_parent_classes(kg, entity_iri))
+    method_parent_classes = list(query_parent_classes(kg, entity_iri))
     for method_class_result_row in method_parent_classes:
         property_list += list(get_data_properties_by_entity_iri(method_class_result_row[0], kg))
 
@@ -182,14 +282,50 @@ def get_method_by_task_iri(
     method_iri = str(query_result[0])
 
     query_result = get_first_query_result_if_exists(
-        query_entity_parent_iri,
+        query_instance_parent_iri,
         kg,
         method_iri,
         namespace.AtomicMethod,
     )
+    # print(query_result)
     if query_result is None:
         return None
 
     method_parent_iri = str(query_result[0])
 
     return Entity(method_iri, Entity(method_parent_iri))
+
+
+def get_module_hierarchy_chain(
+    kg: Graph,
+    namespace_prefix: str,
+    method_iri: str,
+) -> List:
+    """
+    Retrieves the hierarchy chain of a method's module
+    Args:
+        kg: Graph object to use when querying
+        namespace_prefix: namespace prefix to use when querying
+        method_iri: IRI of method to query
+
+    Returns:
+        List: contains the hierarchy chain of the method's module
+    """
+
+    query_result = get_first_query_result_if_exists(
+        query_module_iri_by_method_iri,
+        kg,
+        method_iri,
+        namespace_prefix,
+    )
+
+    if query_result is None:
+        return None
+
+    module_iri = str(query_result[0])
+    module_chain_query_res = list(query_hierarchy_chain(kg, module_iri, namespace_prefix))
+    module_chain_query_res = [str(x[0]) for x in module_chain_query_res]
+    module_chain_iris = [module_iri] + module_chain_query_res[:-1]
+    module_chain_names = [iri.split("#")[-1] for iri in module_chain_iris]
+
+    return module_chain_names

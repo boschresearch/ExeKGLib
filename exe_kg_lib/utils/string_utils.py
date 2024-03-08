@@ -26,4 +26,5 @@ def property_name_to_field_name(property_name: str) -> str:
     Returns:
         str: converted string
     """
-    return camel_to_snake(property_name.split("#")[1])
+    snake_case = camel_to_snake(property_name.split("#")[1])
+    return snake_case.replace("has_", "").replace("param_", "")

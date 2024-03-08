@@ -3,10 +3,10 @@
 
 import itertools
 import os
-from typing import Dict, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
-from rdflib import Literal
+from rdflib import XSD, Graph, Literal, Namespace, URIRef
 
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 
@@ -17,37 +17,71 @@ from ..utils.kg_creation_utils import (add_and_attach_data_entity,
                                        add_instance_from_parent_with_relation,
                                        add_literal, create_pipeline_task,
                                        name_instance)
-from ..utils.query_utils import *
 from ..utils.query_utils import (
-    get_data_properties_plus_inherited_by_class_iri, get_method_by_task_iri,
-    get_pipeline_and_first_task_iri)
-from ..utils.string_utils import property_name_to_field_name
+    get_data_properties_by_entity_iri,
+    get_data_properties_plus_inherited_by_class_iri,
+    get_first_query_result_if_exists, get_input_properties_and_inputs,
+    get_input_triples, get_method_by_task_iri,
+    get_method_properties_and_methods, get_module_hierarchy_chain,
+    get_output_properties_and_outputs, get_output_triples,
+    get_parameters_triples, get_pipeline_and_first_task_iri, get_subclasses_of,
+    query_data_entity_reference_iri, query_instance_parent_iri,
+    query_linked_task_and_property, query_parent_classes,
+    query_top_level_task_iri)
+from ..utils.string_utils import camel_to_snake, property_name_to_field_name
 from .data_entity import DataEntity
 from .entity import Entity
 from .kg_schema import KGSchema
 from .task import Task
 from .tasks import ml_tasks, statistic_tasks, visual_tasks
 
+# KG_SCHEMAS = {
+#     "Data Science": {
+#         "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl",
+#         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#",
+#         "namespace_prefix": "ds",
+#     },
+#     "Visualization": {
+#         "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl",
+#         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
+#         "namespace_prefix": "visu",
+#     },
+#     "Statistics": {
+#         "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl",
+#         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl#",
+#         "namespace_prefix": "stats",
+#     },
+#     "Machine Learning": {
+#         "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl",
+#         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
+#         "namespace_prefix": "ml",
+#     },
+# }
+
 KG_SCHEMAS = {
     "Data Science": {
-        "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl",
+        "path": "../ExeKGOntology/ds_exeKGOntology.ttl",
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#",
         "namespace_prefix": "ds",
+        "generated_schemata_dir": "",
     },
     "Visualization": {
-        "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl",
+        "path": "../ExeKGOntology/visu_exeKGOntology.ttl",
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
         "namespace_prefix": "visu",
+        "generated_schemata_dir": "../ExeKGOntology/generated_visu_ontologies/",
     },
     "Statistics": {
-        "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl",
+        "path": "../ExeKGOntology/stats_exeKGOntology.ttl",
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl#",
         "namespace_prefix": "stats",
+        "generated_schemata_dir": "../ExeKGOntology/generated_stats_ontologies/",
     },
     "Machine Learning": {
-        "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl",
+        "path": "../ExeKGOntology/ml_exeKGOntology.ttl",
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
         "namespace_prefix": "ml",
+        "generated_schemata_dir": "../ExeKGOntology/generated_ml_ontologies/",
     },
 }
 
@@ -65,6 +99,7 @@ class ExeKG:
 
         # top-level KG schema entities
         self.atomic_task = Entity(self.top_level_schema.namespace.AtomicTask)
+        self.task = Entity(self.top_level_schema.namespace.Task)
         self.atomic_method = Entity(self.top_level_schema.namespace.AtomicMethod)
         self.data_entity = Entity(self.top_level_schema.namespace.DataEntity)
         self.pipeline = Entity(self.top_level_schema.namespace.Pipeline)
@@ -76,7 +111,7 @@ class ExeKG:
         self.input_kg = Graph(bind_namespaces="rdflib")
         if input_exe_kg_path:  # KG execution mode
             self.input_kg.parse(input_exe_kg_path, format="n3")  # parse input executable KG
-            check_kg_executability(self.input_kg)
+            # check_kg_executability(self.input_kg)
             all_ns = [n for n in self.input_kg.namespace_manager.namespaces()]
             bottom_level_schema_info_set = False  # flag indicating that a bottom-level schema was found
             for schema_name, schema_info in KG_SCHEMAS.items():  # search for used bottom-level schema
@@ -102,7 +137,12 @@ class ExeKG:
 
                 self.bottom_level_schemata[schema_info["namespace_prefix"]] = KGSchema.from_schema_info(schema_info)
 
-        bottom_level_schemata_kgs = [kg_schema.kg for kg_schema in self.bottom_level_schemata.values()]
+        # bottom_level_schemata_kgs = [kg_schema.kg for kg_schema in self.bottom_level_schemata.values()]
+        bottom_level_schemata_kgs = []
+        for kg_schema in self.bottom_level_schemata.values():
+            bottom_level_schemata_kgs.append(kg_schema.kg)
+            for gen_kg_schema in kg_schema.generated_kgs:
+                bottom_level_schemata_kgs.append(gen_kg_schema)
 
         self.input_kg += self.top_level_schema.kg  # + self.visu_schema.kg  # combine all KG schemas in input KG
 
@@ -231,10 +271,11 @@ class ExeKG:
     def add_task(
         self,
         kg_schema_short: str,
-        task: str,
         input_data_entity_dict: Dict[str, List[DataEntity]],
-        method: str,
         properties_dict: Dict[str, Union[str, int, float]],
+        generic_task: str,
+        specific_task: str = None,
+        method: str = None,
     ) -> Task:
         """
         Instantiates and adds a new task entity to self.output_kg
@@ -251,7 +292,31 @@ class ExeKG:
         Returns:
             Task: object of the created task
         """
+
         kg_schema_to_use = self.bottom_level_schemata[kg_schema_short]
+
+        query_result = list(query_parent_classes(self.input_kg, URIRef(kg_schema_to_use.namespace + generic_task)))
+        generic_task_class_parent_iris = [res[0] for res in query_result]
+        if self.atomic_task.iri not in generic_task_class_parent_iris:  # check if generic_task is an AtomicTask
+            if specific_task is None:
+                print(f"Error: Task {generic_task} is not an AtomicTask and no specific task was given")
+                exit(1)
+        else:
+            specific_task = generic_task
+
+        # # validate input task types
+        # query_result = get_first_query_result_if_exists(
+        #     query_instance_parent_iri,
+        #     self.input_kg,
+        #     URIRef(kg_schema_to_use.namespace + generic_task),
+        #     self.atomic_task.iri,
+        # )
+        # if query_result is None:
+        #     if specific_task is None:
+        #         print(f"Error: Task {generic_task} is not an AtomicTask and no specific task was given")
+        #         exit(1)
+        # else:
+        #     specific_task = generic_task
 
         relation_iri = (
             self.top_level_schema.namespace.hasNextTask
@@ -259,73 +324,104 @@ class ExeKG:
             else self.top_level_schema.namespace.hasStartTask
         )  # use relation depending on the previous task
 
+        # query_result = get_first_query_result_if_exists(
+        #     query_linked_task_and_property, self.input_kg, self.top_level_schema.namespace_prefix, method_parent.iri
+        # )
+        # if query_result is None:
+        #     print(f"Error: No linked task found in KG for method {method}")
+        #     exit(1)
+
+        # task_parent = Entity(query_result[0], self.atomic_task)
+
         # instantiate task and link it with the previous one
-        parent_task = Task(kg_schema_to_use.namespace + task, self.atomic_task)
+        specific_task_class = Task(kg_schema_to_use.namespace + specific_task, self.atomic_task)
         added_entity = add_instance_from_parent_with_relation(
             kg_schema_to_use.namespace,
             self.output_kg,
-            parent_task,
+            specific_task_class,
             relation_iri,
             self.last_created_task,
-            name_instance(self.task_type_dict, self.method_type_dict, parent_task),
+            name_instance(self.task_type_dict, self.method_type_dict, specific_task_class),
         )
-        next_task = Task.from_entity(added_entity)  # create Task object from Entity object
+        task_instance = Task.from_entity(added_entity)  # create Task object from Entity object
 
+        generic_task_class = Task(kg_schema_to_use.namespace + generic_task, self.task)
         # instantiate and add given input data entities to the task
-        self._add_inputs_to_task(kg_schema_to_use.namespace, next_task, input_data_entity_dict)
+        self._add_inputs_to_task(kg_schema_to_use.namespace, task_instance, generic_task_class, input_data_entity_dict)
         # instantiate and add output data entities to the task, as specified in the KG schema
-        self._add_outputs_to_task(next_task)
+        self._add_outputs_to_task(task_instance, generic_task_class)
 
-        method_parent = Entity(kg_schema_to_use.namespace + method, self.atomic_method)
+        # if no method is given, return the task without adding a method
+        if method is None:
+            self.last_created_task = task_instance  # store created taskq
+            return task_instance
 
         # fetch compatible methods and their properties from KG schema
         results = list(
             get_method_properties_and_methods(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
-                next_task.parent_entity.iri,
+                task_instance.parent_entity.iri,
             )
         )
-
         chosen_property_method = next(
             filter(lambda pair: pair[1].split("#")[1] == method, results), None
         )  # match given method_type with query result
+        # print(chosen_property_method)
+
         if chosen_property_method is None:
-            print(f"Property connecting task of type {task} with method of type {method} not found")
+            print(f"Property connecting task of type {specific_task} with method of type {method} not found")
             exit(1)
 
+        method_parent = Entity(kg_schema_to_use.namespace + method, self.atomic_method)
         # instantiate method and link it with the task using the appropriate chosen_property_method[0] relation
         method_entity = add_instance_from_parent_with_relation(
             kg_schema_to_use.namespace,
             self.output_kg,
             method_parent,
             chosen_property_method[0],
-            next_task,
+            task_instance,
             name_instance(self.task_type_dict, self.method_type_dict, method_parent),
         )
 
         # fetch compatible data properties from KG schema
-        property_list = get_data_properties_plus_inherited_by_class_iri(self.input_kg, method_parent.iri)
-
+        property_list = get_data_properties_by_entity_iri(method_parent.iri, self.input_kg)
+        property_iris = {pair[0] for pair in property_list}
         # add data properties to the task with given values
-        for pair in property_list:
-            property_iri = pair[0]
-            property_name = property_iri.split("#")[1]
-            range_iri = pair[1]
+        for property_iri in property_iris:
+            param_name = property_name_to_field_name(property_iri)
+            if param_name not in properties_dict:
+                continue
+
+            given_value = properties_dict[param_name]
+
+            if isinstance(given_value, str):
+                range_iri = XSD.string
+            elif isinstance(given_value, int):
+                range_iri = XSD.integer
+            elif isinstance(given_value, float):
+                range_iri = XSD.float
+            elif isinstance(given_value, bool):
+                range_iri = XSD.boolean
+            else:
+                print(f"Error: Unsupported data type for property {param_name}")
+                exit(1)
+
             input_property = Literal(
-                lexical_or_value=properties_dict[property_name],
+                lexical_or_value=properties_dict[param_name],
                 datatype=range_iri,
             )
             add_literal(self.output_kg, method_entity, property_iri, input_property)
 
-        self.last_created_task = next_task  # store created task
+        self.last_created_task = task_instance  # store created task
 
-        return next_task
+        return task_instance
 
     def _add_inputs_to_task(
         self,
         namespace: Namespace,
-        task_entity: Task,
+        task_instance: Task,
+        generic_task_class: Task,
         input_data_entity_dict: Dict[str, List[DataEntity]] = None,
     ) -> None:
         """
@@ -344,13 +440,22 @@ class ExeKG:
             get_input_properties_and_inputs(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
-                task_entity.parent_entity.iri,
+                task_instance.parent_entity.iri,
+            )
+        )
+
+        # add inputs from generic task class
+        results += list(
+            get_input_properties_and_inputs(
+                self.input_kg,
+                self.top_level_schema.namespace_prefix,
+                generic_task_class.iri,
             )
         )
 
         # task_type_index was incremented when creating the task entity
         # reset the index to match the currently created task's index
-        task_type_index = self.task_type_dict[task_entity.type] - 1
+        task_type_index = self.task_type_dict[task_instance.type] - 1
         for _, input_entity_iri, data_structure_iri in results:
             input_entity_name = input_entity_iri.split("#")[1]
             if not use_cli:
@@ -382,8 +487,8 @@ class ExeKG:
                 data_entity = DataEntity(
                     data_entity_iri,
                     DataEntity(input_entity_iri, self.data_entity),
-                    has_reference=input_data_entity.iri,
-                    has_data_structure_iri=data_structure_iri,
+                    reference=input_data_entity.iri,
+                    data_structure_iri=data_structure_iri,
                 )
                 add_and_attach_data_entity(
                     self.output_kg,
@@ -392,15 +497,15 @@ class ExeKG:
                     self.top_level_schema.namespace,
                     data_entity,
                     self.top_level_schema.namespace.hasInput,
-                    task_entity,
+                    task_instance,
                 )
-                task_entity.input_dict[input_entity_name] = data_entity
+                task_instance.input_dict[input_entity_name] = data_entity
                 same_input_index += 1
 
                 if use_cli:
                     check_kg_executability(self.output_kg)
 
-    def _add_outputs_to_task(self, task_entity: Task) -> None:
+    def _add_outputs_to_task(self, task_instance: Task, generic_task_class: Task) -> None:
         """
         Instantiates and adds output data entities to the given task of self.output_kg, based on the task's definition in the KG schema
         Args:
@@ -411,20 +516,28 @@ class ExeKG:
             get_output_properties_and_outputs(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
-                task_entity.parent_entity.iri,
+                task_instance.parent_entity.iri,
+            )
+        )
+
+        results += list(
+            get_output_properties_and_outputs(
+                self.input_kg,
+                self.top_level_schema.namespace_prefix,
+                generic_task_class.iri,
             )
         )
 
         # task_type_index was incremented when creating the task entity
         # reset the index to match the currently created task's index
-        task_type_index = self.task_type_dict[task_entity.type] - 1
+        task_type_index = self.task_type_dict[task_instance.type] - 1
         for output_property, output_parent_entity_iri, data_structure_iri in results:
             # instantiate and add data entity
             output_data_entity_iri = output_parent_entity_iri + str(task_type_index)
             output_data_entity = DataEntity(
                 output_data_entity_iri,
                 DataEntity(output_parent_entity_iri, self.data_entity),
-                has_data_structure_iri=data_structure_iri,
+                data_structure_iri=data_structure_iri,
             )
             add_and_attach_data_entity(
                 self.output_kg,
@@ -433,9 +546,9 @@ class ExeKG:
                 self.top_level_schema.namespace,
                 output_data_entity,
                 self.top_level_schema.namespace.hasOutput,
-                task_entity,
+                task_instance,
             )
-            task_entity.output_dict[output_parent_entity_iri.split("#")[1]] = output_data_entity
+            task_instance.output_dict[output_parent_entity_iri.split("#")[1]] = output_data_entity
             self.existing_data_entity_list.append(output_data_entity)
 
     def _create_next_task_cli(self) -> Union[None, Task]:
@@ -575,7 +688,7 @@ class ExeKG:
         Args:
             file_path: path of the output file
         """
-        check_kg_executability(self.output_kg)
+        # check_kg_executability(self.output_kg)
 
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path, exist_ok=True)
@@ -583,7 +696,7 @@ class ExeKG:
         self.output_kg.serialize(destination=file_path)
         print(f"Executable KG saved in {file_path}")
 
-    def _property_value_to_field_value(self, property_value: str) -> Union[str, DataEntity]:
+    def _property_value_to_field_value(self, property_value: Union[str, Literal]) -> Union[str, DataEntity]:
         """
         Converts property value to Python class field value
         If property_value is not a data entity's IRI, it is returned as is
@@ -595,13 +708,41 @@ class ExeKG:
             str: property_value parameter as is
             DataEntity: object containing parsed data entity properties
         """
-        if "#" in property_value:
-            data_entity = self._parse_data_entity_by_iri(property_value)
+        property_value_s = str(property_value)
+        if "#" in property_value_s:
+            data_entity = self._parse_data_entity_by_iri(property_value_s)
             if data_entity is None:
-                return property_value
+                if not isinstance(property_value, Literal):
+                    return property_value
+                return self._literal_to_field_value(property_value)
             return data_entity
 
-        return property_value
+        if not isinstance(property_value, Literal):
+            return property_value
+        return self._literal_to_field_value(property_value)
+
+    def _literal_to_field_value(self, literal: Literal) -> Union[str, int, float, bool]:
+        """
+        Converts a Literal to a Python class field value
+        Args:
+            literal: Literal object to convert
+
+        Returns:
+            str: lexical form of the literal
+            int: value of the literal
+            float: value of the literal
+            bool: value of the literal
+        """
+        if literal.datatype == XSD.string:
+            return str(literal)
+        elif literal.datatype == XSD.integer:
+            return int(literal)
+        elif literal.datatype == XSD.float:
+            return float(literal)
+        elif literal.datatype == XSD.boolean:
+            return bool(literal)
+        else:
+            return literal
 
     def _parse_data_entity_by_iri(self, in_out_data_entity_iri: str) -> Optional[DataEntity]:
         """
@@ -615,7 +756,7 @@ class ExeKG:
         """
         # fetch type of entity with given IRI
         query_result = get_first_query_result_if_exists(
-            query_entity_parent_iri,
+            query_instance_parent_iri,
             self.input_kg,
             in_out_data_entity_iri,
             self.top_level_schema.namespace.DataEntity,
@@ -640,7 +781,7 @@ class ExeKG:
 
         # create DataEntity object to store all the parsed properties
         data_entity = DataEntity(in_out_data_entity_iri, Entity(data_entity_parent_iri))
-        data_entity.has_reference = data_entity_ref_iri.split("#")[1]
+        data_entity.reference = data_entity_ref_iri.split("#")[1]
 
         for s, p, o in self.input_kg.triples((URIRef(data_entity_ref_iri), None, None)):
             # parse property name and value
@@ -652,7 +793,7 @@ class ExeKG:
 
         return data_entity
 
-    def _parse_task_by_iri(self, task_iri: str, canvas_method: visual_tasks.CanvasTaskCanvasMethod = None) -> Task:
+    def _parse_task_by_iri(self, task_iri: str, canvas_method: visual_tasks.CanvasMethodCanvasTask = None) -> Task:
         """
         Parses a task of self.input_kg and stores the info in an object of a sub-class of Task
         The sub-class name and the object's fields are mapped dynamically based on the found KG components
@@ -665,7 +806,7 @@ class ExeKG:
         """
         # fetch type of entity with given IRI
         query_result = get_first_query_result_if_exists(
-            query_entity_parent_iri,
+            query_instance_parent_iri,
             self.input_kg,
             task_iri,
             self.top_level_schema.namespace.AtomicTask,
@@ -679,7 +820,22 @@ class ExeKG:
 
         task_parent_iri = str(query_result[0])
 
-        task = Task(task_iri, Task(task_parent_iri))
+        query_result = get_first_query_result_if_exists(
+            query_top_level_task_iri,
+            self.input_kg,
+            task_parent_iri,
+            self.top_level_schema.namespace_prefix,
+        )
+
+        if (
+            query_result is None
+        ):  # given IRI does not belong to an instance of a sub-class of self.top_level_schema.namespace.AtomicTask
+            task_top_level_parent_iri = task_parent_iri
+        else:
+            task_top_level_parent_iri = str(query_result[0])
+
+        task_top_level_parent = Entity(task_top_level_parent_iri, None)
+
         method = get_method_by_task_iri(
             self.input_kg,
             self.top_level_schema.namespace_prefix,
@@ -688,9 +844,11 @@ class ExeKG:
         )
         if method is None:
             print(f"Cannot retrieve method for task with iri: {task_iri}")
-
+        # print(task_iri)
         # perform automatic mapping of KG task class to Python sub-class
-        class_name = task.type + method.type
+        # class_name = task_top_level_parent.name if method is None else method.type + task_top_level_parent.name
+        class_name = task_top_level_parent.name
+
         Class = getattr(visual_tasks, class_name, None)
         if Class is None:
             Class = getattr(statistic_tasks, class_name, None)
@@ -703,21 +861,42 @@ class ExeKG:
         else:
             task = Class(task_iri, Task(task_parent_iri))
 
-        task_related_triples = self.input_kg.triples((URIRef(task_iri), None, None))
-        method_related_triples = self.input_kg.triples((URIRef(method.iri), None, None))
+        if method is not None:
+            module_chain_names = get_module_hierarchy_chain(
+                self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
+            )
+            module_chain_names = [camel_to_snake(name) for name in module_chain_names]
+            module_chain_names = [method.type] + module_chain_names
+            module_chain_names.reverse()
+            module_chain = ".".join(module_chain_names)
+            task.method_module_chain = module_chain
+
+        task_related_triples = list(get_input_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri))
+        # print(taskr)
+        task_related_triples += list(
+            get_output_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri)
+        )
+        task_related_triples += list(
+            self.input_kg.triples((URIRef(task_iri), self.top_level_schema.namespace.hasNextTask, None))
+        )
+        method_related_triples = (
+            list(get_parameters_triples(self.input_kg, self.top_level_schema.namespace_prefix, method.iri))
+            if method is not None
+            else []
+        )
 
         for s, p, o in itertools.chain(task_related_triples, method_related_triples):
+            # print((s,p,o))
             # parse property name and value
             field_name = property_name_to_field_name(str(p))
-            if not hasattr(task, field_name) or field_name == "type":
-                continue
-            field_value = self._property_value_to_field_value(str(o))
-
+            field_value = self._property_value_to_field_value(o)
             # set field value dynamically
-            if field_name == "has_input" or field_name == "has_output":
-                getattr(task, field_name).append(field_value)
-            else:
+            if field_name == "input" or field_name == "output":
+                getattr(task, f"{field_name}s").append(field_value)
+            elif field_name == "next_task":
                 setattr(task, field_name, field_value)
+            else:  # method parameter
+                task.method_params_dict[field_name] = field_value
 
         return task
 
@@ -740,4 +919,4 @@ class ExeKG:
             if next_task.type == "CanvasTask":
                 canvas_method = next_task
 
-            next_task_iri = next_task.has_next_task
+            next_task_iri = next_task.next_task

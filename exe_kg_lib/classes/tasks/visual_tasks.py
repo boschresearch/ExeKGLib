@@ -12,7 +12,7 @@ from ..task import Task
 """
 
 
-class CanvasTaskCanvasMethod(Task):
+class CanvasMethodCanvasTask(Task):
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
         self.grid = None
@@ -27,7 +27,7 @@ class CanvasTaskCanvasMethod(Task):
 
 
 class PlotTask(Task):
-    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod):
+    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasMethodCanvasTask):
         super().__init__(iri, parent_entity)
         self.fig = canvas_method.fig
         self.grid = canvas_method.grid
@@ -46,8 +46,8 @@ class PlotTask(Task):
         raise NotImplementedError
 
 
-class PlotTaskScatterplotMethod(PlotTask):
-    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod):
+class ScatterplotMethodPlotTask(PlotTask):
+    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasMethodCanvasTask):
         super().__init__(iri, parent_entity, canvas_method)
         self.has_scatter_size = None
         self.has_scatter_style = None
@@ -73,7 +73,7 @@ class PlotTaskScatterplotMethod(PlotTask):
 
 
 class PlotTaskLineplotMethod(PlotTask):
-    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasTaskCanvasMethod):
+    def __init__(self, iri: str, parent_entity: Entity, canvas_method: CanvasMethodCanvasTask):
         super().__init__(iri, parent_entity, canvas_method)
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):

@@ -63,13 +63,13 @@ def get_input_for_new_data_entities(
         for i, t in enumerate(data_semantics_list):
             print(f"\t{str(i)}. {t.name}")
         chosen_data_semantics_id = int(input())
-        new_data_entity.has_data_semantics = data_semantics_list[chosen_data_semantics_id].iri
+        new_data_entity.data_semantics = data_semantics_list[chosen_data_semantics_id].iri
 
         print(f"Choose data structure for {source}:")
         for i, t in enumerate(data_structure_list):
             print(f"\t{str(i)}. {t.name}")
         chosen_data_structure_id = int(input())
-        new_data_entity.has_data_structure = data_structure_list[chosen_data_structure_id].iri
+        new_data_entity.data_structure = data_structure_list[chosen_data_structure_id].iri
 
         data_entities.append(new_data_entity)
 
