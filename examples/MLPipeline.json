@@ -1,0 +1,231 @@
+{
+    "name": "MLPipeline",
+    "input_data_path": "/PATH/TO/THIS/DIR/data/dummy_data.csv",
+    "output_plots_dir": "/PATH/TO/THIS/DIR/plots/MLPipeline",
+    "data_entities": [
+        {
+            "name": "feature_1",
+            "source": "feature_1",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_2",
+            "source": "feature_2",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_3",
+            "source": "feature_3",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_4",
+            "source": "feature_4",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_5",
+            "source": "feature_5",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "label",
+            "source": "label",
+            "data_semantics": "Categorical",
+            "data_structure": "Vector"
+        }
+    ],
+    "tasks": [
+        {
+            "kg_schema_short": "ml",
+            "task_type": "Concatenation",
+            "method_type": "ConcatenationMethod",
+            "method_params_dict": {},
+            "input_data_entity_dict": {
+                "DataInConcatenation": [
+                    "feature_1",
+                    "feature_2",
+                    "feature_3",
+                    "feature_4",
+                    "feature_5"
+                ]
+            },
+            "output_names": [
+                "DataOutConcatenatedData"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "DataSplitting",
+            "method_type": "TrainTestSplitMethod",
+            "method_params_dict": {
+                "hasParamTestSize": 0.2,
+                "hasParamRandomState": 0
+            },
+            "input_data_entity_dict": {
+                "DataInDataSplittingX": [
+                    "DataOutConcatenatedData_Concatenation1_ConcatenationMethod"
+                ],
+                "DataInDataSplittingY": [
+                    "label"
+                ]
+            },
+            "output_names": [
+                "DataOutSplittedTestDataX",
+                "DataOutSplittedTestDataY",
+                "DataOutSplittedTrainDataX",
+                "DataOutSplittedTrainDataY"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "BinaryClassification",
+            "method_type": "SVCMethod",
+            "method_params_dict": {
+                "hasParamRandomState": 0
+            },
+            "input_data_entity_dict": {
+                "DataInTrainX": [
+                    "DataOutSplittedTrainDataX_DataSplitting1_TrainTestSplitMethod"
+                ],
+                "DataInTrainY": [
+                    "DataOutSplittedTrainDataY_DataSplitting1_TrainTestSplitMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutTrainModel"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "Test",
+            "method_type": "TestMethod",
+            "method_params_dict": {},
+            "input_data_entity_dict": {
+                "DataInTestModel": [
+                    "DataOutTrainModel_BinaryClassification1_SVCMethod"
+                ],
+                "DataInTestX": [
+                    "DataOutSplittedTestDataX_DataSplitting1_TrainTestSplitMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutPredictedValueTest"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "PerformanceCalculation",
+            "method_type": "AccuracyScoreMethod",
+            "method_params_dict": {},
+            "input_data_entity_dict": {
+                "DataInRealY": [
+                    "DataOutSplittedTestDataY_DataSplitting1_TrainTestSplitMethod"
+                ],
+                "DataInPredictedY": [
+                    "DataOutPredictedValueTest_Test1_TestMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutScore"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "PerformanceCalculation",
+            "method_type": "F1ScoreMethod",
+            "method_params_dict": {},
+            "input_data_entity_dict": {
+                "DataInRealY": [
+                    "DataOutSplittedTestDataY_DataSplitting1_TrainTestSplitMethod"
+                ],
+                "DataInPredictedY": [
+                    "DataOutPredictedValueTest_Test1_TestMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutScore"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "PerformanceCalculation",
+            "method_type": "PrecisionScoreMethod",
+            "method_params_dict": {},
+            "input_data_entity_dict": {
+                "DataInRealY": [
+                    "DataOutSplittedTestDataY_DataSplitting1_TrainTestSplitMethod"
+                ],
+                "DataInPredictedY": [
+                    "DataOutPredictedValueTest_Test1_TestMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutScore"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "PerformanceCalculation",
+            "method_type": "RecallScoreMethod",
+            "method_params_dict": {},
+            "input_data_entity_dict": {
+                "DataInRealY": [
+                    "DataOutSplittedTestDataY_DataSplitting1_TrainTestSplitMethod"
+                ],
+                "DataInPredictedY": [
+                    "DataOutPredictedValueTest_Test1_TestMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutScore"
+            ]
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "CanvasCreation",
+            "method_type": "CanvasMethod",
+            "method_params_dict": {
+                "hasParamLayout": "2 1",
+                "hasParamFigureSize": "10 10"
+            },
+            "input_data_entity_dict": {},
+            "output_names": []
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "BarPlotting",
+            "method_type": "BarMethod",
+            "method_params_dict": {
+                "hasParamTitle": "Test Accuracy & F1"
+            },
+            "input_data_entity_dict": {
+                "DataInToPlot": [
+                    "DataOutScore_PerformanceCalculation1_AccuracyScoreMethod",
+                    "DataOutScore_PerformanceCalculation2_F1ScoreMethod"
+                ]
+            },
+            "output_names": []
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "BarPlotting",
+            "method_type": "BarMethod",
+            "method_params_dict": {
+                "hasParamTitle": "Test Precision & Recall"
+            },
+            "input_data_entity_dict": {
+                "DataInToPlot": [
+                    "DataOutScore_PerformanceCalculation3_PrecisionScoreMethod",
+                    "DataOutScore_PerformanceCalculation4_RecallScoreMethod"
+                ]
+            },
+            "output_names": []
+        }
+    ]
+}

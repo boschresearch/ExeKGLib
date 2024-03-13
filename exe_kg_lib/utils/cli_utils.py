@@ -13,12 +13,13 @@ def get_input_for_existing_data_entities(
     existing_data_entity_list: List[DataEntity],
 ) -> List[DataEntity]:
     """
-    Asks user to choose data entities from an existing list
+    Prompts the user to choose input for a task from a list of existing data entities.
+
     Args:
-        existing_data_entity_list: contains DataEntity objects for the user to choose from
+        existing_data_entity_list (List[DataEntity]): A list of existing data entities.
 
     Returns:
-        List[DataEntity]: contains the chosen DataEntity objects
+        List[DataEntity]: A list of chosen data entities.
     """
     if not existing_data_entity_list:
         return []
@@ -42,15 +43,16 @@ def get_input_for_new_data_entities(
     data_semantics_list: List[Entity], data_structure_list: List[Entity], namespace: Namespace, data_entity: Entity
 ) -> List[DataEntity]:
     """
-    Asks user to specify info of new data entities and creates relevant objects
+    Prompts the user to enter input columns and their corresponding data semantics and data structure.
+
     Args:
-        data_semantics_list: contains data semantics for the user to choose from
-        data_structure_list: contains data structures for the user to choose from
-        namespace: KG schema namespace to use when initializing the new entities
-        data_entity: Entity object to assign as parent entity of the new entities
+        data_semantics_list (List[Entity]): A list of available data semantics.
+        data_structure_list (List[Entity]): A list of available data structures.
+        namespace (Namespace): The namespace for the new data entities.
+        data_entity (Entity): The data entity to which the new data entities belong.
 
     Returns:
-        List[DataEntity]: contains the created DataEntity objects
+        List[DataEntity]: A list of newly created data entities.
     """
     data_entities = []
 
@@ -78,13 +80,15 @@ def get_input_for_new_data_entities(
     return data_entities
 
 
-def input_pipeline_info() -> Tuple[str, str]:
+def input_pipeline_info() -> Tuple[str, str, str]:
     """
-    Asks user to provide a name for the pipeline and a path for the input data
+    Prompts the user to enter information about the pipeline.
+
     Returns:
-        Tuple[str, str]: contains the provided strings
+        A tuple containing the pipeline name, input data path, and output directory for saving plots.
     """
     pipeline_name = input("Enter a name for the pipeline: ")
     input_data_path = input("Enter a path for the input data: ")
+    input_plots_output_dir = input("Enter a path for saving the plots: ")
 
-    return pipeline_name, input_data_path
+    return pipeline_name, input_data_path, input_plots_output_dir

@@ -3,41 +3,85 @@
 [//]: # (--8<-- [start:content])
 ### Overview
 
-This package contains classes that correspond to entities of type `owl:class` that are `rdfs:subClassOf AtomicTask` in
-the KG.
+This package contains classes that correspond to entities of type `owl:class` that are either `rdfs:subClassOf ds:Task` or `rdfs:subClassOf ds:AtomicTask` in the KG. In either case, these entities are in the top-level of the Task hierarchy for each of the three KG schemata: ML, Statistics and Visualization.
 
-They implement the abstract `run_method()` like so:
+This package's classes implement the abstract `run_method()` to perform the following steps:
 
-1. The input is taken either from outputs of previously executed Tasks (parameter: `other_task_output_dict`) or a
-   dataframe (parameter: `input_data`).
-2. An algorithm is executed using the input.
-
-   There are two conventions:
-    - The algorithm is related to ML, Statistics or Visualization, depending on
-      the Python file's prefix.
-    - The algorithm's implementation is placed in `utils.task_utils` package in the Python file with the corresponding prefix.
-3. The output is returned as a dictionary with pairs of output name and value.
+1. The input data are taken:
+    - Either from outputs of previous Tasks (parameter: `other_task_output_dict`) of the ExeKG
+    - Or a given dataframe (parameter: `input_data`) that holds the input data for the ExeKG
+2. An algorithm is executed. The algorithm can be related to ML, Statistics or Visualization, depending on the Python file's prefix (i.e. `ml`, `statistic`, `visual`). The algorithm can:
+     - Either be implemented as part of this library
+     - Or belong to an external module. In this case, the module is determined using `classes.tasks.task.Task.resolve_module()` based on the Task's `method_module_chain`. See section [Naming conventions](#naming-conventions) for more info on `method_module_chain`.
+3. The output of the algorithm is returned as a dictionary with pairs of output name and value
 
 ### Naming conventions
 
-- Each class name is a concatenation of 2 strings:
-    1. The name of an `owl:class` that is `rdfs:subClassOf AtomicTask`.
-    2. The name of an `owl:class` that is `rdfs:subClassOf AtomicMethod` and is associated with the above `owl:class` via a property that is `rdfs:subPropertyOf hasMethod`.
+The below naming conventions are necessary for automatically mapping KG's tasks (with methods and properties) to Python objects while parsing the ExeKG.
 
-    For example, the below KG property associates `CanvasMethod` with `CanvasTask`. So, the corresponding class name will be `CanvasTaskCanvasMethod`.
+- Each class name in this package is the name of an `owl:class` that is either `rdfs:subClassOf ds:Task` or `rdfs:subClassOf ds:AtomicTask`.
+- The `method_params_dict` and `method_inherited_params_dict` fields inherited from `classes.tasks.task.Task` contain parameters for the algorithm to be executed.
+    - Their **keys** are produced by applying `utils.string_utils.property_iri_to_field_name()` to the datatype property names of the Task's linked `ds:AtomicMethod` instance in the ExeKG. E.g. a key named `split_ratio` corresponds to `hasParamSplitRatio` property in the KG.
+    - Their **values** are produced by applying `classes.exe_kg_mixins.exe_kg_execution_mixin.ExeKGExecutionMixin._literal_to_field_value()` to the literal values of the datatype properties in the ExeKG. E.g. a value of `0.6` corresponds to `"0.2"^^xsd:float` literal value in the KG.
+- The `method_module_chain` field inherited from `classes.tasks.task.Task` contains a hierarchy list of Python module names from top to bottom.
+    - The **module hierarchy** is determined by `utils.query_utils.get_module_hierarchy_chain()` starting from the Task's linked `ds:AtomicMethod` instance in the ExeKG, and proceeding via the `rdfs:subClassOf+ ds:Module` property path.
+    - Each item in the hierarchy list (except for the last one) comes from the name of a `owl:class` that is a `rdfs:subClassOf+ ds:Module`, after conversion by `utils.string_utils.class_name_to_module_name()`.
+    - The last item of the list comes from the type of the Task's linked `ds:AtomicMethod` instance, after conversion by `utils.string_utils.class_name_to_method_name()`.
+
+    The **below example** shows the module chain `SVCMethod -> SvmModule -> SklearnModule` which leads to `method_module_chain = ["sklearn", "svm", "SVC"]`.
     ```turtle
-    visu:hasCanvasMethod
-        a                  owl:ObjectProperty ;
-        rdfs:domain        visu:CanvasTask ;
-        rdfs:range         visu:CanvasMethod ;
-        rdfs:subPropertyOf ds:hasMethod .
+    #############################
+    ### START: ExeKG fragment ###
+    #############################
+    ml:BinaryClassification1 a ml:BinaryClassification ;
+                              ds:hasNextTask ml:Test1 ;
+                              ml:hasBinaryClassificationMethod ml:SVCMethod1 ;
+                              ml:hasTrainInput ml:DataInTrainX_BinaryClassification1_1,
+                                              ml:DataInTrainY_BinaryClassification1_1 ;
+                                              ml:hasTrainOutput ml:DataOutTrainModelSVCMethod .
+    ###########################
+    ### END: ExeKG fragment ###
+    ###########################
+
+    #################################
+    ### START: KG schema fragment ###
+    #################################
+    ml:SVCMethod a owl:Class ;
+                  rdfs:subClassOf ds:AtomicMethod,
+                                  ml:SvmModule,
+                                  ml:TrainMethod .
+
+    ml:SvmModule a owl:Class ;
+                  rdfs:subClassOf ml:SklearnModule .
+
+    ml:SklearnModule a owl:Class ;
+                      rdfs:subClassOf ds:Module .
+    ###############################
+    ### END: KG schema fragment ###
+    ###############################
     ```
 
-- The class fields that contain `_` are the snake-case conversions of the equivalent camel-case property names in the
-  KG.
+- The `inputs` and `outputs` fields inherited from `classes.tasks.task.Task` contain a list of `classes.data_entity.DataEntity` objects. These objects created by applying `classes.exe_kg_mixins.exe_kg_execution_mixin.ExeKGExecutionMixin._property_value_to_field_value()` to the Task's linked `ds:DataEntity` instances in the ExeKG.
+    - The **field names** of `classes.data_entity.DataEntity` are produced by applying `utils.string_utils.property_iri_to_field_name()` to the properties of the Task's linked `ds:DataEntity` instances in the ExeKG.
+    - **In the case of input DataEntities**, the object's fields are filled using the properties of the `ds:DataEntity` instances that are **referenced by** the Task's linked `ds:DataEntity` instances.
 
-  e.g. `has_split_ratio` field corresponds to `hasSplitRatio` property in the KG.
+    The **below example** shows a `LinePlotting1` task instance that has `DataInToPlot_LinePlotting1_1` as input. `DataInToPlot_LinePlotting1_1` references `ds:feature_1`. So, in this case, the `inputs` field of the corresponding Task Python object will contain a DataEntity object with fields: `source = "feature_1"`, `reference = IRI(ds:feature_1)`. The fields `data_semantics` and `data_structure` are mainly used during pipeline construction.
+    ```turtle
+    ######################
+    ### ExeKG fragment ###
+    ######################
+    visu:LinePlotting1 a visu:LinePlotting ;
+                      ds:hasNextTask visu:LinePlotting2 ;
+                      visu:hasLinePlottingMethod visu:PlotMethod1 ;
+                      visu:hasPlottingInput visu:DataInToPlot_LinePlotting1_1 .
 
-The above conventions are necessary for automatically mapping KG tasks with methods and properties to Python objects while parsing the KG.
+    visu:DataInToPlot_LinePlotting1_1 a visu:DataInToPlot ;
+                                      ds:hasReference ds:feature_1 .
+
+    ds:feature_1 a ds:DataEntity,
+                  ds:Numerical,
+                  ds:Vector ;
+                ds:hasSource "feature_1"^^xsd:string .
+    ```
 
 [//]: # (--8<-- [end:content])

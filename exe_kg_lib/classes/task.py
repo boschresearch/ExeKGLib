@@ -3,7 +3,7 @@
 
 import importlib
 from abc import abstractmethod
-from typing import Dict
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
@@ -15,12 +15,9 @@ from .entity import Entity
 
 class Task(Entity):
     """
-    Abstraction of owl:class Task.
+    Abstraction of owl:class ds:Task.
 
-    ❗ Important for contributors ❗
-    The fields that contain "_" are by convention the snake-case conversions of the equivalent camel-case property names in the KG.
-    e.g. has_next_task field corresponds to hasNextTask property in the KG.
-    This is necessary for automatically mapping KG properties to Python object fields while parsing the KG.
+    ❗ Important for contributors: See Section "Naming conventions" in README.md of "classes.tasks" package before extending the code's functionality.
     """
 
     def __init__(
@@ -30,11 +27,13 @@ class Task(Entity):
     ):
         super().__init__(iri, parent_entity)
         self.next_task = None
-        self.method_module = None
-        self.method_module_chain = None
+        self.method_module_chain = (
+            []
+        )  # e.g. ['sklearn','model_selection', 'StratifiedShuffleSplit'] Used for resolving the Python module that contains the method to be executed
         self.method_params_dict = {}  # used for storing method parameters during KG execution
-        self.inputs = []
-        self.outputs = []
+        self.method_inherited_params_dict = {}  # used for storing inherited method parameters during KG execution
+        self.inputs = []  # used for storing input DataEntity objects during KG execution
+        self.outputs = []  # used for storing output DataEntity objects during KG execution
         self.input_dict = {}  # used for storing input DataEntity objects during KG creation
         self.output_dict = {}  # used for storing output DataEntity objects during KG creation
 
@@ -66,51 +65,65 @@ class Task(Entity):
 
         return out_dict
 
-    def get_inputs(self, dict_to_search: dict, fallback_df: pd.DataFrame) -> Dict[str, np.ndarray]:
+    def get_inputs(self, dict_to_search: dict, fallback_df: pd.DataFrame) -> Dict[str, Dict[str, pd.DataFrame]]:
         """
-        Tries to match the Task's input names with the keys of dict_to_search
-        and fills input_dict list with their corresponding values.
-        If the matches fail, it retrieves columns of the provided fallback_df
+        Tries to match the Task's input reference names with the keys of dict_to_search and fills input_dict list with their names and values.
+        If the matching fail, it retrieves columns of the provided fallback_df
         Args:
             dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
             fallback_df: contains data to return as an alternative
 
         Returns:
-            Dict[str, np.ndarray]: pairs of input entity types and corresponding input values
+            Dict[str, Dict[str, pd.DataFrame]]: dictionary with input types as keys and dictionaries with input reference names and values as values
         """
         input_dict = {}
-        for input in self.inputs:
+        inputs_sorted = sorted(self.inputs, key=lambda x: x.name)
+        for input in inputs_sorted:
+            if input.type not in input_dict:
+                input_dict[input.type] = []
+
             try:
-                input_dict[input.type] = dict_to_search[input.reference]
+                input_value = dict_to_search[input.reference]
             except KeyError:
-                input_dict[input.type] = fallback_df[input.source]
+                input_value = fallback_df.loc[:, [input.source]]
+
+            input_dict[input.type].append({"name": input.reference, "value": input_value})
 
         return input_dict
 
-    def resolve_module(self, module_name_to_snakecase=False):
+    def resolve_module(self, module_name_to_snakecase=False) -> Any:
         """
-        Resolves the module that contains the method to be executed.
+        Resolves and returns the Python module specified by the method module chain.
+
+        Args:
+            module_name_to_snakecase (bool, optional): Whether to convert the last module name to snake case.
+                                                      Defaults to False.
+
+        Returns:
+            Any: The resolved module.
+
+        Raises:
+            NotImplementedError: If the method module chain is not defined for the task.
         """
-        if self.method_module_chain is not None:
-            method_module_chain = self.method_module_chain
-            if module_name_to_snakecase:
-                module_name = self.method_module_chain.split(".")[-1]
-                module_name_snake = camel_to_snake(module_name)
-                method_module_chain = ".".join(self.method_module_chain.split(".")[:-1] + [module_name_snake])
+        if not self.method_module_chain:
+            raise NotImplementedError(f"Method module chain not defined for task {self.name}.")
 
-            method_module_chain_parents = ".".join(method_module_chain.split(".")[:-1])
-            method_module_chain_child = method_module_chain.split(".")[-1]
-            module_container = importlib.import_module(method_module_chain_parents)
-            module = getattr(module_container, method_module_chain_child)
-            return module
+        method_module_chain = self.method_module_chain
+        if module_name_to_snakecase:
+            method_module_chain = self.method_module_chain[:-1] + [camel_to_snake(self.method_module_chain[-1])]
 
-        print(f"Method module chain not defined for task {self.name}.")
+        method_module_chain_parents = ".".join(method_module_chain[:-1])
+        method_module_chain_child = method_module_chain[-1]
+        module_container = importlib.import_module(method_module_chain_parents)
+        module = getattr(module_container, method_module_chain_child)
+        return module
 
     @abstractmethod
     def run_method(self, *args):
         """
         Abstract method to be implemented by Task sub-classes that are in the bottom of the hierarchy.
         Executes the logic that is needed to fulfill the Task.
+
         Args:
             *args: defined by sub-classes
         """

@@ -1,4 +1,4 @@
-# ExeKGLib
+# ExeKGLib: A Python Library for Knowledge Graphs-Empowered Machine Learning Analytics 🚀
 
 ![PyPI](https://img.shields.io/pypi/v/exe-kg-lib)
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
@@ -7,17 +7,23 @@
 [![License](https://img.shields.io/badge/license-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 [//]: # (--8<-- [start:overview])
-Python library for conveniently constructing and executing Machine Learning (ML) pipelines represented by Knowledge Graphs (KGs). It features a coding interface and a CLI, and allows the user to:
+ExeKGLib is a Python library that simplifies the construction and execution of Machine Learning (ML) pipelines represented by Executable Knowledge Graphs (ExeKGs). It features a coding interface and a CLI, and allows the user to:
 
-1. **Construct** an ML pipeline that gets a CSV as input and processes the data using any of the [available tasks and methods](https://github.com/boschresearch/ExeKGLib/tree/main/README.md#Ready-to-use-ML-related-tasks-and-methods).
-2. **Save** the constructed pipeline as a KG in Turtle format.
-3. **Execute** the generated KG.
+## 🌟 Features
 
-The coding interface is demonstrated with [three sample Python files](https://github.com/boschresearch/ExeKGLib/tree/main/examples). The pipelines represented by the generated sample KGs are briefly explained below:
+1. **🔨 Construct** data analytics pipelines that take tabular files (e.g. CSV) as input and process the data using a variety of [available tasks and methods](https://boschresearch.github.io/ExeKGLib/supported-methods/).
+2. **💾 Save** the constructed pipelines as ExeKGs in RDF Turtle format.
+3. **▶️ Execute** the generated ExeKGs.
 
-1. **ML pipeline**: Loads features and labels from an input CSV dataset, splits the data, trains and tests a k-NN model, and visualizes the prediction errors.
-2. **Statistics pipeline**: Loads a feature from an input CSV dataset, normalizes it, and plots its values (before and after normalization) using a scatter plot.
-3. **Visualization pipeline**: Loads a feature from an input CSV dataset and plots its values using a line plot.
+## 🌟 Key Benefits of ExeKGLib
+
+1. 🚀 **No-code ML Pipeline Creation**: With ExeKGLib, the user can specify the pipeline's structure and the operations to be performed using a simple JSON file (see [Creating an ML pipeline](#🚀-creating-an-ml-pipeline)), which is then automatically converted to an ExeKG. This ExeKG can be executed to perform the specified operations on the input data (see [Executing an ML pipeline](#🚀-executing-an-ml-pipeline)).
+2. 📦 **Batch Pipeline Creation**: ExeKGLib allows users to create pipelines in a batch fashion through its simple coding interface (see [Creating an ML pipeline](#🚀-creating-an-ml-pipeline)). This enables automatic creation of multiple pipelines as ExeKGs, which can then be queried and analyzed.
+3. 🔗 **Linked Open Data Integration**: ExeKGLib is a tool that leverages linked open data (LOD) in several significant ways:
+    - 📚 **Pipeline Creation Guidance**: It helps guide the user through the pipeline creation process. This is achieved by using a predefined hierarchy of tasks, along with their compatible inputs, outputs, methods, and method parameters (see [available tasks and methods]([task_hierarchy.md](https://boschresearch.github.io/ExeKGLib/supported-methods/))).
+    - 🧠 **Enhancing User Understanding**: It enhances the user's understanding of Data Science and the pipeline's functionality. This is achieved by linking the generated pipelines to Knowledge Graph (KG) schemata that encapsulate various Data Science concepts (see [KG schemata](#📜-kg-schemata)).
+    - ✅ **Validation of ExeKGs**: It validates the generated ExeKGs to ensure their executability.
+    - 🔄 **Automatic Conversion and Execution**: It automatically converts the ExeKGs to Python code and executes them.
 
 Under the hood, **ExeKGLib** uses well-known Python libraries for data processing and visualization and performing predictions such as [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), and [scikit-learn](https://scikit-learn.org/).
 
@@ -27,7 +33,7 @@ Under the hood, **ExeKGLib** uses well-known Python libraries for data processin
 
 Detailed information (installation, documentation etc.) about **ExeKGLib** can be found in [its website](https://boschresearch.github.io/ExeKGLib/) and basic information is shown below.
 
-## Installation
+## 📦 Installation
 
 [//]: # (--8<-- [start:installation])
 To install, run `pip install exe-kg-lib`.
@@ -36,80 +42,80 @@ To install, run `pip install exe-kg-lib`.
 
 For detailed installation instructions, refer to the [installation page](https://boschresearch.github.io/ExeKGLib/installation/) of **ExeKGLib**'s website.
 
-## Ready-to-use ML-related tasks and methods
+## 🚀 Getting started
 
-<details>
-  <summary>Click to expand</summary>
+[//]: # (--8<-- [start:gettingstarted])
+We provide [example Python files and a JSON file](https://github.com/boschresearch/ExeKGLib/tree/main/examples) that can be used to create the following pipelines:
 
-<!-- --8<-- [start:supportedmethods] -->
-| KG schema (abbreviation) | Task                      | Method                       | Properties                                                                                    | Input (data structure)                                                                                                                                           | Output (data structure)                                                                                                                                                                    | Implemented by Python class                          |
-| ------------------------ | ------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
-| Machine Learning (ml)    | Train                     | KNNTrain                     | \-                                                                                            | DataInTrainX (Matrix or Vector)<br>DataInTrainY (Matrix or Vector)                                                                                               | DataOutPredictedValueTrain (Matrix or Vector)<br>DataOutTrainModel (SingleValue)                                                                                                           | TrainKNNTrain                                        |
-| Machine Learning (ml)    | Train                     | MLPTrain                     | \-                                                                                            | DataInTrainX (Matrix or Vector)<br>DataInTrainY (Matrix or Vector)                                                                                               | DataOutPredictedValueTrain (Matrix or Vector)<br>DataOutTrainModel (SingleValue)                                                                                                           | TrainMLPTrain                                        |
-| Machine Learning (ml)    | Train                     | LRTrain                      | \-                                                                                            | DataInTrainX (Matrix or Vector)<br>DataInTrainY (Matrix or Vector)                                                                                               | DataOutPredictedValueTrain (Matrix or Vector)<br>DataOutTrainModel (SingleValue)                                                                                                           | TrainLRTrain                                         |
-| Machine Learning (ml)    | Test                      | KNNTest                      | \-                                                                                            | DataInTestModel (SingleValue)<br>DataInTestX (Matrix or Vector)                                                                                                  | DataOutPredictedValueTest (Matrix or Vector)                                                                                                                                               | TestKNNTest                                          |
-| Machine Learning (ml)    | Test                      | MLPTest                      | \-                                                                                            | DataInTestModel (SingleValue)<br>DataInTestX (Matrix or Vector)                                                                                                  | DataOutPredictedValueTest (Matrix or Vector)                                                                                                                                               | TestMLPTest                                          |
-| Machine Learning (ml)    | Test                      | LRTest                       | \-                                                                                            | DataInTestModel (SingleValue)<br>DataInTestX (Matrix or Vector)                                                                                                  | DataOutPredictedValueTest (Matrix or Vector)                                                                                                                                               | TestLRTest                                           |
-| Machine Learning (ml)    | PerformanceCalculation    | PerformanceCalculationMethod | \-                                                                                            | DataInTrainRealY (Matrix or Vector)<br>DataInTrainPredictedY (Matrix or Vector)<br>DataInTestPredictedY (Matrix or Vector)<br>DataInTestRealY (Matrix or Vector) | DataOutMLTestErr (Vector)<br>DataOutMLTrainErr (Vector)                                                                                                                                    | PerformanceCalculationPerformanceCalculationMethod   |
-| Machine Learning (ml)    | Concatenation             | ConcatenationMethod          | \-                                                                                            | DataInConcatenation (list of Vector)                                                                                                                             | DataOutConcatenatedData (Matrix)                                                                                                                                                           | ConcatenationConcatenationMethod                     |
-| Machine Learning (ml)    | DataSplitting             | DataSplittingMethod          | \-                                                                                            | DataInDataSplittingX (Matrix or Vector)<br>DataInDataSplittingY (Matrix or Vector)                                                                               | DataOutSplittedTestDataX (Matrix or Vector)<br>DataOutSplittedTrainDataY (Matrix or Vector)<br>DataOutSplittedTrainDataX (Matrix or Vector)<br>DataOutSplittedTestDataY (Matrix or Vector) | DataSplittingDataSplittingMethod                     |
-| Visualization (visu)     | CanvasTask                | CanvasMethod                 | hasCanvasName (string)<br>hasLayout (string)                                                  | \-                                                                                                                                                               | \-                                                                                                                                                                                         | CanvasTaskCanvasMethod                               |
-| Visualization (visu)     | PlotTask                  | LineplotMethod               | hasLineStyle (string)<br>hasLineWidth (int)<br>hasLegendName (string)                         | DataInVector (Vector)                                                                                                                                            | \-                                                                                                                                                                                         | PlotTaskLineplotMethod                               |
-| Visualization (visu)     | PlotTask                  | ScatterplotMethod            | hasLineStyle (string)<br>hasLineWidth (int)<br>hasScatterSize (int)<br>hasLegendName (string) | DataInVector (Vector)                                                                                                                                            | \-                                                                                                                                                                                         | PlotTaskScatterplotMethod                            |
-| Statistics (stats)       | TrendCalculationTask      | TrendCalculationMethod       | \-                                                                                            | DataInTrendCalculation (Vector)                                                                                                                                  | DataOutTrendCalculation (Vector)                                                                                                                                                           | TrendCalculationTaskTrendCalculationMethod           |
-| Statistics (stats)       | NormalizationTask         | NormalizationMethod          | \-                                                                                            | DataInNormalization (Vector)                                                                                                                                     | DataOutNormalization (Vector)                                                                                                                                                              | NormalizationTaskNormalizationMethod                 |
-| Statistics (stats)       | ScatteringCalculationTask | ScatteringCalculationMethod  | \-                                                                                            | DataInScatteringCalculation (Vector)                                                                                                                             | DataOutScatteringCalculation (Vector)                                                                                                                                                      | ScatteringCalculationTaskScatteringCalculationMethod |
+1. **🧠 ML pipeline**: Loads a CSV dataset, concatenates selected features, splits the data into training and testing sets, trains a Support Vector Classifier model, tests the model, calculates performance metrics (accuracy, F1 score, precision, and recall), and visualizes the results in bar plots.
+2. **📊 Statistics pipeline**: Loads a specific feature from a CSV dataset, calculates its mean and standard deviation, and visualizes the feature's values using a line plot and the calculated statistics using a bar plot.
+3. **📈 Visualization pipeline**: The pipeline loads two numerical features from a CSV dataset and visualizes each feature's values using separate line plots.
 
-[//]: # (--8<-- [end:supportedmethods])
+[//]: # (--8<-- [end:gettingstarted])
 
-</details>
+## 🧪 Supported ML-related tasks and methods
 
-## Usage
+See [relevant website page](https://boschresearch.github.io/ExeKGLib/supported-tasks-and-methods).
+
+## 🛠️ Usage
 
 [//]: # (--8<-- [start:usage])
-### Creating an ML pipeline
+### 🚀 Creating an ML pipeline
 
-- **Via code**: See the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples). To fetch them to your working directory for easy access, run `typer exe_kg_lib.cli.main run get-examples`.
-- **Step-by-step via CLI**: Run `typer exe_kg_lib.cli.main run create-pipeline`.
+#### 💻 Via code
+See `ml_pipeline_creation.py`,  `stats_pipeline_creation.py`,  `visu_pipeline_creation.py` in the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples).
 
-### Executing an ML pipeline
-- **Via code**: See [example code](https://github.com/boschresearch/ExeKGLib/blob/21e4df0e7de89c27748c8b61759652b7edf7d9b8/exe_kg_lib/cli/main.py#L28-L29).
-- **Via CLI**: Run `typer exe_kg_lib.cli.main run run-pipeline <pipeline_path>`.
+#### 📄 Using JSON
+See `MLPipeline.json` and `ml_pipeline_creation_from_json.py` in the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples).
+
+#### 🖥️ Step-by-step via CLI
+Run `typer exe_kg_lib.cli.main run create-pipeline`.
+
+> 🗒️ **Note**: To fetch the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples) to your working directory for easy access, run `typer exe_kg_lib.cli.main run get-examples`.
+
+### 🚀 Executing an ML pipeline
+
+#### 💻 Via code
+See [example code](https://github.com/boschresearch/ExeKGLib/blob/21e4df0e7de89c27748c8b61759652b7edf7d9b8/exe_kg_lib/cli/main.py#L28-L29).
+
+#### 🖥️ Via CLI
+Run `typer exe_kg_lib.cli.main run run-pipeline <pipeline_path>`. The `pipeline_path` can either be a `.ttl` or `.json` file.
 
 [//]: # (--8<-- [end:usage])
 
-## Adding a new ML-related task and method
+## 📝 Adding a new ML-related task and method
 
 [//]: # (--8<-- [start:extending])
-To perform this type of **ExeKGLib** extension, there are 3 required steps:
+For detailed guidelines, refer to the [relevant page](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/) of **ExeKGLib**'s website.
 
-1. Selection of a relevant bottom-level KG schema (Statistics, ML, or Visualization) according to the type of the new task and method.
-2. Addition of new semantic components (entities, properties, etc) to the selected KG schema.
-3. Addition of a Python class to the corresponding module of `exe_kg_lib.classes.tasks` package.
+In summary, these are the steps:
 
-For steps 2 and 3, refer to the [relevant page](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/) of **ExeKGLib**'s website.
+1. Selecting a bottom-level KG schema (Statistics, ML, or Visualization) based on the type of the new task and method.
+2. Adding new semantic components (entities, properties, etc.) to the selected KG schema and the corresponding SHACL shapes graph.
+3. Modifying the Python code in the corresponding file of `exe_kg_lib.classes.tasks` package.
 
 [//]: # (--8<-- [end:extending])
 
-## Documentation
+## 📚 Documentation
 See the _Code Reference_ and _Development_ sections of the [**ExeKGLib**'s website](https://boschresearch.github.io/ExeKGLib/).
 
-## External resources
+## 🌐 External resources
 
 [//]: # (--8<-- [start:externalresources])
-### KG schemata
+### 📜 KG schemata
 
 - **Top-level**: [Data Science](https://w3id.org/def/exekg-ds)
 - **Bottom-level**: [Visualization](https://w3id.org/def/exekg-visu) | [Statistics](https://w3id.org/def/exekg-stats) | [Machine Learning](https://w3id.org/def/exekg-ml)
 
 The above KG schemata are included in the [ExeKGOntology repository](https://github.com/nsai-uio/ExeKGOntology).
 
-### Dataset used in code examples
+### 📊 Dataset used in code examples
+
 [The dataset](https://github.com/boschresearch/ExeKGLib/tree/main/examples/data/dummy_data.csv) was generated using the `sklearn.datasets.make_classification()` function of the [scikit-learn Python library](https://scikit-learn.org/).
 
 [//]: # (--8<-- [end:externalresources])
 
-## License
+## 📜 License
 
 ExeKGLib is open-sourced under the AGPL-3.0 license. See the
 [LICENSE](LICENSE.md) file for details.

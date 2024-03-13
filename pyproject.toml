@@ -54,7 +54,6 @@ pytest-cov = "^4.0.0"
 pytest-html = "^3.2.0"
 pytest-xdist = "^3.0.2"
 pyupgrade = "^3.2.3"
-shexer = "^2.1.1"
 
 # Tools config
 [tool.black]
