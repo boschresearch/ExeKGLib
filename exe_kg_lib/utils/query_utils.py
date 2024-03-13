@@ -132,9 +132,10 @@ def get_method_properties_and_methods(input_kg, namespace_prefix, entity_parent_
     )
 
 
-def get_input_properties_and_inputs(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
+def get_inherited_input_properties_and_inputs(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
     return input_kg.query(
-        "\nSELECT ?p ?m ?s WHERE {?p rdfs:domain ?entity_iri . "
+        "\nSELECT ?p ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
+        "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
         "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . "
@@ -143,9 +144,10 @@ def get_input_properties_and_inputs(input_kg, namespace_prefix, entity_parent_ir
     )
 
 
-def get_output_properties_and_outputs(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
+def get_inherited_output_properties_and_outputs(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
     return input_kg.query(
-        "\nSELECT ?p ?m ?s WHERE {?p rdfs:domain ?entity_iri . "
+        "\nSELECT ?p ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
+        "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasOutput ."
         "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . "

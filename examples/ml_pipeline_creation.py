@@ -42,12 +42,12 @@ if __name__ == "__main__":
         input_data_entity_dict={"DataInConcatenation": feature_data_entities},
         # method="ConcatenationMethod",
         method_params_dict={},
-        generic_task="Concatenation",
+        task="Concatenation",
     )
 
     data_splitting_task = exe_kg.add_task(
         kg_schema_short="ml",
-        generic_task="DataSplitting",
+        task="DataSplitting",
         input_data_entity_dict={
             "DataInDataSplittingX": [concatenate_task.output_dict["DataOutConcatenatedData"]],
             "DataInDataSplittingY": [label_data_entity],
@@ -63,8 +63,7 @@ if __name__ == "__main__":
 
     knn_train_task = exe_kg.add_task(
         kg_schema_short="ml",
-        generic_task="Train",
-        specific_task="BinaryClassification",
+        task="BinaryClassification",
         input_data_entity_dict={
             "DataInTrainX": [train_x],
             "DataInTrainY": [train_real_y],
@@ -77,8 +76,7 @@ if __name__ == "__main__":
 
     knn_test_task = exe_kg.add_task(
         kg_schema_short="ml",
-        generic_task="Test",
-        # specific_task="BinaryClassification",
+        task="Test",
         input_data_entity_dict={
             "DataInTestModel": [model],
             "DataInTestX": [test_x],
@@ -90,7 +88,7 @@ if __name__ == "__main__":
 
     performance_calc_task = exe_kg.add_task(
         kg_schema_short="ml",
-        generic_task="PerformanceCalculation",
+        task="PerformanceCalculation",
         input_data_entity_dict={
             "DataInRealY": [test_real_y],
             "DataInPredictedY": [test_predicted_y],
@@ -102,7 +100,7 @@ if __name__ == "__main__":
 
     performance_calc_task = exe_kg.add_task(
         kg_schema_short="ml",
-        generic_task="PerformanceCalculation",
+        task="PerformanceCalculation",
         input_data_entity_dict={
             "DataInRealY": [test_real_y],
             "DataInPredictedY": [test_predicted_y],
@@ -114,7 +112,7 @@ if __name__ == "__main__":
 
     performance_calc_task = exe_kg.add_task(
         kg_schema_short="ml",
-        generic_task="PerformanceCalculation",
+        task="PerformanceCalculation",
         input_data_entity_dict={
             "DataInRealY": [test_real_y],
             "DataInPredictedY": [test_predicted_y],
@@ -126,7 +124,7 @@ if __name__ == "__main__":
 
     performance_calc_task = exe_kg.add_task(
         kg_schema_short="ml",
-        generic_task="PerformanceCalculation",
+        task="PerformanceCalculation",
         input_data_entity_dict={
             "DataInRealY": [test_real_y],
             "DataInPredictedY": [test_predicted_y],
@@ -138,7 +136,7 @@ if __name__ == "__main__":
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        generic_task="CanvasCreation",
+        task="CanvasCreation",
         input_data_entity_dict={},
         method="CanvasMethod",
         method_params_dict={"hasParamLayout": "2 1"},
@@ -146,8 +144,7 @@ if __name__ == "__main__":
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        generic_task="Plot",
-        specific_task="BarPlot",
+        task="BarPlot",
         input_data_entity_dict={
             "DataInToPlot": [test_accuracy, test_f1],
         },
@@ -159,8 +156,7 @@ if __name__ == "__main__":
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        generic_task="Plot",
-        specific_task="BarPlot",
+        task="BarPlot",
         input_data_entity_dict={
             "DataInToPlot": [test_precision, test_recall],
         },

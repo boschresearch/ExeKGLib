@@ -20,11 +20,12 @@ from ..utils.kg_creation_utils import (add_and_attach_data_entity,
 from ..utils.query_utils import (
     get_data_properties_by_entity_iri,
     get_data_properties_plus_inherited_by_class_iri,
-    get_first_query_result_if_exists, get_input_properties_and_inputs,
-    get_input_triples, get_method_by_task_iri,
-    get_method_properties_and_methods, get_module_hierarchy_chain,
-    get_output_properties_and_outputs, get_output_triples,
-    get_parameters_triples, get_pipeline_and_first_task_iri, get_subclasses_of,
+    get_first_query_result_if_exists,
+    get_inherited_input_properties_and_inputs,
+    get_inherited_output_properties_and_outputs, get_input_triples,
+    get_method_by_task_iri, get_method_properties_and_methods,
+    get_module_hierarchy_chain, get_output_triples, get_parameters_triples,
+    get_pipeline_and_first_task_iri, get_subclasses_of,
     query_data_entity_reference_iri, query_instance_parent_iri,
     query_linked_task_and_property, query_parent_classes,
     query_top_level_task_iri)
@@ -274,8 +275,7 @@ class ExeKG:
         kg_schema_short: str,
         input_data_entity_dict: Dict[str, List[DataEntity]],
         method_params_dict: Dict[str, Union[str, int, float]],
-        generic_task: str,
-        specific_task: str = None,
+        task: str = None,
         method: str = None,
     ) -> Task:
         """
@@ -296,61 +296,28 @@ class ExeKG:
 
         kg_schema_to_use = self.bottom_level_schemata[kg_schema_short]
 
-        query_result = list(query_parent_classes(self.input_kg, URIRef(kg_schema_to_use.namespace + generic_task)))
-        generic_task_class_parent_iris = [res[0] for res in query_result]
-        if self.atomic_task.iri not in generic_task_class_parent_iris:  # check if generic_task is an AtomicTask
-            if specific_task is None:
-                print(f"Error: Task {generic_task} is not an AtomicTask and no specific task was given")
-                exit(1)
-        else:
-            specific_task = generic_task
-
-        # # validate input task types
-        # query_result = get_first_query_result_if_exists(
-        #     query_instance_parent_iri,
-        #     self.input_kg,
-        #     URIRef(kg_schema_to_use.namespace + generic_task),
-        #     self.atomic_task.iri,
-        # )
-        # if query_result is None:
-        #     if specific_task is None:
-        #         print(f"Error: Task {generic_task} is not an AtomicTask and no specific task was given")
-        #         exit(1)
-        # else:
-        #     specific_task = generic_task
-
         relation_iri = (
             self.top_level_schema.namespace.hasNextTask
             if self.last_created_task.type != "Pipeline"
             else self.top_level_schema.namespace.hasStartTask
         )  # use relation depending on the previous task
 
-        # query_result = get_first_query_result_if_exists(
-        #     query_linked_task_and_property, self.input_kg, self.top_level_schema.namespace_prefix, method_parent.iri
-        # )
-        # if query_result is None:
-        #     print(f"Error: No linked task found in KG for method {method}")
-        #     exit(1)
-
-        # task_parent = Entity(query_result[0], self.atomic_task)
-
         # instantiate task and link it with the previous one
-        specific_task_class = Task(kg_schema_to_use.namespace + specific_task, self.atomic_task)
+        task_class = Task(kg_schema_to_use.namespace + task, self.atomic_task)
         added_entity = add_instance_from_parent_with_relation(
             kg_schema_to_use.namespace,
             self.output_kg,
-            specific_task_class,
+            task_class,
             relation_iri,
             self.last_created_task,
-            name_instance(self.task_type_dict, self.method_type_dict, specific_task_class),
+            name_instance(self.task_type_dict, self.method_type_dict, task_class),
         )
         task_instance = Task.from_entity(added_entity)  # create Task object from Entity object
 
-        generic_task_class = Task(kg_schema_to_use.namespace + generic_task, self.task)
         # instantiate and add given input data entities to the task
-        self._add_inputs_to_task(kg_schema_to_use.namespace, task_instance, generic_task_class, input_data_entity_dict)
+        self._add_inputs_to_task(kg_schema_to_use.namespace, task_instance, input_data_entity_dict)
         # instantiate and add output data entities to the task, as specified in the KG schema
-        self._add_outputs_to_task(task_instance, method, generic_task_class)
+        self._add_outputs_to_task(task_instance, method)
 
         # if no method is given, return the task without adding a method
         if method is None:
@@ -371,7 +338,7 @@ class ExeKG:
         # print(chosen_property_method)
 
         if chosen_property_method is None:
-            print(f"Property connecting task of type {specific_task} with method of type {method} not found")
+            print(f"Property connecting task of type {task} with method of type {method} not found")
             exit(1)
 
         method_parent = Entity(kg_schema_to_use.namespace + method, self.atomic_method)
@@ -423,7 +390,6 @@ class ExeKG:
         self,
         namespace: Namespace,
         task_instance: Task,
-        generic_task_class: Task,
         input_data_entity_dict: Dict[str, List[DataEntity]] = None,
     ) -> None:
         """
@@ -439,19 +405,10 @@ class ExeKG:
 
         # fetch compatible inputs from KG schema
         results = list(
-            get_input_properties_and_inputs(
+            get_inherited_input_properties_and_inputs(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
                 task_instance.parent_entity.iri,
-            )
-        )
-
-        # add inputs from generic task class
-        results += list(
-            get_input_properties_and_inputs(
-                self.input_kg,
-                self.top_level_schema.namespace_prefix,
-                generic_task_class.iri,
             )
         )
 
@@ -507,7 +464,7 @@ class ExeKG:
                 if use_cli:
                     check_kg_executability(self.output_kg)
 
-    def _add_outputs_to_task(self, task_instance: Task, method_instance_type: str, generic_task_class: Task) -> None:
+    def _add_outputs_to_task(self, task_instance: Task, method_instance_type: str) -> None:
         """
         Instantiates and adds output data entities to the given task of self.output_kg, based on the task's definition in the KG schema
         Args:
@@ -515,18 +472,10 @@ class ExeKG:
         """
         # fetch compatible outputs from KG schema
         results = list(
-            get_output_properties_and_outputs(
+            get_inherited_output_properties_and_outputs(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
                 task_instance.parent_entity.iri,
-            )
-        )
-
-        results += list(
-            get_output_properties_and_outputs(
-                self.input_kg,
-                self.top_level_schema.namespace_prefix,
-                generic_task_class.iri,
             )
         )
 
@@ -688,7 +637,7 @@ class ExeKG:
             # instantiate and add input data entities to the task based on user input
             self._add_inputs_to_task(next_task.parent_entity.namespace, next_task)
             # instantiate and add output data entities to the task, as specified in the KG schema
-            self._add_outputs_to_task(next_task, method_instance, generic_task_class)
+            self._add_outputs_to_task(next_task, method_instance)
 
     def save_created_kg(self, file_path: str) -> None:
         """
