@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-from typing import Optional, Tuple
+from typing import Callable, Optional, Tuple
 
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -17,7 +17,7 @@ def canvas_creation(layout: str) -> Tuple[Figure, Optional[plt.GridSpec]]:
     font.set_name("Verdana")
 
     try:
-        n_rows, n_cols = (int(i) for i in layout[0].split(" "))
+        n_rows, n_cols = (int(i) for i in layout.split(" "))
     except:
         n_rows, n_cols = (1, 1)
 
@@ -39,54 +39,47 @@ def line_plot(**kwargs):
 
 
 def plot_creation(
-    plot_type: str,
     data: pd.Series,
     fig: Figure,
     grid: plt.GridSpec,
-    layout: str,
-    line_width: str,
-    line_style: str,
-    legend_name: str,
-    x_lim: str,
-    y_lim: str,
-    x_label: str,
-    y_label: str,
+    method_module: Callable[..., None],
+    method_params_dict: dict,
 ):
     plot = plt
     if grid is not None:
         row_start, row_end, col_start, col_end = (int(i) for i in layout.split())
         plot = fig.add_subplot(grid[row_start:row_end, col_start:col_end])
 
-    if plot_type == "line":
-        plot.plot(
-            data.index,
-            data,
-            linestyle=line_style,
-            linewidth=int(line_width),
-            label=legend_name,
-        )
-    elif plot_type == "scatter":
-        plot.scatter(
-            data.index,
-            data,
-            s=int(int(line_width) * 10),
-            marker=line_style,
-            linewidth=int(line_width),
-            label=legend_name,
-        )
-    else:
-        print("Invalid plot type given")
+    # if plot_type == "line":
+    #     plot.plot(
+    #         data.index,
+    #         data,
+    #         linestyle=line_style,
+    #         linewidth=int(line_width),
+    #         label=legend_name,
+    #     )
+    # elif plot_type == "scatter":
+    #     plot.scatter(
+    #         data.index,
+    #         data,
+    #         s=int(int(line_width) * 10),
+    #         marker=line_style,
+    #         linewidth=int(line_width),
+    #         label=legend_name,
+    #     )
+    # else:
+    #     print("Invalid plot type given")
 
-    if grid is None:
-        plot.xlim(x_lim)
-        plot.ylim(y_lim)
-        plot.xlabel(x_label)
-        plot.ylabel(y_label)
-    else:
-        plot.set_xlim(x_lim)
-        plot.set_ylim(y_lim)
-        plot.set_xlabel(x_label)
-        plot.set_ylabel(y_label)
+    # if grid is None:
+    #     plot.xlim(x_lim)
+    #     plot.ylim(y_lim)
+    #     plot.xlabel(x_label)
+    #     plot.ylabel(y_label)
+    # else:
+    #     plot.set_xlim(x_lim)
+    #     plot.set_ylim(y_lim)
+    #     plot.set_xlabel(x_label)
+    #     plot.set_ylabel(y_label)
 
     plt.legend()
     plt.show()

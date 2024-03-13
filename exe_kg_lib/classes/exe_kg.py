@@ -28,7 +28,7 @@ from ..utils.query_utils import (
     query_data_entity_reference_iri, query_instance_parent_iri,
     query_linked_task_and_property, query_parent_classes,
     query_top_level_task_iri)
-from ..utils.string_utils import camel_to_snake, property_name_to_field_name
+from ..utils.string_utils import camel_to_snake, property_iri_to_field_name
 from .data_entity import DataEntity
 from .entity import Entity
 from .kg_schema import KGSchema
@@ -222,7 +222,7 @@ class ExeKG:
             data_structure = Entity(d[0], self.data_structure)
             self.data_structure_list.append(data_structure)
 
-    def create_pipeline_task(self, pipeline_name: str, input_data_path: str) -> Task:
+    def create_pipeline_task(self, pipeline_name: str, input_data_path: str, plots_output_dir: str) -> Task:
         """
         Instantiates and adds a new pipeline task entity to self.output_kg
         Args:
@@ -238,6 +238,7 @@ class ExeKG:
             self.output_kg,
             pipeline_name,
             input_data_path,
+            plots_output_dir,
         )
         self.last_created_task = pipeline
         return pipeline
@@ -272,7 +273,7 @@ class ExeKG:
         self,
         kg_schema_short: str,
         input_data_entity_dict: Dict[str, List[DataEntity]],
-        properties_dict: Dict[str, Union[str, int, float]],
+        method_params_dict: Dict[str, Union[str, int, float]],
         generic_task: str,
         specific_task: str = None,
         method: str = None,
@@ -349,7 +350,7 @@ class ExeKG:
         # instantiate and add given input data entities to the task
         self._add_inputs_to_task(kg_schema_to_use.namespace, task_instance, generic_task_class, input_data_entity_dict)
         # instantiate and add output data entities to the task, as specified in the KG schema
-        self._add_outputs_to_task(task_instance, generic_task_class)
+        self._add_outputs_to_task(task_instance, method, generic_task_class)
 
         # if no method is given, return the task without adding a method
         if method is None:
@@ -375,7 +376,7 @@ class ExeKG:
 
         method_parent = Entity(kg_schema_to_use.namespace + method, self.atomic_method)
         # instantiate method and link it with the task using the appropriate chosen_property_method[0] relation
-        method_entity = add_instance_from_parent_with_relation(
+        method_instance = add_instance_from_parent_with_relation(
             kg_schema_to_use.namespace,
             self.output_kg,
             method_parent,
@@ -389,11 +390,12 @@ class ExeKG:
         property_iris = {pair[0] for pair in property_list}
         # add data properties to the task with given values
         for property_iri in property_iris:
-            param_name = property_name_to_field_name(property_iri)
-            if param_name not in properties_dict:
+            property_name = property_iri.split("#")[1]
+            # param_name = property_name_to_field_name(property_name)
+            if property_name not in method_params_dict:
                 continue
 
-            given_value = properties_dict[param_name]
+            given_value = method_params_dict[property_name]
 
             if isinstance(given_value, str):
                 range_iri = XSD.string
@@ -404,14 +406,14 @@ class ExeKG:
             elif isinstance(given_value, bool):
                 range_iri = XSD.boolean
             else:
-                print(f"Error: Unsupported data type for property {param_name}")
+                print(f"Error: Unsupported data type for property {property_name}")
                 exit(1)
 
             input_property = Literal(
-                lexical_or_value=properties_dict[param_name],
+                lexical_or_value=method_params_dict[property_name],
                 datatype=range_iri,
             )
-            add_literal(self.output_kg, method_entity, property_iri, input_property)
+            add_literal(self.output_kg, method_instance, property_iri, input_property)
 
         self.last_created_task = task_instance  # store created task
 
@@ -505,7 +507,7 @@ class ExeKG:
                 if use_cli:
                     check_kg_executability(self.output_kg)
 
-    def _add_outputs_to_task(self, task_instance: Task, generic_task_class: Task) -> None:
+    def _add_outputs_to_task(self, task_instance: Task, method_instance_type: str, generic_task_class: Task) -> None:
         """
         Instantiates and adds output data entities to the given task of self.output_kg, based on the task's definition in the KG schema
         Args:
@@ -533,7 +535,11 @@ class ExeKG:
         task_type_index = self.task_type_dict[task_instance.type] - 1
         for output_property, output_parent_entity_iri, data_structure_iri in results:
             # instantiate and add data entity
-            output_data_entity_iri = output_parent_entity_iri + str(task_type_index)
+            output_data_entity_iri = (
+                output_parent_entity_iri + method_instance_type
+                if method_instance_type is not None
+                else output_parent_entity_iri + str(task_type_index)
+            )
             output_data_entity = DataEntity(
                 output_data_entity_iri,
                 DataEntity(output_parent_entity_iri, self.data_entity),
@@ -590,11 +596,6 @@ class ExeKG:
 
         task_entity = Task(task_entity.iri, task_entity.parent_entity)  # create Task object from Entity object's info
 
-        # instantiate and add input data entities to the task based on user input
-        self._add_inputs_to_task(next_task_parent.namespace, task_entity)
-        # instantiate and add output data entities to the task, as specified in the KG schema
-        self._add_outputs_to_task(task_entity)
-
         self.last_created_task = task_entity
         if task_entity.type == "CanvasTask":
             self.canvas_task_created = True
@@ -631,7 +632,7 @@ class ExeKG:
             None,
         )
         # instantiate method and link it with the task using the appropriate selected_property_and_method[0] relation
-        add_instance_from_parent_with_relation(
+        method_instance = add_instance_from_parent_with_relation(
             task_to_attach_to.namespace,
             self.output_kg,
             method_parent,
@@ -658,6 +659,8 @@ class ExeKG:
 
         check_kg_executability(self.output_kg)
 
+        return method_instance
+
     def start_pipeline_creation(self, pipeline_name: str, input_data_path: str) -> None:
         """
         Handles the pipeline creation through CLI
@@ -680,7 +683,12 @@ class ExeKG:
             if next_task is None:
                 break
 
-            self._create_method(next_task)
+            method_instance = self._create_method(next_task)
+
+            # instantiate and add input data entities to the task based on user input
+            self._add_inputs_to_task(next_task.parent_entity.namespace, next_task)
+            # instantiate and add output data entities to the task, as specified in the KG schema
+            self._add_outputs_to_task(next_task, method_instance, generic_task_class)
 
     def save_created_kg(self, file_path: str) -> None:
         """
@@ -785,7 +793,7 @@ class ExeKG:
 
         for s, p, o in self.input_kg.triples((URIRef(data_entity_ref_iri), None, None)):
             # parse property name and value
-            field_name = property_name_to_field_name(str(p))
+            field_name = property_iri_to_field_name(str(p))
             if not hasattr(data_entity, field_name) or field_name == "type":
                 continue
             field_value = self._property_value_to_field_value(str(o))
@@ -793,7 +801,9 @@ class ExeKG:
 
         return data_entity
 
-    def _parse_task_by_iri(self, task_iri: str, canvas_method: visual_tasks.CanvasMethodCanvasTask = None) -> Task:
+    def _parse_task_by_iri(
+        self, task_iri: str, plots_output_dir: str, canvas_task: visual_tasks.CanvasCreation = None
+    ) -> Task:
         """
         Parses a task of self.input_kg and stores the info in an object of a sub-class of Task
         The sub-class name and the object's fields are mapped dynamically based on the found KG components
@@ -842,22 +852,24 @@ class ExeKG:
             self.top_level_schema.namespace,
             task_iri,
         )
-        if method is None:
-            print(f"Cannot retrieve method for task with iri: {task_iri}")
-        # print(task_iri)
+        # if method is None:
+        #     print(f"Cannot retrieve method for task with iri: {task_iri}")
+
         # perform automatic mapping of KG task class to Python sub-class
-        # class_name = task_top_level_parent.name if method is None else method.type + task_top_level_parent.name
         class_name = task_top_level_parent.name
 
+        is_visu_task = True
         Class = getattr(visual_tasks, class_name, None)
         if Class is None:
+            is_visu_task = False
             Class = getattr(statistic_tasks, class_name, None)
         if Class is None:
+            is_visu_task = False
             Class = getattr(ml_tasks, class_name, None)
 
         # create Task sub-class object
-        if canvas_method:
-            task = Class(task_iri, Task(task_parent_iri), canvas_method)
+        if is_visu_task and canvas_task:
+            task = Class(task_iri, Task(task_parent_iri), plots_output_dir, canvas_task)
         else:
             task = Class(task_iri, Task(task_parent_iri))
 
@@ -865,14 +877,14 @@ class ExeKG:
             module_chain_names = get_module_hierarchy_chain(
                 self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
             )
-            module_chain_names = [camel_to_snake(name) for name in module_chain_names]
-            module_chain_names = [method.type] + module_chain_names
-            module_chain_names.reverse()
-            module_chain = ".".join(module_chain_names)
-            task.method_module_chain = module_chain
+            if module_chain_names is not None:
+                module_chain_names = [camel_to_snake(name) for name in module_chain_names]
+                module_chain_names = [method.type] + module_chain_names
+                module_chain_names.reverse()
+                module_chain = ".".join(module_chain_names)
+                task.method_module_chain = module_chain
 
         task_related_triples = list(get_input_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri))
-        # print(taskr)
         task_related_triples += list(
             get_output_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri)
         )
@@ -886,9 +898,8 @@ class ExeKG:
         )
 
         for s, p, o in itertools.chain(task_related_triples, method_related_triples):
-            # print((s,p,o))
             # parse property name and value
-            field_name = property_name_to_field_name(str(p))
+            field_name = property_iri_to_field_name(str(p))
             field_value = self._property_value_to_field_value(o)
             # set field value dynamically
             if field_name == "input" or field_name == "output":
@@ -904,19 +915,19 @@ class ExeKG:
         """
         Retrieves and executes pipeline by parsing self.input_kg
         """
-        pipeline_iri, input_data_path, next_task_iri = get_pipeline_and_first_task_iri(
+        pipeline_iri, input_data_path, plots_output_dir, next_task_iri = get_pipeline_and_first_task_iri(
             self.input_kg, self.top_level_schema.namespace_prefix
         )
         input_data = pd.read_csv(input_data_path, delimiter=",", encoding="ISO-8859-1")
-        canvas_method = None  # stores Task object that corresponds to a task of type CanvasTask
+        canvas_task = None  # stores Task object that corresponds to a task of type CanvasTask
         task_output_dict = {}  # gradually filled with outputs of executed tasks
         while next_task_iri is not None:
-            next_task = self._parse_task_by_iri(next_task_iri, canvas_method)
+            next_task = self._parse_task_by_iri(next_task_iri, plots_output_dir, canvas_task)
             output = next_task.run_method(task_output_dict, input_data)
             if output:
                 task_output_dict.update(output)
 
-            if next_task.type == "CanvasTask":
-                canvas_method = next_task
+            if next_task.type == "CanvasCreation":
+                canvas_task = next_task
 
             next_task_iri = next_task.next_task

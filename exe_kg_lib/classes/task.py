@@ -79,11 +79,17 @@ class Task(Entity):
             Dict[str, np.ndarray]: pairs of input entity types and corresponding input values
         """
         input_dict = {}
-        for input in self.inputs:
+        inputs_sorted = sorted(self.inputs, key=lambda x: x.name)
+        for input in inputs_sorted:
+            if input.type not in input_dict:
+                input_dict[input.type] = []
+
             try:
-                input_dict[input.type] = dict_to_search[input.reference]
+                input_value = dict_to_search[input.reference]
             except KeyError:
-                input_dict[input.type] = fallback_df[input.source]
+                input_value = fallback_df[input.source]
+
+            input_dict[input.type].append({"name": input.reference, "value": input_value})
 
         return input_dict
 

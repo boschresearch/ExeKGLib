@@ -156,8 +156,9 @@ def get_output_properties_and_outputs(input_kg, namespace_prefix, entity_parent_
 
 def query_pipeline_info(kg, namespace_prefix):
     return kg.query(
-        f"\nSELECT ?p ?i ?t WHERE {{?p rdf:type {namespace_prefix}:Pipeline ;"
+        f"\nSELECT ?p ?i ?o ?t WHERE {{?p rdf:type {namespace_prefix}:Pipeline ;"
         f"                          {namespace_prefix}:hasInputDataPath ?i ;"
+        f"                          {namespace_prefix}:hasPlotsOutputDir ?o ;"
         f"                          {namespace_prefix}:hasStartTask ?t . }}"
     )
 
@@ -172,7 +173,7 @@ def get_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
 def get_input_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
     return kg.query(
         f"""
-        SELECT ?s ?p ?o
+        SELECT DISTINCT ?s ?p ?o
         WHERE {{
             {{ ?s ?p ?o . FILTER(?p = {namespace_prefix}:hasInput) }}
             UNION
@@ -186,7 +187,7 @@ def get_input_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> quer
 def get_output_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
     return kg.query(
         f"""
-        SELECT ?s ?p ?o
+        SELECT DISTINCT ?s ?p ?o
         WHERE {{
             {{ ?s ?p ?o . FILTER(?p = {namespace_prefix}:hasOutput) }}
             UNION
@@ -247,9 +248,9 @@ def get_pipeline_and_first_task_iri(kg: Graph, namespace_prefix: str) -> Tuple[s
         print("Error: Pipeline info not found")
         exit(1)
 
-    pipeline_iri, input_data_path, task_iri = query_result
+    pipeline_iri, input_data_path, plots_output_dir, task_iri = query_result
 
-    return str(pipeline_iri), str(input_data_path), str(task_iri)
+    return str(pipeline_iri), str(input_data_path), str(plots_output_dir), str(task_iri)
 
 
 def get_method_by_task_iri(
@@ -287,7 +288,7 @@ def get_method_by_task_iri(
         method_iri,
         namespace.AtomicMethod,
     )
-    # print(query_result)
+
     if query_result is None:
         return None
 

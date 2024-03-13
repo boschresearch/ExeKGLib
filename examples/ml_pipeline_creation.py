@@ -1,7 +1,11 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+from pathlib import Path
+
 from exe_kg_lib import ExeKG
+
+HERE = Path(__file__).resolve().parent
 
 if __name__ == "__main__":
     exe_kg = ExeKG()
@@ -29,26 +33,27 @@ if __name__ == "__main__":
     pipeline_name = "MLPipeline"
     pipeline = exe_kg.create_pipeline_task(
         pipeline_name,
-        input_data_path="./examples/data/dummy_data.csv",
+        input_data_path=HERE / "data" / "dummy_data.csv",
+        plots_output_dir=HERE / "plots" / pipeline_name,
     )
 
     concatenate_task = exe_kg.add_task(
         kg_schema_short="ml",
-        task="Concatenation",
         input_data_entity_dict={"DataInConcatenation": feature_data_entities},
-        method="ConcatenationMethod",
-        properties_dict={},
+        # method="ConcatenationMethod",
+        method_params_dict={},
+        generic_task="Concatenation",
     )
 
     data_splitting_task = exe_kg.add_task(
         kg_schema_short="ml",
-        task="DataSplitting",
+        generic_task="DataSplitting",
         input_data_entity_dict={
             "DataInDataSplittingX": [concatenate_task.output_dict["DataOutConcatenatedData"]],
             "DataInDataSplittingY": [label_data_entity],
         },
-        method="DataSplittingMethod",
-        properties_dict={"hasSplitRatio": 0.8},
+        method="TrainTestSplit",
+        method_params_dict={"hasParamTestSize": 0.2, "hasParamRandomState": 0},
     )
 
     train_x = data_splitting_task.output_dict["DataOutSplittedTrainDataX"]
@@ -58,82 +63,111 @@ if __name__ == "__main__":
 
     knn_train_task = exe_kg.add_task(
         kg_schema_short="ml",
-        task="Train",
+        generic_task="Train",
+        specific_task="BinaryClassification",
         input_data_entity_dict={
             "DataInTrainX": [train_x],
             "DataInTrainY": [train_real_y],
         },
-        method="KNNTrain",
-        properties_dict={},
+        method="SVC",
+        method_params_dict={"hasParamRandomState": 0},
     )
     model = knn_train_task.output_dict["DataOutTrainModel"]
-    train_predicted_y = knn_train_task.output_dict["DataOutPredictedValueTrain"]
+    # train_predicted_y = knn_train_task.output_dict["DataOutPredictedValueTrain"]
 
     knn_test_task = exe_kg.add_task(
         kg_schema_short="ml",
-        task="Test",
+        generic_task="Test",
+        # specific_task="BinaryClassification",
         input_data_entity_dict={
             "DataInTestModel": [model],
             "DataInTestX": [test_x],
         },
-        method="KNNTest",
-        properties_dict={},
+        # method="SVC",
+        method_params_dict={},
     )
     test_predicted_y = knn_test_task.output_dict["DataOutPredictedValueTest"]
 
     performance_calc_task = exe_kg.add_task(
         kg_schema_short="ml",
-        task="PerformanceCalculation",
+        generic_task="PerformanceCalculation",
         input_data_entity_dict={
-            "DataInTrainRealY": [train_real_y],
-            "DataInTrainPredictedY": [train_predicted_y],
-            "DataInTestRealY": [test_real_y],
-            "DataInTestPredictedY": [test_predicted_y],
+            "DataInRealY": [test_real_y],
+            "DataInPredictedY": [test_predicted_y],
         },
-        method="PerformanceCalculationMethod",
-        properties_dict={},
+        method="AccuracyScore",
+        method_params_dict={},
     )
-    train_error = performance_calc_task.output_dict["DataOutMLTrainErr"]
-    test_error = performance_calc_task.output_dict["DataOutMLTestErr"]
+    test_accuracy = performance_calc_task.output_dict["DataOutScore"]
 
-    canvas_task = exe_kg.add_task(
+    performance_calc_task = exe_kg.add_task(
+        kg_schema_short="ml",
+        generic_task="PerformanceCalculation",
+        input_data_entity_dict={
+            "DataInRealY": [test_real_y],
+            "DataInPredictedY": [test_predicted_y],
+        },
+        method="F1Score",
+        method_params_dict={},
+    )
+    test_f1 = performance_calc_task.output_dict["DataOutScore"]
+
+    performance_calc_task = exe_kg.add_task(
+        kg_schema_short="ml",
+        generic_task="PerformanceCalculation",
+        input_data_entity_dict={
+            "DataInRealY": [test_real_y],
+            "DataInPredictedY": [test_predicted_y],
+        },
+        method="PrecisionScore",
+        method_params_dict={},
+    )
+    test_precision = performance_calc_task.output_dict["DataOutScore"]
+
+    performance_calc_task = exe_kg.add_task(
+        kg_schema_short="ml",
+        generic_task="PerformanceCalculation",
+        input_data_entity_dict={
+            "DataInRealY": [test_real_y],
+            "DataInPredictedY": [test_predicted_y],
+        },
+        method="RecallScore",
+        method_params_dict={},
+    )
+    test_recall = performance_calc_task.output_dict["DataOutScore"]
+
+    exe_kg.add_task(
         kg_schema_short="visu",
-        task="CanvasTask",
+        generic_task="CanvasCreation",
         input_data_entity_dict={},
         method="CanvasMethod",
-        properties_dict={"hasCanvasName": "MyCanvas", "hasLayout": "1 1"},
+        method_params_dict={"hasParamLayout": "2 1"},
     )
 
-    train_error_lineplot_task = exe_kg.add_task(
+    exe_kg.add_task(
         kg_schema_short="visu",
-        task="PlotTask",
+        generic_task="Plot",
+        specific_task="BarPlot",
         input_data_entity_dict={
-            "DataInVector": [train_error],
+            "DataInToPlot": [test_accuracy, test_f1],
         },
-        method="ScatterplotMethod",
-        properties_dict={
-            "hasLegendName": "Train error",
-            "hasLineStyle": "o",
-            "hasScatterStyle": "o",
-            "hasLineWidth": 1,
-            "hasScatterSize": 1,
+        method="Bar",
+        method_params_dict={
+            "hasParamLabel": "Test Accuracy & F1",
         },
     )
 
-    test_error_lineplot_task = exe_kg.add_task(
+    exe_kg.add_task(
         kg_schema_short="visu",
-        task="PlotTask",
+        generic_task="Plot",
+        specific_task="BarPlot",
         input_data_entity_dict={
-            "DataInVector": [test_error],
+            "DataInToPlot": [test_precision, test_recall],
         },
-        method="ScatterplotMethod",
-        properties_dict={
-            "hasLegendName": "Test error",
-            "hasLineStyle": "o",
-            "hasScatterStyle": "o",
-            "hasLineWidth": 1,
-            "hasScatterSize": 1,
+        method="Bar",
+        method_params_dict={
+            "hasParamLabel": "Test Precision & Recall",
         },
     )
 
-    exe_kg.save_created_kg(f"./pipelines/{pipeline_name}.ttl")
+    exe_kg.save_created_kg(HERE / "pipelines" / f"{pipeline_name}.ttl")

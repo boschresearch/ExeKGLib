@@ -16,8 +16,8 @@ from ..task import Task
 class Train(Task):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        input_x = input_dict["DataInTrainX"]
-        input_y = input_dict["DataInTrainY"]
+        input_x = input_dict["DataInTrainX"][0]["value"]
+        input_y = input_dict["DataInTrainY"][0]["value"]
 
         method_module = self.resolve_module()
         if "sklearn" in method_module.__module__:
@@ -36,8 +36,8 @@ class Train(Task):
 class Test(Task):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        model = input_dict["DataInTestModel"]
-        input_x = input_dict["DataInTestX"]
+        model = input_dict["DataInTestModel"][0]["value"]
+        input_x = input_dict["DataInTestX"][0]["value"]
 
         # check if model belongs to sklearn library
         if "sklearn" in model.__module__:
@@ -53,8 +53,8 @@ class Test(Task):
 class TrainAndTest(Train, Test):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        input_x = input_dict["DataInTrainAndTestX"]
-        input_y = input_dict["DataInTrainAndTestY"]
+        input_x = input_dict["DataInTrainAndTestX"][0]["value"]
+        input_y = input_dict["DataInTrainAndTestY"][0]["value"]
 
         model = Train.run_method(self, {"DataInTrainX": input_x, "DataInTrainY": input_y}, input_data)
 
@@ -69,7 +69,7 @@ class TrainAndTest(Train, Test):
 class PrepareTransformer(Task):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        input = input_dict["DataInToTransform"]
+        input = input_dict["DataInToTransform"][0]["value"]
 
         method_module = self.resolve_module()
         if "sklearn" in method_module.__module__:
@@ -85,8 +85,8 @@ class PrepareTransformer(Task):
 class Transform(Task):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        transformer = input_dict["DataInTransformer"]
-        input = input_dict["DataInToTransform"]
+        transformer = input_dict["DataInTransformer"][0]["value"]
+        input = input_dict["DataInToTransform"][0]["value"]
 
         # check if model belongs to sklearn library
         if "sklearn" in transformer.__module__:
@@ -102,7 +102,7 @@ class Transform(Task):
 class PrepareTransformerAndTransform(PrepareTransformer, Transform):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        input = input_dict["DataInPrepareTransformAndTransform"]
+        input = input_dict["DataInPrepareTransformAndTransform"][0]["value"]
 
         prepared_transformer = PrepareTransformer.run_method(self, {"DataInToTransform": input}, input_data)
         transformed_input = Transform.run_method(
@@ -117,8 +117,8 @@ class PrepareTransformerAndTransform(PrepareTransformer, Transform):
 class DataSplitting(Task):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        input_x = input_dict["DataInDataSplittingX"]
-        input_y = input_dict["DataInDataSplittingY"]
+        input_x = input_dict["DataInDataSplittingX"][0]["value"]
+        input_y = input_dict["DataInDataSplittingY"][0]["value"]
 
         if "TrainTestSplit" in self.method_module_chain:
             method_module = self.resolve_module(module_name_to_snakecase=True)
@@ -157,9 +157,9 @@ class PerformanceCalculation(Task):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         # real_train_y = input_dict["DataInTrainRealY"]
-        input_real_y = input_dict["DataInRealY"]
+        input_real_y = input_dict["DataInRealY"][0]["value"]
         # predicted_train_y = input_dict["DataInTrainPredictedY"]
-        input_predicted_y = input_dict["DataInPredictedY"]
+        input_predicted_y = input_dict["DataInPredictedY"][0]["value"]
 
         method_module = self.resolve_module(module_name_to_snakecase=True)
 
@@ -173,5 +173,9 @@ class PerformanceCalculation(Task):
 class Concatenation(Task):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        concatenation_result = concatenation(list(input_dict.values()))
+        inputs = input_dict["DataInConcatenation"]
+        input_values = [input["value"] for input in inputs]
+
+        concatenation_result = concatenation(input_values)
+
         return self.create_output_dict({"DataOutConcatenatedData": concatenation_result})

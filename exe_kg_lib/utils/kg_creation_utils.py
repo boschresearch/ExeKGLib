@@ -198,6 +198,7 @@ def create_pipeline_task(
     kg: Graph,
     pipeline_name: str,
     input_data_path: str,
+    plots_output_dir: str,
 ) -> Task:
     """
     Adds instance of pipeline task to kg
@@ -216,5 +217,8 @@ def create_pipeline_task(
 
     input_data_path_literal = Literal(lexical_or_value=input_data_path, datatype=XSD.string)
     add_literal(kg, pipeline, top_level_schema_namespace.hasInputDataPath, input_data_path_literal)
+
+    plots_output_dir_literal = Literal(lexical_or_value=plots_output_dir, datatype=XSD.string)
+    add_literal(kg, pipeline, top_level_schema_namespace.hasPlotsOutputDir, plots_output_dir_literal)
 
     return pipeline

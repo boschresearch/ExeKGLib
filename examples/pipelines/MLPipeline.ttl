@@ -4,7 +4,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ds:MLPipeline a ds:Pipeline ;
-    ds:hasInputDataPath "./examples/data/dummy_data.csv"^^xsd:string ;
+    ds:hasInputDataPath "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\data\\dummy_data.csv"^^xsd:string ;
+    ds:hasPlotsOutputDir "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\plots\\MLPipeline"^^xsd:string ;
     ds:hasStartTask ml:Concatenation1 .
 
 ds:feature_1 a ds:DataEntity ;
@@ -37,6 +38,15 @@ ds:label a ds:DataEntity ;
     ds:hasDataStructure ds:Vector ;
     ds:hasSource "label"^^xsd:string .
 
+ml:AccuracyScore1 a ml:AccuracyScore .
+
+ml:BinaryClassification1 a ml:BinaryClassification ;
+    ds:hasInput ml:DataInTrainX1_1,
+        ml:DataInTrainY1_1 ;
+    ds:hasNextTask ml:Test1 ;
+    ds:hasOutput ml:DataOutTrainModelSVC ;
+    ml:hasBinaryClassificationMethod ml:SVC1 .
+
 ml:Concatenation1 a ml:Concatenation ;
     ds:hasInput ml:DataInConcatenation1_1,
         ml:DataInConcatenation1_2,
@@ -44,10 +54,7 @@ ml:Concatenation1 a ml:Concatenation ;
         ml:DataInConcatenation1_4,
         ml:DataInConcatenation1_5 ;
     ds:hasNextTask ml:DataSplitting1 ;
-    ds:hasOutput ml:DataOutConcatenatedData1 ;
-    ml:hasConcatenationMethod ml:ConcatenationMethod1 .
-
-ml:ConcatenationMethod1 a ml:ConcatenationMethod .
+    ds:hasOutput ml:DataOutConcatenatedData1 .
 
 ml:DataInConcatenation1_1 a ml:DataInConcatenation ;
     ds:hasDataStructure ds:Vector ;
@@ -79,160 +86,198 @@ ml:DataInDataSplittingY1_1 a ml:DataInDataSplittingY ;
         ds:Vector ;
     ds:hasReference ds:label .
 
-ml:DataInTestModel1_1 a ml:DataInTestModel ;
-    ds:hasDataStructure ds:SingleValue ;
-    ds:hasReference ml:DataOutTrainModel1 .
-
-ml:DataInTestPredictedY1_1 a ml:DataInTestPredictedY ;
+ml:DataInPredictedY1_1 a ml:DataInPredictedY ;
     ds:hasDataStructure ds:Matrix,
         ds:Vector ;
     ds:hasReference ml:DataOutPredictedValueTest1 .
 
-ml:DataInTestRealY1_1 a ml:DataInTestRealY ;
+ml:DataInPredictedY2_1 a ml:DataInPredictedY ;
     ds:hasDataStructure ds:Matrix,
         ds:Vector ;
-    ds:hasReference ml:DataOutSplittedTestDataY1 .
+    ds:hasReference ml:DataOutPredictedValueTest1 .
+
+ml:DataInPredictedY3_1 a ml:DataInPredictedY ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutPredictedValueTest1 .
+
+ml:DataInPredictedY4_1 a ml:DataInPredictedY ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutPredictedValueTest1 .
+
+ml:DataInRealY1_1 a ml:DataInRealY ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutSplittedTestDataYTrainTestSplit .
+
+ml:DataInRealY2_1 a ml:DataInRealY ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutSplittedTestDataYTrainTestSplit .
+
+ml:DataInRealY3_1 a ml:DataInRealY ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutSplittedTestDataYTrainTestSplit .
+
+ml:DataInRealY4_1 a ml:DataInRealY ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutSplittedTestDataYTrainTestSplit .
+
+ml:DataInTestModel1_1 a ml:DataInTestModel ;
+    ds:hasDataStructure ds:SingleValue ;
+    ds:hasReference ml:DataOutTrainModelSVC .
 
 ml:DataInTestX1_1 a ml:DataInTestX ;
     ds:hasDataStructure ds:Matrix,
         ds:Vector ;
-    ds:hasReference ml:DataOutSplittedTestDataX1 .
-
-ml:DataInTrainPredictedY1_1 a ml:DataInTrainPredictedY ;
-    ds:hasDataStructure ds:Matrix,
-        ds:Vector ;
-    ds:hasReference ml:DataOutPredictedValueTrain1 .
-
-ml:DataInTrainRealY1_1 a ml:DataInTrainRealY ;
-    ds:hasDataStructure ds:Matrix,
-        ds:Vector ;
-    ds:hasReference ml:DataOutSplittedTrainDataY1 .
+    ds:hasReference ml:DataOutSplittedTestDataXTrainTestSplit .
 
 ml:DataInTrainX1_1 a ml:DataInTrainX ;
     ds:hasDataStructure ds:Matrix,
         ds:Vector ;
-    ds:hasReference ml:DataOutSplittedTrainDataX1 .
+    ds:hasReference ml:DataOutSplittedTrainDataXTrainTestSplit .
 
 ml:DataInTrainY1_1 a ml:DataInTrainY ;
     ds:hasDataStructure ds:Matrix,
         ds:Vector ;
-    ds:hasReference ml:DataOutSplittedTrainDataY1 .
+    ds:hasReference ml:DataOutSplittedTrainDataYTrainTestSplit .
 
 ml:DataSplitting1 a ml:DataSplitting ;
     ds:hasInput ml:DataInDataSplittingX1_1,
         ml:DataInDataSplittingY1_1 ;
-    ds:hasNextTask ml:Train1 ;
-    ds:hasOutput ml:DataOutSplittedTestDataX1,
-        ml:DataOutSplittedTestDataY1,
-        ml:DataOutSplittedTrainDataX1,
-        ml:DataOutSplittedTrainDataY1 ;
-    ml:hasDataSplittingMethod ml:DataSplittingMethod1 .
+    ds:hasNextTask ml:BinaryClassification1 ;
+    ds:hasOutput ml:DataOutSplittedTestDataXTrainTestSplit,
+        ml:DataOutSplittedTestDataYTrainTestSplit,
+        ml:DataOutSplittedTrainDataXTrainTestSplit,
+        ml:DataOutSplittedTrainDataYTrainTestSplit ;
+    ml:hasDataSplittingMethod ml:TrainTestSplit1 .
 
-ml:DataSplittingMethod1 a ml:DataSplittingMethod ;
-    ml:hasSplitRatio "0.8"^^xsd:float .
-
-ml:KNNTest1 a ml:KNNTest .
-
-ml:KNNTrain1 a ml:KNNTrain .
+ml:F1Score1 a ml:F1Score .
 
 ml:PerformanceCalculation1 a ml:PerformanceCalculation ;
-    ds:hasInput ml:DataInTestPredictedY1_1,
-        ml:DataInTestRealY1_1,
-        ml:DataInTrainPredictedY1_1,
-        ml:DataInTrainRealY1_1 ;
-    ds:hasNextTask visu:CanvasTask1 ;
-    ds:hasOutput ml:DataOutMLTestErr1,
-        ml:DataOutMLTrainErr1 ;
-    ml:hasPerformanceCalculationMethod ml:PerformanceCalculationMethod1 .
+    ds:hasInput ml:DataInPredictedY1_1,
+        ml:DataInRealY1_1 ;
+    ds:hasNextTask ml:PerformanceCalculation2 ;
+    ds:hasOutput ml:DataOutScoreAccuracyScore ;
+    ml:hasPerformanceCalculationMethod ml:AccuracyScore1 .
 
-ml:PerformanceCalculationMethod1 a ml:PerformanceCalculationMethod .
+ml:PerformanceCalculation2 a ml:PerformanceCalculation ;
+    ds:hasInput ml:DataInPredictedY2_1,
+        ml:DataInRealY2_1 ;
+    ds:hasNextTask ml:PerformanceCalculation3 ;
+    ds:hasOutput ml:DataOutScoreF1Score ;
+    ml:hasPerformanceCalculationMethod ml:F1Score1 .
+
+ml:PerformanceCalculation3 a ml:PerformanceCalculation ;
+    ds:hasInput ml:DataInPredictedY3_1,
+        ml:DataInRealY3_1 ;
+    ds:hasNextTask ml:PerformanceCalculation4 ;
+    ds:hasOutput ml:DataOutScorePrecisionScore ;
+    ml:hasPerformanceCalculationMethod ml:PrecisionScore1 .
+
+ml:PerformanceCalculation4 a ml:PerformanceCalculation ;
+    ds:hasInput ml:DataInPredictedY4_1,
+        ml:DataInRealY4_1 ;
+    ds:hasNextTask visu:CanvasCreation1 ;
+    ds:hasOutput ml:DataOutScoreRecallScore ;
+    ml:hasPerformanceCalculationMethod ml:RecallScore1 .
+
+ml:PrecisionScore1 a ml:PrecisionScore .
+
+ml:RecallScore1 a ml:RecallScore .
+
+ml:SVC1 a ml:SVC ;
+    ml:hasParamRandomState 0 .
 
 ml:Test1 a ml:Test ;
     ds:hasInput ml:DataInTestModel1_1,
         ml:DataInTestX1_1 ;
     ds:hasNextTask ml:PerformanceCalculation1 ;
-    ds:hasOutput ml:DataOutPredictedValueTest1 ;
-    ml:hasTestMethod ml:KNNTest1 .
+    ds:hasOutput ml:DataOutPredictedValueTest1 .
 
-ml:Train1 a ml:Train ;
-    ds:hasInput ml:DataInTrainX1_1,
-        ml:DataInTrainY1_1 ;
-    ds:hasNextTask ml:Test1 ;
-    ds:hasOutput ml:DataOutPredictedValueTrain1,
-        ml:DataOutTrainModel1 ;
-    ml:hasTrainMethod ml:KNNTrain1 .
+ml:TrainTestSplit1 a ml:TrainTestSplit ;
+    ml:hasParamRandomState 0 ;
+    ml:hasParamTestSize "0.2"^^xsd:float .
+
+visu:Bar1 a visu:Bar .
+
+visu:Bar2 a visu:Bar .
+
+visu:BarPlot1 a visu:BarPlot ;
+    ds:hasInput visu:DataInToPlot1_1,
+        visu:DataInToPlot1_2 ;
+    ds:hasNextTask visu:BarPlot2 ;
+    visu:hasBarPlotMethod visu:Bar1 .
+
+visu:BarPlot2 a visu:BarPlot ;
+    ds:hasInput visu:DataInToPlot2_1,
+        visu:DataInToPlot2_2 ;
+    visu:hasBarPlotMethod visu:Bar2 .
+
+visu:CanvasCreation1 a visu:CanvasCreation ;
+    ds:hasNextTask visu:BarPlot1 ;
+    visu:hasCanvasCreationMethod visu:CanvasMethod1 .
 
 visu:CanvasMethod1 a visu:CanvasMethod ;
-    visu:hasCanvasName "MyCanvas"^^xsd:string ;
-    visu:hasLayout "1 1"^^xsd:string .
+    visu:hasParamLayout "2 1"^^xsd:string .
 
-visu:CanvasTask1 a visu:CanvasTask ;
-    ds:hasNextTask visu:PlotTask1 ;
-    visu:hasCanvasMethod visu:CanvasMethod1 .
+visu:DataInToPlot1_1 a visu:DataInToPlot ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutScoreAccuracyScore .
 
-visu:DataInVector1_1 a visu:DataInVector ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasReference ml:DataOutMLTrainErr1 .
+visu:DataInToPlot1_2 a visu:DataInToPlot ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutScoreF1Score .
 
-visu:DataInVector2_1 a visu:DataInVector ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasReference ml:DataOutMLTestErr1 .
+visu:DataInToPlot2_1 a visu:DataInToPlot ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutScorePrecisionScore .
 
-visu:PlotTask1 a visu:PlotTask ;
-    ds:hasInput visu:DataInVector1_1 ;
-    ds:hasNextTask visu:PlotTask2 ;
-    visu:hasPlotMethod visu:ScatterplotMethod1 .
-
-visu:PlotTask2 a visu:PlotTask ;
-    ds:hasInput visu:DataInVector2_1 ;
-    visu:hasPlotMethod visu:ScatterplotMethod2 .
-
-visu:ScatterplotMethod1 a visu:ScatterplotMethod ;
-    visu:hasLegendName "Train error"^^xsd:string ;
-    visu:hasLineStyle "o"^^xsd:string ;
-    visu:hasLineWidth "1"^^xsd:int ;
-    visu:hasScatterSize "1"^^xsd:int ;
-    visu:hasScatterStyle "o"^^xsd:string .
-
-visu:ScatterplotMethod2 a visu:ScatterplotMethod ;
-    visu:hasLegendName "Test error"^^xsd:string ;
-    visu:hasLineStyle "o"^^xsd:string ;
-    visu:hasLineWidth "1"^^xsd:int ;
-    visu:hasScatterSize "1"^^xsd:int ;
-    visu:hasScatterStyle "o"^^xsd:string .
+visu:DataInToPlot2_2 a visu:DataInToPlot ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector ;
+    ds:hasReference ml:DataOutScoreRecallScore .
 
 ml:DataOutConcatenatedData1 a ml:DataOutConcatenatedData ;
     ds:hasDataStructure ds:Matrix .
 
-ml:DataOutMLTestErr1 a ml:DataOutMLTestErr ;
+ml:DataOutScoreAccuracyScore a ml:DataOutScore ;
     ds:hasDataStructure ds:Vector .
 
-ml:DataOutMLTrainErr1 a ml:DataOutMLTrainErr ;
+ml:DataOutScoreF1Score a ml:DataOutScore ;
     ds:hasDataStructure ds:Vector .
+
+ml:DataOutScorePrecisionScore a ml:DataOutScore ;
+    ds:hasDataStructure ds:Vector .
+
+ml:DataOutScoreRecallScore a ml:DataOutScore ;
+    ds:hasDataStructure ds:Vector .
+
+ml:DataOutSplittedTestDataXTrainTestSplit a ml:DataOutSplittedTestDataX ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector .
+
+ml:DataOutSplittedTrainDataXTrainTestSplit a ml:DataOutSplittedTrainDataX ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector .
+
+ml:DataOutSplittedTrainDataYTrainTestSplit a ml:DataOutSplittedTrainDataY ;
+    ds:hasDataStructure ds:Matrix,
+        ds:Vector .
+
+ml:DataOutTrainModelSVC a ml:DataOutTrainModel ;
+    ds:hasDataStructure ds:SingleValue .
 
 ml:DataOutPredictedValueTest1 a ml:DataOutPredictedValueTest ;
     ds:hasDataStructure ds:Matrix,
         ds:Vector .
 
-ml:DataOutPredictedValueTrain1 a ml:DataOutPredictedValueTrain ;
-    ds:hasDataStructure ds:Matrix,
-        ds:Vector .
-
-ml:DataOutSplittedTestDataX1 a ml:DataOutSplittedTestDataX ;
-    ds:hasDataStructure ds:Matrix,
-        ds:Vector .
-
-ml:DataOutSplittedTestDataY1 a ml:DataOutSplittedTestDataY ;
-    ds:hasDataStructure ds:Matrix,
-        ds:Vector .
-
-ml:DataOutSplittedTrainDataX1 a ml:DataOutSplittedTrainDataX ;
-    ds:hasDataStructure ds:Matrix,
-        ds:Vector .
-
-ml:DataOutTrainModel1 a ml:DataOutTrainModel ;
-    ds:hasDataStructure ds:SingleValue .
-
-ml:DataOutSplittedTrainDataY1 a ml:DataOutSplittedTrainDataY ;
+ml:DataOutSplittedTestDataYTrainTestSplit a ml:DataOutSplittedTestDataY ;
     ds:hasDataStructure ds:Matrix,
         ds:Vector .

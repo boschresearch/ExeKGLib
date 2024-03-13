@@ -17,7 +17,7 @@ def camel_to_snake(text: str) -> str:
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", text).lower()
 
 
-def property_name_to_field_name(property_name: str) -> str:
+def property_iri_to_field_name(property_name: str) -> str:
     """
     Extracts property name from IRI and converts it to snake-case
     Args:

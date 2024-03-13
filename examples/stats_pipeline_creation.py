@@ -23,7 +23,7 @@ if __name__ == "__main__":
         task="NormalizationTask",
         input_data_entity_dict={"DataInNormalization": [my_data_entity]},
         method="NormalizationMethod",
-        properties_dict={},
+        method_params_dict={},
     )
     norm_output = normalization_task.output_dict["DataOutNormalization"]
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         task="CanvasTask",
         input_data_entity_dict={},
         method="CanvasMethod",
-        properties_dict={"hasCanvasName": "MyCanvas", "hasLayout": "1 1"},
+        method_params_dict={"hasCanvasName": "MyCanvas", "hasLayout": "1 1"},
     )
 
     feature_1_scatterplot_task = exe_kg.add_task(
@@ -42,7 +42,7 @@ if __name__ == "__main__":
             "DataInVector": [my_data_entity],
         },
         method="ScatterplotMethod",
-        properties_dict={
+        method_params_dict={
             "hasLegendName": "Feature 1 before normalization",
             "hasLineStyle": "o",
             "hasScatterStyle": "o",
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             "DataInVector": [norm_output],
         },
         method="ScatterplotMethod",
-        properties_dict={
+        method_params_dict={
             "hasLegendName": "Normalized feature 1",
             "hasLineStyle": "o",
             "hasScatterStyle": "o",

@@ -23,7 +23,7 @@ if __name__ == "__main__":
         task="CanvasTask",
         input_data_entity_dict={},
         method="CanvasMethod",
-        properties_dict=canvas_task_properties,
+        method_params_dict=canvas_task_properties,
     )
 
     lineplot_task_properties = {
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         task="PlotTask",
         input_data_entity_dict={"DataInVector": [my_data_entity]},
         method="LineplotMethod",
-        properties_dict=lineplot_task_properties,
+        method_params_dict=lineplot_task_properties,
     )
 
     exe_kg.save_created_kg(f"./pipelines/{pipeline_name}.ttl")
