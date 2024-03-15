@@ -78,7 +78,7 @@ def get_input_for_new_data_entities(
     return data_entities
 
 
-def input_pipeline_info() -> Tuple[str, str]:
+def input_pipeline_info() -> Tuple[str, str, str]:
     """
     Asks user to provide a name for the pipeline and a path for the input data
     Returns:
@@ -86,5 +86,6 @@ def input_pipeline_info() -> Tuple[str, str]:
     """
     pipeline_name = input("Enter a name for the pipeline: ")
     input_data_path = input("Enter a path for the input data: ")
+    input_plots_output_dir = input("Enter a path for saving the plots: ")
 
-    return pipeline_name, input_data_path
+    return pipeline_name, input_data_path, input_plots_output_dir

@@ -16,10 +16,10 @@ app = typer.Typer(name="ML pipeline creation and execution", no_args_is_help=Tru
 
 @app.command()
 def create_pipeline():
-    pipeline_name, input_data_path = input_pipeline_info()
+    pipeline_name, input_data_path, input_plots_output_dir = input_pipeline_info()
 
     exe_kg = ExeKG()
-    exe_kg.start_pipeline_creation(pipeline_name, input_data_path)
+    exe_kg.start_pipeline_creation(pipeline_name, input_data_path, input_plots_output_dir)
     exe_kg.save_created_kg(f"pipelines/{pipeline_name}.ttl")
 
 

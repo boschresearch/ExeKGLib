@@ -1,6 +1,7 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+import itertools
 from typing import Callable, List, Optional, Tuple
 
 from rdflib import Graph, Namespace, URIRef, query
@@ -332,3 +333,21 @@ def get_module_hierarchy_chain(
     module_chain_names = [iri.split("#")[-1] for iri in module_chain_iris]
 
     return module_chain_names
+
+
+def get_grouped_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> List[Tuple[str, List[str]]]:
+    """
+    Retrieves data properties grouped by their domain
+    Args:
+        entity_iri: IRI of entity to query
+        kg: Graph object to use when querying
+
+    Returns:
+        List: contains rows of data property IRIs and their range
+    """
+    property_list = list(get_data_properties_by_entity_iri(entity_iri, kg))
+    property_list = [
+        (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
+    ]
+
+    return property_list

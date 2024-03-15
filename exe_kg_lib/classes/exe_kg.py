@@ -1,6 +1,7 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+import ast
 import itertools
 import os
 from typing import Dict, List, Optional, Union
@@ -21,6 +22,7 @@ from ..utils.query_utils import (
     get_data_properties_by_entity_iri,
     get_data_properties_plus_inherited_by_class_iri,
     get_first_query_result_if_exists,
+    get_grouped_data_properties_by_entity_iri,
     get_inherited_input_properties_and_inputs,
     get_inherited_output_properties_and_outputs, get_input_triples,
     get_method_by_task_iri, get_method_properties_and_methods,
@@ -353,34 +355,18 @@ class ExeKG:
         )
 
         # fetch compatible data properties from KG schema
-        property_list = get_data_properties_by_entity_iri(method_parent.iri, self.input_kg)
-        property_iris = {pair[0] for pair in property_list}
+        property_list = get_grouped_data_properties_by_entity_iri(method_parent.iri, self.input_kg)
         # add data properties to the task with given values
-        for property_iri in property_iris:
+        for property_iri, _ in property_list:
             property_name = property_iri.split("#")[1]
             # param_name = property_name_to_field_name(property_name)
             if property_name not in method_params_dict:
                 continue
 
-            given_value = method_params_dict[property_name]
+            input_value = method_params_dict[property_name]
+            literal = self._field_value_to_literal(input_value)
 
-            if isinstance(given_value, str):
-                range_iri = XSD.string
-            elif isinstance(given_value, int):
-                range_iri = XSD.integer
-            elif isinstance(given_value, float):
-                range_iri = XSD.float
-            elif isinstance(given_value, bool):
-                range_iri = XSD.boolean
-            else:
-                print(f"Error: Unsupported data type for property {property_name}")
-                exit(1)
-
-            input_property = Literal(
-                lexical_or_value=method_params_dict[property_name],
-                datatype=range_iri,
-            )
-            add_literal(self.output_kg, method_instance, property_iri, input_property)
+            add_literal(self.output_kg, method_instance, property_iri, literal)
 
         self.last_created_task = task_instance  # store created task
 
@@ -461,8 +447,8 @@ class ExeKG:
                 task_instance.input_dict[input_entity_name] = data_entity
                 same_input_index += 1
 
-                if use_cli:
-                    check_kg_executability(self.output_kg)
+                # if use_cli:
+                #     check_kg_executability(self.output_kg)
 
     def _add_outputs_to_task(self, task_instance: Task, method_instance_type: str) -> None:
         """
@@ -591,26 +577,32 @@ class ExeKG:
         )
 
         # fetch compatible data properties from KG schema
-        property_list = get_data_properties_plus_inherited_by_class_iri(self.input_kg, method_parent.iri)
+        property_list = get_grouped_data_properties_by_entity_iri(method_parent.iri, self.input_kg)
 
         if property_list:
             print(f"Please enter requested properties for {method_parent.name}:")
             # add data properties to the task with given values
-            for pair in property_list:
-                property_instance = URIRef(pair[0])
-                range = pair[1].split("#")[1]
-                range_iri = pair[1]
-                input_property = Literal(
-                    lexical_or_value=input("\t{} in range({}): ".format(pair[0].split("#")[1], range)),
-                    datatype=range_iri,
-                )
-                add_literal(self.output_kg, task_to_attach_to, property_instance, input_property)
+            for property_iri, property_range_iris in property_list:
+                property_name = property_iri.split("#")[1]
+                ranges = [range_iri.split("#")[1] for range_iri in property_range_iris]
 
-        check_kg_executability(self.output_kg)
+                input_value_s = input("\t{} in range({}): ".format(property_name, ", ".join(ranges)))
+                if input_value_s == "":
+                    continue
+
+                try:
+                    input_value = eval(input_value_s)
+                except SyntaxError:
+                    input_value = input_value_s
+
+                literal = self._field_value_to_literal(input_value)
+                add_literal(self.output_kg, method_instance, property_iri, literal)
+
+        # check_kg_executability(self.output_kg)
 
         return method_instance
 
-    def start_pipeline_creation(self, pipeline_name: str, input_data_path: str) -> None:
+    def start_pipeline_creation(self, pipeline_name: str, input_data_path: str, input_plots_output_dir: str) -> None:
         """
         Handles the pipeline creation through CLI
         Args:
@@ -623,6 +615,7 @@ class ExeKG:
             self.output_kg,
             pipeline_name,
             input_data_path,
+            input_plots_output_dir,
         )
 
         self.last_created_task = pipeline
@@ -700,6 +693,26 @@ class ExeKG:
             return bool(literal)
         else:
             return literal
+
+    def _field_value_to_literal(self, field_value: Union[str, int, float, bool]) -> Literal:
+        """
+        Converts a Python class field value to a Literal
+        Args:
+            field_value: field value to convert
+
+        Returns:
+            Literal: object containing the given field value
+        """
+        if isinstance(field_value, str):
+            return Literal(field_value, datatype=XSD.string)
+        elif isinstance(field_value, int):
+            return Literal(field_value, datatype=XSD.integer)
+        elif isinstance(field_value, float):
+            return Literal(field_value, datatype=XSD.float)
+        elif isinstance(field_value, bool):
+            return Literal(field_value, datatype=XSD.boolean)
+        else:
+            return field_value
 
     def _parse_data_entity_by_iri(self, in_out_data_entity_iri: str) -> Optional[DataEntity]:
         """
