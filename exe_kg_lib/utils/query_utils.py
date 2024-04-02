@@ -39,32 +39,13 @@ def query_top_level_task_iri(kg, task_iri: str, namespace_prefix: str):
     )
 
 
-def query_hierarchy_chain(kg, entity_iri: str, namespace_prefix: str):
-    # retrieve the longest paths from method_iri to Method
-    # return kg.query(
-    #     f"SELECT ?m1 ?m2 WHERE {{ ?m1 rdfs:subClassOf* ?m2 ."
-    #     f"                         ?m2 rdfs:subClassOf* ?m3 ."
-    #     f"                    ?m3 rdfs:subClassOf* {namespace_prefix}:Method .}} ",
-    #     # f"                    FILTER(?m2 != {namespace_prefix}:AtomicMethod) . }}",
-    #     initBindings={
-    #         "m1": URIRef(method_iri),
-    #     },
-    # )
+def query_hierarchy_chain(kg, entity_iri: str):
     return kg.query(
         f"SELECT ?m2 WHERE {{ ?m1 rdfs:subClassOf+ ?m2 . }}",
         initBindings={
             "m1": URIRef(entity_iri),
         },
     )
-    # return kg.query(
-    #     f"SELECT ?m1 ?m2 WHERE {{ ?m1 rdfs:subClassOf* ?m2 ."
-    #     # f"                         ?m2 rdfs:subClassOf* ?m3 ."
-    #     f"                    ?m2 rdfs:subClassOf* {namespace_prefix}:Method .}} ",
-    #     # f"                    FILTER(?m2 != {namespace_prefix}:AtomicMethod) . }}",
-    #     initBindings={
-    #         "m1": URIRef(method_iri),
-    #     },
-    # )
 
 
 def query_module_iri_by_method_iri(
@@ -327,7 +308,7 @@ def get_module_hierarchy_chain(
         return None
 
     module_iri = str(query_result[0])
-    module_chain_query_res = list(query_hierarchy_chain(kg, module_iri, namespace_prefix))
+    module_chain_query_res = list(query_hierarchy_chain(kg, module_iri))
     module_chain_query_res = [str(x[0]) for x in module_chain_query_res]
     module_chain_iris = [module_iri] + module_chain_query_res[:-1]
     module_chain_names = [iri.split("#")[-1] for iri in module_chain_iris]

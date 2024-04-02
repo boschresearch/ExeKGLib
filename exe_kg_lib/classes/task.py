@@ -31,7 +31,9 @@ class Task(Entity):
         super().__init__(iri, parent_entity)
         self.next_task = None
         self.method_module = None
-        self.method_module_chain = None
+        self.method_module_chain = (
+            []
+        )  # e.g. ['sklearn','model_selection', 'StratifiedShuffleSplit'] Used for resolving the Python module that contains the method to be executed
         self.method_params_dict = {}  # used for storing method parameters during KG execution
         self.inputs = []
         self.outputs = []
@@ -97,20 +99,19 @@ class Task(Entity):
         """
         Resolves the module that contains the method to be executed.
         """
-        if self.method_module_chain is not None:
-            method_module_chain = self.method_module_chain
-            if module_name_to_snakecase:
-                module_name = self.method_module_chain.split(".")[-1]
-                module_name_snake = camel_to_snake(module_name)
-                method_module_chain = ".".join(self.method_module_chain.split(".")[:-1] + [module_name_snake])
+        if not self.method_module_chain:
+            raise NotImplementedError(f"Method module chain not defined for task {self.name}.")
 
-            method_module_chain_parents = ".".join(method_module_chain.split(".")[:-1])
-            method_module_chain_child = method_module_chain.split(".")[-1]
-            module_container = importlib.import_module(method_module_chain_parents)
-            module = getattr(module_container, method_module_chain_child)
-            return module
+        method_module_chain = self.method_module_chain
+        if module_name_to_snakecase:
+            # module_name = self.method_module_chain.split(".")[-1]
+            method_module_chain = self.method_module_chain[:-1] + [camel_to_snake(self.method_module_chain[-1])]
 
-        print(f"Method module chain not defined for task {self.name}.")
+        method_module_chain_parents = ".".join(method_module_chain[:-1])
+        method_module_chain_child = method_module_chain[-1]
+        module_container = importlib.import_module(method_module_chain_parents)
+        module = getattr(module_container, method_module_chain_child)
+        return module
 
     @abstractmethod
     def run_method(self, *args):

@@ -28,3 +28,7 @@ def property_iri_to_field_name(property_name: str) -> str:
     """
     snake_case = camel_to_snake(property_name.split("#")[1])
     return snake_case.replace("has_", "").replace("param_", "")
+
+
+def class_name_to_module_name(class_name):
+    return camel_to_snake(class_name.replace("Module", ""))

@@ -29,6 +29,8 @@ class Train(Task):
             model.fit(input_x, input_y)
 
             print(f"{model.__class__.__name__} training finished")
+        else:
+            raise NotImplementedError("Only sklearn models are supported for now")
 
         return self.create_output_dict({"DataOutTrainModel": model})
 
@@ -69,7 +71,7 @@ class TrainAndTest(Train, Test):
 class PrepareTransformer(Task):
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
-        input = input_dict["DataInToTransform"][0]["value"]
+        input = input_dict["DataInToPrepareTransformer"][0]["value"]
 
         method_module = self.resolve_module()
         if "sklearn" in method_module.__module__:
@@ -78,6 +80,8 @@ class PrepareTransformer(Task):
             transformer.fit(input)
 
             print(f"{transformer.__class__.__name__} transforming finished")
+        else:
+            raise NotImplementedError("Only sklearn data transformers are supported for now")
 
         return self.create_output_dict({"DataOutTransformer": transformer})
 
@@ -134,14 +138,17 @@ class DataSplitting(Task):
                 assert isinstance(method_module, type), "The method_module should be a class"
                 splitter = method_module(**self.method_params_dict)
 
-                splits = splitter.split(input_x, input_y)
-                for train_index, test_index in splits:
-                    train_x = [input_x[i] for i in train_index]
-                    train_y = [input_y[i] for i in train_index]
-                    test_x = [input_x[i] for i in test_index]
-                    test_y = [input_y[i] for i in test_index]
+                # TODO: handle sklearn's splitters like KFold, StratifiedKFold, etc. that allow for multiple splits via n_splits
+                #       https://scikit-learn.org/stable/modules/cross_validation.html
+                # NOTE: in this case, the model should be trained and tested for each split, and the metric value should be averaged
+                #       https://www.askpython.com/python/examples/k-fold-cross-validation
+                for train_index, test_index in splitter.split(input_x, input_y):
+                    train_x, test_x = input_x.iloc[train_index], input_x.iloc[test_index]
+                    train_y, test_y = input_y.iloc[train_index], input_y.iloc[test_index]
 
                 print(f"{splitter.__class__.__name__} splitting finished")
+        else:
+            raise NotImplementedError("Only sklearn data splitters are supported for now")
 
         return self.create_output_dict(
             {
@@ -166,6 +173,8 @@ class PerformanceCalculation(Task):
         if "sklearn" in method_module.__module__:
             assert callable(method_module), "The method_module should be a function"
             metric_value = method_module(input_real_y, input_predicted_y, **self.method_params_dict)
+        else:
+            raise NotImplementedError("Only sklearn metrics are supported for now")
 
         return self.create_output_dict({"DataOutScore": metric_value})
 

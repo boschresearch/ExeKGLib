@@ -4,6 +4,7 @@
 import ast
 import itertools
 import os
+from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 import pandas as pd
@@ -31,7 +32,8 @@ from ..utils.query_utils import (
     query_data_entity_reference_iri, query_instance_parent_iri,
     query_linked_task_and_property, query_parent_classes,
     query_top_level_task_iri)
-from ..utils.string_utils import camel_to_snake, property_iri_to_field_name
+from ..utils.string_utils import (camel_to_snake, class_name_to_module_name,
+                                  property_iri_to_field_name)
 from .data_entity import DataEntity
 from .entity import Entity
 from .kg_schema import KGSchema
@@ -61,30 +63,32 @@ from .tasks import ml_tasks, statistic_tasks, visual_tasks
 #     },
 # }
 
+HERE = Path(__file__).parent
+
 KG_SCHEMAS = {
     "Data Science": {
-        "path": "../ExeKGOntology/ds_exeKGOntology.ttl",
+        "path": HERE / ".." / ".." / ".." / "ExeKGOntology/ds_exeKGOntology.ttl",
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#",
         "namespace_prefix": "ds",
         "generated_schemata_dir": "",
     },
     "Visualization": {
-        "path": "../ExeKGOntology/visu_exeKGOntology.ttl",
+        "path": HERE / ".." / ".." / ".." / "ExeKGOntology/visu_exeKGOntology.ttl",
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
         "namespace_prefix": "visu",
-        "generated_schemata_dir": "../ExeKGOntology/generated_visu_ontologies/",
+        "generated_schemata_dir": HERE / ".." / ".." / ".." / "ExeKGOntology/generated_visu_ontologies/",
     },
     "Statistics": {
-        "path": "../ExeKGOntology/stats_exeKGOntology.ttl",
+        "path": HERE / ".." / ".." / ".." / "ExeKGOntology/stats_exeKGOntology.ttl",
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl#",
         "namespace_prefix": "stats",
-        "generated_schemata_dir": "../ExeKGOntology/generated_stats_ontologies/",
+        "generated_schemata_dir": HERE / ".." / ".." / ".." / "ExeKGOntology/generated_stats_ontologies/",
     },
     "Machine Learning": {
-        "path": "../ExeKGOntology/ml_exeKGOntology.ttl",
+        "path": HERE / ".." / ".." / ".." / "ExeKGOntology/ml_exeKGOntology.ttl",
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
         "namespace_prefix": "ml",
-        "generated_schemata_dir": "../ExeKGOntology/generated_ml_ontologies/",
+        "generated_schemata_dir": HERE / ".." / ".." / ".." / "ExeKGOntology/generated_ml_ontologies/",
     },
 }
 
@@ -839,12 +843,15 @@ class ExeKG:
             module_chain_names = get_module_hierarchy_chain(
                 self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
             )
-            if module_chain_names is not None:
-                module_chain_names = [camel_to_snake(name) for name in module_chain_names]
+            if module_chain_names is None:
+                print(
+                    f"Cannot retrieve module chain for method class: {method.parent_entity.iri}. Proceeding without it..."
+                )
+            else:
+                module_chain_names = [class_name_to_module_name(name) for name in module_chain_names]
                 module_chain_names = [method.type] + module_chain_names
                 module_chain_names.reverse()
-                module_chain = ".".join(module_chain_names)
-                task.method_module_chain = module_chain
+                task.method_module_chain = module_chain_names
 
         task_related_triples = list(get_input_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri))
         task_related_triples += list(
@@ -880,7 +887,14 @@ class ExeKG:
         pipeline_iri, input_data_path, plots_output_dir, next_task_iri = get_pipeline_and_first_task_iri(
             self.input_kg, self.top_level_schema.namespace_prefix
         )
-        input_data = pd.read_csv(input_data_path, delimiter=",", encoding="ISO-8859-1")
+        if input_data_path.endswith(".csv"):
+            input_data = pd.read_csv(input_data_path, delimiter=",", encoding="ISO-8859-1")
+        elif input_data_path.endswith(".pq") or input_data_path.endswith(".parquet"):
+            input_data = pd.read_parquet(input_data_path)
+        else:
+            print(f"Unsupported file format for input data: {input_data_path}")
+            exit(1)
+
         canvas_task = None  # stores Task object that corresponds to a task of type CanvasTask
         task_output_dict = {}  # gradually filled with outputs of executed tasks
         while next_task_iri is not None:
