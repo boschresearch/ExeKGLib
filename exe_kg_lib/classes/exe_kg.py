@@ -19,19 +19,19 @@ from ..utils.kg_creation_utils import (add_and_attach_data_entity,
                                        add_instance_from_parent_with_relation,
                                        add_literal, create_pipeline_task,
                                        name_instance)
-from ..utils.query_utils import (
-    get_data_properties_by_entity_iri,
-    get_data_properties_plus_inherited_by_class_iri,
-    get_first_query_result_if_exists,
-    get_grouped_data_properties_by_entity_iri,
-    get_inherited_input_properties_and_inputs,
-    get_inherited_output_properties_and_outputs, get_input_triples,
-    get_method_by_task_iri, get_method_properties_and_methods,
-    get_module_hierarchy_chain, get_output_triples, get_parameters_triples,
-    get_pipeline_and_first_task_iri, get_subclasses_of,
-    query_data_entity_reference_iri, query_instance_parent_iri,
-    query_linked_task_and_property, query_parent_classes,
-    query_top_level_task_iri)
+from ..utils.query_utils import (get_first_query_result_if_exists,
+                                 get_grouped_data_properties_by_entity_iri,
+                                 get_grouped_inherited_inputs,
+                                 get_grouped_inherited_outputs,
+                                 get_input_triples, get_method_by_task_iri,
+                                 get_method_properties_and_methods,
+                                 get_module_hierarchy_chain,
+                                 get_output_triples, get_parameters_triples,
+                                 get_pipeline_and_first_task_iri,
+                                 get_subclasses_of,
+                                 query_data_entity_reference_iri,
+                                 query_instance_parent_iri,
+                                 query_top_level_task_iri)
 from ..utils.string_utils import (camel_to_snake, class_name_to_module_name,
                                   property_iri_to_field_name)
 from .data_entity import DataEntity
@@ -395,7 +395,7 @@ class ExeKG:
 
         # fetch compatible inputs from KG schema
         results = list(
-            get_inherited_input_properties_and_inputs(
+            get_grouped_inherited_inputs(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
                 task_instance.parent_entity.iri,
@@ -405,13 +405,15 @@ class ExeKG:
         # task_type_index was incremented when creating the task entity
         # reset the index to match the currently created task's index
         task_type_index = self.task_type_dict[task_instance.type] - 1
-        for _, input_entity_iri, data_structure_iri in results:
+        for input_entity_iri, data_structure_iris in results:
             input_entity_name = input_entity_iri.split("#")[1]
+            data_structure_names = [iri.split("#")[1] for iri in data_structure_iris]
+
             if not use_cli:
                 input_data_entity_list = input_data_entity_dict[input_entity_name]
             else:
                 # use CLI
-                print(f"Specify input corresponding to {input_entity_name}")
+                print(f"Specify input corresponding to {input_entity_name} with data structures {data_structure_names}")
                 input_data_entity_list = get_input_for_existing_data_entities(self.existing_data_entity_list)
                 input_data_entity_list += get_input_for_new_data_entities(
                     self.data_semantics_list,
@@ -432,12 +434,12 @@ class ExeKG:
                     self.top_level_schema.namespace,
                     input_data_entity,
                 )
-                # instantiate and attach data entity with reference to the given data entity
+                # instantiate and attach data entity with reference to the given data entit
                 data_entity = DataEntity(
                     data_entity_iri,
                     DataEntity(input_entity_iri, self.data_entity),
                     reference=input_data_entity.iri,
-                    data_structure_iri=data_structure_iri,
+                    data_structure_iri=input_data_entity.data_structure,
                 )
                 add_and_attach_data_entity(
                     self.output_kg,
@@ -462,7 +464,7 @@ class ExeKG:
         """
         # fetch compatible outputs from KG schema
         results = list(
-            get_inherited_output_properties_and_outputs(
+            get_grouped_inherited_outputs(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
                 task_instance.parent_entity.iri,
@@ -472,27 +474,30 @@ class ExeKG:
         # task_type_index was incremented when creating the task entity
         # reset the index to match the currently created task's index
         task_type_index = self.task_type_dict[task_instance.type] - 1
-        for output_property, output_parent_entity_iri, data_structure_iri in results:
+        for output_parent_entity_iri, data_structure_iris in results:
             # instantiate and add data entity
             output_data_entity_iri = (
                 output_parent_entity_iri + method_instance_type
                 if method_instance_type is not None
                 else output_parent_entity_iri + str(task_type_index)
             )
-            output_data_entity = DataEntity(
-                output_data_entity_iri,
-                DataEntity(output_parent_entity_iri, self.data_entity),
-                data_structure_iri=data_structure_iri,
-            )
-            add_and_attach_data_entity(
-                self.output_kg,
-                self.data,
-                self.top_level_schema.kg,
-                self.top_level_schema.namespace,
-                output_data_entity,
-                self.top_level_schema.namespace.hasOutput,
-                task_instance,
-            )
+            # add and attach output data entity to the task
+            # attach all compatible data structures to the data entity
+            for data_structure_iri in data_structure_iris:
+                output_data_entity = DataEntity(
+                    output_data_entity_iri,
+                    DataEntity(output_parent_entity_iri, self.data_entity),
+                    data_structure_iri=data_structure_iri,
+                )
+                add_and_attach_data_entity(
+                    self.output_kg,
+                    self.data,
+                    self.top_level_schema.kg,
+                    self.top_level_schema.namespace,
+                    output_data_entity,
+                    self.top_level_schema.namespace.hasOutput,
+                    task_instance,
+                )
             task_instance.output_dict[output_parent_entity_iri.split("#")[1]] = output_data_entity
             self.existing_data_entity_list.append(output_data_entity)
 

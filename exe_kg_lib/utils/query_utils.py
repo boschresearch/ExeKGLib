@@ -114,27 +114,27 @@ def get_method_properties_and_methods(input_kg, namespace_prefix, entity_parent_
     )
 
 
-def get_inherited_input_properties_and_inputs(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
+def get_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
     return input_kg.query(
-        "\nSELECT ?p ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
+        "\nSELECT ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
         "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . "
         "?m " + namespace_prefix + ":hasDataStructure ?s . }",
-        initBindings={"entity_iri": URIRef(entity_parent_iri)},
+        initBindings={"entity_iri": URIRef(entity_iri)},
     )
 
 
-def get_inherited_output_properties_and_outputs(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
+def get_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
     return input_kg.query(
-        "\nSELECT ?p ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
+        "\nSELECT ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasOutput ."
         "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . "
         "?m " + namespace_prefix + ":hasDataStructure ?s . }",
-        initBindings={"entity_iri": URIRef(entity_parent_iri)},
+        initBindings={"entity_iri": URIRef(entity_iri)},
     )
 
 
@@ -318,7 +318,7 @@ def get_module_hierarchy_chain(
 
 def get_grouped_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> List[Tuple[str, List[str]]]:
     """
-    Retrieves data properties grouped by their domain
+    Retrieves data properties grouped by their property IRI
     Args:
         entity_iri: IRI of entity to query
         kg: Graph object to use when querying
@@ -327,6 +327,44 @@ def get_grouped_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> Lis
         List: contains rows of data property IRIs and their range
     """
     property_list = list(get_data_properties_by_entity_iri(entity_iri, kg))
+    property_list = [
+        (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
+    ]
+
+    return property_list
+
+
+def get_grouped_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> List[Tuple[str, List[str]]]:
+    """
+    Retrieves the inherited inputs grouped by their data entity IRI
+    Args:
+        input_kg: The input knowledge graph.
+        namespace_prefix: The namespace prefix.
+        entity_iri: The IRI of the parent entity.
+
+    Returns:
+        List: contains rows of data entity IRIs and their data structure IRIs
+    """
+    property_list = list(get_inherited_inputs(input_kg, namespace_prefix, entity_iri))
+    property_list = [
+        (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
+    ]
+
+    return property_list
+
+
+def get_grouped_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> List[Tuple[str, List[str]]]:
+    """
+    Retrieves the inherited outputs grouped by their data entity IRI
+    Args:
+        input_kg: Graph object to use when querying
+        namespace_prefix: namespace prefix to use when querying
+        entity_iri: IRI of entity to query
+
+    Returns:
+        List: contains rows of data entity IRIs and their data structure IRIs
+    """
+    property_list = list(get_inherited_outputs(input_kg, namespace_prefix, entity_iri))
     property_list = [
         (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
     ]
