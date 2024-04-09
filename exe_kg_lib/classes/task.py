@@ -89,7 +89,7 @@ class Task(Entity):
             try:
                 input_value = dict_to_search[input.reference]
             except KeyError:
-                input_value = fallback_df[input.source]
+                input_value = fallback_df.loc[:, [input.source]]
 
             input_dict[input.type].append({"name": input.reference, "value": input_value})
 
