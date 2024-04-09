@@ -10,6 +10,7 @@ from typing import Dict, List, Optional, Union
 import pandas as pd
 from rdflib import XSD, Graph, Literal, Namespace, URIRef
 
+from exe_kg_lib.config import KG_SCHEMAS
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 
 from ..utils.cli_utils import (get_input_for_existing_data_entities,
@@ -39,58 +40,6 @@ from .entity import Entity
 from .kg_schema import KGSchema
 from .task import Task
 from .tasks import ml_tasks, statistic_tasks, visual_tasks
-
-# KG_SCHEMAS = {
-#     "Data Science": {
-#         "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl",
-#         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#",
-#         "namespace_prefix": "ds",
-#     },
-#     "Visualization": {
-#         "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl",
-#         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
-#         "namespace_prefix": "visu",
-#     },
-#     "Statistics": {
-#         "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl",
-#         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl#",
-#         "namespace_prefix": "stats",
-#     },
-#     "Machine Learning": {
-#         "path": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl",
-#         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
-#         "namespace_prefix": "ml",
-#     },
-# }
-
-HERE = Path(__file__).parent
-
-KG_SCHEMAS = {
-    "Data Science": {
-        "path": HERE / ".." / ".." / ".." / "ExeKGOntology/ds_exeKGOntology.ttl",
-        "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ds_exeKGOntology.ttl#",
-        "namespace_prefix": "ds",
-        "generated_schemata_dir": "",
-    },
-    "Visualization": {
-        "path": HERE / ".." / ".." / ".." / "ExeKGOntology/visu_exeKGOntology.ttl",
-        "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
-        "namespace_prefix": "visu",
-        "generated_schemata_dir": HERE / ".." / ".." / ".." / "ExeKGOntology/generated_visu_ontologies/",
-    },
-    "Statistics": {
-        "path": HERE / ".." / ".." / ".." / "ExeKGOntology/stats_exeKGOntology.ttl",
-        "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl#",
-        "namespace_prefix": "stats",
-        "generated_schemata_dir": HERE / ".." / ".." / ".." / "ExeKGOntology/generated_stats_ontologies/",
-    },
-    "Machine Learning": {
-        "path": HERE / ".." / ".." / ".." / "ExeKGOntology/ml_exeKGOntology.ttl",
-        "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
-        "namespace_prefix": "ml",
-        "generated_schemata_dir": HERE / ".." / ".." / ".." / "ExeKGOntology/generated_ml_ontologies/",
-    },
-}
 
 
 class ExeKG:
@@ -148,8 +97,7 @@ class ExeKG:
         bottom_level_schemata_kgs = []
         for kg_schema in self.bottom_level_schemata.values():
             bottom_level_schemata_kgs.append(kg_schema.kg)
-            for gen_kg_schema in kg_schema.generated_kgs:
-                bottom_level_schemata_kgs.append(gen_kg_schema)
+            bottom_level_schemata_kgs.append(kg_schema.generated_schema_kg)
 
         self.input_kg += self.top_level_schema.kg  # + self.visu_schema.kg  # combine all KG schemas in input KG
 

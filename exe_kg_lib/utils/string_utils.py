@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0
 
 import re
+from pathlib import Path
 
 
 def camel_to_snake(text: str) -> str:
@@ -32,3 +33,18 @@ def property_iri_to_field_name(property_name: str) -> str:
 
 def class_name_to_module_name(class_name):
     return camel_to_snake(class_name.replace("Module", ""))
+
+
+def concat_paths(*paths):
+    output_path = ""
+    for path in paths:
+        if not output_path:
+            output_path = path
+        else:
+            output_path = (
+                output_path / path
+                if isinstance(output_path, Path) or isinstance(path, Path)
+                else f"{output_path}/{path}"
+            )
+
+    return output_path
