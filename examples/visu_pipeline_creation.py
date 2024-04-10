@@ -1,10 +1,10 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-from exe_kg_lib import ExeKG
+from exe_kg_lib import ExeKGConstructor
 
 if __name__ == "__main__":
-    exe_kg = ExeKG()
+    exe_kg = ExeKGConstructor()
     my_data_entity = exe_kg.create_data_entity(
         name="feature_1",
         source_value="feature_1",

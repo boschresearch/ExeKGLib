@@ -51,6 +51,3 @@ pylint-report.txt
 
 # mkdocs site_dir
 .site/
-
-exe_kg_lib/data
-exe_kg_lib/kg

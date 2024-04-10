@@ -83,36 +83,6 @@ def add_instance_from_parent_with_relation(
     return instance
 
 
-def name_instance(
-    task_type_dict: Dict[str, int],
-    method_type_dict: Dict[str, int],
-    parent_entity: Entity,
-) -> Union[None, str]:
-    """
-    Creates a unique name for a new instance by concatenating the parent entity's name (which is the instance type) with a number
-    Also increments the relevant number of the corresponding dict
-    Args:
-        task_type_dict: contains pairs of task types and numbers
-        method_type_dict: contains pairs of method types and numbers
-        parent_entity: instance's parent entity
-
-    Returns:
-        str: name to be given to the new instance
-        None: if the type of the given parent entity is not equal with "AtomicTask" or "AtomicMethod"
-    """
-    if parent_entity.type == "AtomicTask":
-        entity_type_dict = task_type_dict
-    elif parent_entity.type == "AtomicMethod":
-        entity_type_dict = method_type_dict
-    else:
-        print("Error: Invalid parent entity type")
-        return None
-
-    instance_name = parent_entity.name + str(entity_type_dict[parent_entity.name])
-    entity_type_dict[parent_entity.name] += 1
-    return instance_name
-
-
 def add_data_entity_instance(
     kg: Graph,
     data: Entity,

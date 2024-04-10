@@ -3,12 +3,12 @@
 
 from pathlib import Path
 
-from exe_kg_lib import ExeKG
+from exe_kg_lib import ExeKGConstructor
 
 HERE = Path(__file__).resolve().parent
 
 if __name__ == "__main__":
-    exe_kg = ExeKG()
+    exe_kg = ExeKGConstructor()
     feature_columns = ["feature_1", "feature_2", "feature_3", "feature_4", "feature_5"]
     label_column = "label"
 
