@@ -25,8 +25,8 @@ def create_pipeline():
 
 @app.command()
 def run_pipeline(path: str):
-    exe_kg = ExeKGExecutor(input_exe_kg_path=path)
-    exe_kg.execute_pipeline()
+    exe_kg = ExeKGExecutor()
+    exe_kg.execute_pipeline(path)
 
 
 @app.command()

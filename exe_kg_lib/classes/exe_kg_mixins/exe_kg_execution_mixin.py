@@ -12,6 +12,7 @@ from exe_kg_lib.classes.entity import Entity
 from exe_kg_lib.classes.kg_schema import KGSchema
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.classes.tasks import ml_tasks, statistic_tasks, visual_tasks
+from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 from exe_kg_lib.utils.query_utils import (get_first_query_result_if_exists,
                                           get_input_triples,
                                           get_method_by_task_iri,
@@ -29,9 +30,6 @@ from exe_kg_lib.utils.string_utils import (class_name_to_module_name,
 class ExeKGExecutionMixin:
     input_kg: Graph
     top_level_schema: KGSchema
-
-    def __init__(self, input_exe_kg_path: str):
-        super().__init__(input_exe_kg_path)
 
     def _property_value_to_field_value(self, property_value: Union[str, Literal]) -> Union[str, DataEntity]:
         """
@@ -243,10 +241,16 @@ class ExeKGExecutionMixin:
 
         return task
 
-    def execute_pipeline(self):
+    def execute_pipeline(self, input_exe_kg_path: str):
         """
         Retrieves and executes pipeline by parsing self.input_kg
         """
+        input_exe_kg = Graph(bind_namespaces="rdflib")
+        input_exe_kg.parse(input_exe_kg_path, format="n3")  # parse input executable KG
+
+        self.input_kg += input_exe_kg
+        # check_kg_executability(self.input_kg)
+
         pipeline_iri, input_data_path, plots_output_dir, next_task_iri = get_pipeline_and_first_task_iri(
             self.input_kg, self.top_level_schema.namespace_prefix
         )

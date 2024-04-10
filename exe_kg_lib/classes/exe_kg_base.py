@@ -13,7 +13,7 @@ from .kg_schema import KGSchema
 
 
 class ExeKGBase:
-    def __init__(self, input_exe_kg_path: str = None):
+    def __init__(self):
         """
 
         Args:
@@ -42,9 +42,6 @@ class ExeKGBase:
 
         # self.input_kg: KG eventually filled with 3 KG schemas and the input executable KG in case of KG execution
         self.input_kg = Graph(bind_namespaces="rdflib")
-        if input_exe_kg_path:  # KG execution mode
-            self.input_kg.parse(input_exe_kg_path, format="n3")  # parse input executable KG
-            # check_kg_executability(self.input_kg)
 
         # bottom_level_schemata_kgs = [kg_schema.kg for kg_schema in self.bottom_level_schemata.values()]
         bottom_level_schemata_kgs = []
