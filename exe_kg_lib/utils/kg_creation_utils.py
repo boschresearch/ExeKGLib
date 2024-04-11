@@ -3,7 +3,7 @@
 
 from typing import Dict, Union
 
-from rdflib import RDF, XSD, Graph, Literal, Namespace, URIRef
+from rdflib import RDF, RDFS, XSD, Graph, Literal, Namespace, URIRef
 
 from ..classes.data_entity import DataEntity
 from ..classes.entity import Entity
@@ -117,7 +117,7 @@ def add_data_entity_instance(
         add_relation(
             kg,
             data_entity,
-            top_level_schema_namespace.hasDataStructure,
+            RDF.type,
             Entity(data_entity.data_structure),
         )
 
@@ -125,7 +125,7 @@ def add_data_entity_instance(
         add_relation(
             kg,
             data_entity,
-            top_level_schema_namespace.hasDataSemantics,
+            RDF.type,
             Entity(data_entity.data_semantics),
         )
 

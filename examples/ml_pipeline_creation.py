@@ -4,11 +4,12 @@
 from pathlib import Path
 
 from exe_kg_lib import ExeKGConstructor
+from exe_kg_lib.classes.exe_kg_actors import ExeKGConExe
 
 HERE = Path(__file__).resolve().parent
 
 if __name__ == "__main__":
-    exe_kg = ExeKGConstructor()
+    exe_kg = ExeKGConExe()
     feature_columns = ["feature_1", "feature_2", "feature_3", "feature_4", "feature_5"]
     label_column = "label"
 

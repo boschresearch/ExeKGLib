@@ -54,7 +54,9 @@ def query_module_iri_by_method_iri(
     namespace_prefix,
 ):
     return kg.query(
-        f"SELECT ?module WHERE {{ ?method {namespace_prefix}:hasModule ?module . }}",
+        f"SELECT ?module WHERE {{ ?method rdfs:subClassOf ?module . "
+        f"                        ?module rdfs:subClassOf+ {namespace_prefix}:Module . "
+        f"                        FILTER NOT EXISTS {{ ?module rdfs:subClassOf+ {namespace_prefix}:Method . }} . }}",
         initBindings={"method": URIRef(method_iri)},
     )
 
@@ -121,7 +123,9 @@ def get_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query.R
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
         "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . "
-        "?m " + namespace_prefix + ":hasDataStructure ?s . }",
+        "?m rdfs:subClassOf ?s ."
+        "?s rdfs:subClassOf+ " + namespace_prefix + ":DataStructure . "
+        "FILTER(?s != " + namespace_prefix + ":DataEntity) . }",
         initBindings={"entity_iri": URIRef(entity_iri)},
     )
 
@@ -133,7 +137,9 @@ def get_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> query.
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasOutput ."
         "?m rdfs:subClassOf " + namespace_prefix + ":DataEntity . "
-        "?m " + namespace_prefix + ":hasDataStructure ?s . }",
+        "?m rdfs:subClassOf ?s ."
+        "?s rdfs:subClassOf+ " + namespace_prefix + ":DataStructure . "
+        "FILTER(?s != " + namespace_prefix + ":DataEntity) . }",
         initBindings={"entity_iri": URIRef(entity_iri)},
     )
 

@@ -255,7 +255,7 @@ class ExeKGConstructionMixin:
                     data_entity_iri,
                     DataEntity(input_entity_iri, self.data_entity),
                     reference=input_data_entity.iri,
-                    data_structure_iri=input_data_entity.data_structure,
+                    # data_structure_iri=input_data_entity.data_structure,
                 )
                 add_and_attach_data_entity(
                     self.output_kg,
