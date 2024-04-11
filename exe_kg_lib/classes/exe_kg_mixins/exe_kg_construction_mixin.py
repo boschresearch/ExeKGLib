@@ -16,8 +16,9 @@ from exe_kg_lib.utils.kg_creation_utils import (
     add_and_attach_data_entity, add_data_entity_instance,
     add_instance_from_parent_with_relation, add_literal, create_pipeline_task)
 from exe_kg_lib.utils.query_utils import (
-    get_grouped_data_properties_by_entity_iri, get_grouped_inherited_inputs,
-    get_grouped_inherited_outputs, get_method_properties_and_methods)
+    get_grouped_data_properties_plus_inherited_by_entity_iri,
+    get_grouped_inherited_inputs, get_grouped_inherited_outputs,
+    get_method_properties_and_methods)
 
 
 class ExeKGConstructionMixin:
@@ -175,7 +176,7 @@ class ExeKGConstructionMixin:
         )
 
         # fetch compatible data properties from KG schema
-        property_list = get_grouped_data_properties_by_entity_iri(method_parent.iri, self.input_kg)
+        property_list = get_grouped_data_properties_plus_inherited_by_entity_iri(method_parent.iri, self.input_kg)
         # add data properties to the task with given values
         for property_iri, _ in property_list:
             property_name = property_iri.split("#")[1]
@@ -402,7 +403,7 @@ class ExeKGConstructionMixin:
         )
 
         # fetch compatible data properties from KG schema
-        property_list = get_grouped_data_properties_by_entity_iri(method_parent.iri, self.input_kg)
+        property_list = get_grouped_data_properties_plus_inherited_by_entity_iri(method_parent.iri, self.input_kg)
 
         if property_list:
             print(f"Please enter requested properties for {method_parent.name}:")

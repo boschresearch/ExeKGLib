@@ -30,11 +30,11 @@ class Task(Entity):
     ):
         super().__init__(iri, parent_entity)
         self.next_task = None
-        self.method_module = None
         self.method_module_chain = (
             []
         )  # e.g. ['sklearn','model_selection', 'StratifiedShuffleSplit'] Used for resolving the Python module that contains the method to be executed
         self.method_params_dict = {}  # used for storing method parameters during KG execution
+        self.method_inherited_params_dict = {}  # used for storing inherited method parameters during KG execution
         self.inputs = []
         self.outputs = []
         self.input_dict = {}  # used for storing input DataEntity objects during KG creation

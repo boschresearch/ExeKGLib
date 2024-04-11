@@ -107,6 +107,16 @@ def get_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> query.Resul
     )
 
 
+def get_data_properties_plus_inherited_by_entity_iri(entity_iri: str, kg: Graph) -> query.Result:
+    return kg.query(
+        "\nSELECT ?p ?r WHERE {?p rdfs:domain ?domain . "
+        "?entity_iri rdfs:subClassOf* ?domain . "
+        "?p rdfs:range ?r . "
+        "?p rdf:type owl:DatatypeProperty . }",
+        initBindings={"entity_iri": URIRef(entity_iri)},
+    )
+
+
 def get_method_properties_and_methods(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
@@ -198,24 +208,6 @@ def get_parameters_triples(kg: Graph, namespace_prefix: str, entity_iri: str) ->
         """,
         initBindings={"s": URIRef(entity_iri)},
     )
-
-
-def get_data_properties_plus_inherited_by_class_iri(kg: Graph, entity_iri: str) -> List:
-    """
-    Retrieves data properties plus the inherited ones, given an entity IRI
-    Args:
-        kg: Graph object to use when querying
-        entity_iri: IRI of entity to query
-
-    Returns:
-        List: contains rows of data property IRIs and their range
-    """
-    property_list = list(get_data_properties_by_entity_iri(entity_iri, kg))
-    method_parent_classes = list(query_parent_classes(kg, entity_iri))
-    for method_class_result_row in method_parent_classes:
-        property_list += list(get_data_properties_by_entity_iri(method_class_result_row[0], kg))
-
-    return property_list
 
 
 def get_pipeline_and_first_task_iri(kg: Graph, namespace_prefix: str) -> Tuple[str, str, str]:
@@ -322,7 +314,7 @@ def get_module_hierarchy_chain(
     return module_chain_names
 
 
-def get_grouped_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> List[Tuple[str, List[str]]]:
+def get_grouped_data_properties_plus_inherited_by_entity_iri(entity_iri: str, kg: Graph) -> List[Tuple[str, List[str]]]:
     """
     Retrieves data properties grouped by their property IRI
     Args:
@@ -332,7 +324,7 @@ def get_grouped_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> Lis
     Returns:
         List: contains rows of data property IRIs and their range
     """
-    property_list = list(get_data_properties_by_entity_iri(entity_iri, kg))
+    property_list = list(get_data_properties_plus_inherited_by_entity_iri(entity_iri, kg))
     property_list = [
         (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
     ]

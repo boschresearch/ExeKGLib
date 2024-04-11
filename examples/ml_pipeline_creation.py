@@ -4,12 +4,11 @@
 from pathlib import Path
 
 from exe_kg_lib import ExeKGConstructor
-from exe_kg_lib.classes.exe_kg_actors import ExeKGConExe
 
 HERE = Path(__file__).resolve().parent
 
 if __name__ == "__main__":
-    exe_kg = ExeKGConExe()
+    exe_kg = ExeKGConstructor()
     feature_columns = ["feature_1", "feature_2", "feature_3", "feature_4", "feature_5"]
     label_column = "label"
 
@@ -41,7 +40,7 @@ if __name__ == "__main__":
     concatenate_task = exe_kg.add_task(
         kg_schema_short="ml",
         input_data_entity_dict={"DataInConcatenation": feature_data_entities},
-        # method="ConcatenationMethod",
+        method="ConcatenationMethod",
         method_params_dict={},
         task="Concatenation",
     )
@@ -78,6 +77,7 @@ if __name__ == "__main__":
     knn_test_task = exe_kg.add_task(
         kg_schema_short="ml",
         task="Test",
+        method="TestMethod",
         input_data_entity_dict={
             "DataInTestModel": [model],
             "DataInTestX": [test_x],
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         },
         method="Bar",
         method_params_dict={
-            "hasParamLabel": "Test Accuracy & F1",
+            "hasParamTitle": "Test Accuracy & F1",
         },
     )
 
@@ -163,7 +163,7 @@ if __name__ == "__main__":
         },
         method="Bar",
         method_params_dict={
-            "hasParamLabel": "Test Precision & Recall",
+            "hasParamTitle": "Test Precision & Recall",
         },
     )
 

@@ -4,6 +4,7 @@
 from abc import abstractmethod
 from pathlib import Path
 
+import pandas as pd
 from matplotlib import pyplot as plt
 
 from ...utils.task_utils.visual_utils import *
@@ -25,9 +26,20 @@ class CanvasCreation(Task):
         # self.canvas_name = None
 
     def run_method(self, *args):
-        self.fig, self.grid = canvas_creation(**self.method_params_dict)
+        n_rows, n_cols = (
+            [int(i) for i in self.method_params_dict["layout"].split(" ")]
+            if "layout" in self.method_params_dict
+            else (1, 1)
+        )
 
-        return None
+        figsize = (
+            [int(i) for i in self.method_params_dict["figure_size"].split(" ")]
+            if "figure_size" in self.method_params_dict
+            else (7, 5)
+        )
+
+        self.fig = plt.figure(figsize=(figsize))
+        self.grid = None if (n_rows == n_cols and n_rows == 1) else plt.GridSpec(n_rows, n_cols, hspace=0.3, wspace=0.3)
 
 
 class Plot(Task):
@@ -57,11 +69,29 @@ class Plot(Task):
                 input_name = input["name"]
                 input_value = input["value"]
 
-                x = input_value.index if isinstance(input_value, pd.Series) else input_name
+                x = input_value.index if isinstance(input_value, pd.DataFrame) else input_name
                 y = input_value
 
                 method_to_call = method_module if plot is None else getattr(plot, method_module.__name__)
                 method_to_call(x, y, **self.method_params_dict)
+                if plot is not None:
+                    if "title" in self.method_inherited_params_dict:
+                        plot.set_title(self.method_inherited_params_dict["title"])
+                    if "x_label" in self.method_inherited_params_dict:
+                        plot.set_xlabel(self.method_inherited_params_dict["x_label"])
+                    if "y_label" in self.method_inherited_params_dict:
+                        plot.set_ylabel(self.method_inherited_params_dict["y_label"])
+                    if "hasParamLegendName" in self.method_inherited_params_dict:
+                        plot.legend(title=self.method_inherited_params_dict["hasParamLegendName"])
+                else:
+                    if "title" in self.method_inherited_params_dict:
+                        plt.title(self.method_inherited_params_dict["title"])
+                    if "x_label" in self.method_inherited_params_dict:
+                        plt.xlabel(self.method_inherited_params_dict["hasParamXLabel"])
+                    if "y_label" in self.method_inherited_params_dict:
+                        plt.ylabel(self.method_inherited_params_dict["hasParamYLabel"])
+                    if "hasParamLegendName" in self.method_inherited_params_dict:
+                        plt.legend(title=self.method_inherited_params_dict["hasParamLegendName"])
 
             output_dir = Path(self.plots_output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
@@ -69,5 +99,3 @@ class Plot(Task):
             print(f"Plot saved in {output_dir / f'{self.name}_plot.png'}")
         else:
             raise NotImplementedError("Only matplotlib library is supported for now")
-
-        return None

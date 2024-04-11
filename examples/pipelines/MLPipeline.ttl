@@ -54,7 +54,10 @@ ml:Concatenation1 a ml:Concatenation ;
         ml:DataInConcatenation1_4,
         ml:DataInConcatenation1_5 ;
     ds:hasNextTask ml:DataSplitting1 ;
-    ds:hasOutput ml:DataOutConcatenatedData1 .
+    ds:hasOutput ml:DataOutConcatenatedDataConcatenationMethod ;
+    ml:hasConcatenationMethod ml:ConcatenationMethod1 .
+
+ml:ConcatenationMethod1 a ml:ConcatenationMethod .
 
 ml:DataInConcatenation1_1 a ml:DataInConcatenation ;
     ds:hasReference ds:feature_1 .
@@ -72,22 +75,22 @@ ml:DataInConcatenation1_5 a ml:DataInConcatenation ;
     ds:hasReference ds:feature_5 .
 
 ml:DataInDataSplittingX1_1 a ml:DataInDataSplittingX ;
-    ds:hasReference ml:DataOutConcatenatedData1 .
+    ds:hasReference ml:DataOutConcatenatedDataConcatenationMethod .
 
 ml:DataInDataSplittingY1_1 a ml:DataInDataSplittingY ;
     ds:hasReference ds:label .
 
 ml:DataInPredictedY1_1 a ml:DataInPredictedY ;
-    ds:hasReference ml:DataOutPredictedValueTest1 .
+    ds:hasReference ml:DataOutPredictedValueTestTestMethod .
 
 ml:DataInPredictedY2_1 a ml:DataInPredictedY ;
-    ds:hasReference ml:DataOutPredictedValueTest1 .
+    ds:hasReference ml:DataOutPredictedValueTestTestMethod .
 
 ml:DataInPredictedY3_1 a ml:DataInPredictedY ;
-    ds:hasReference ml:DataOutPredictedValueTest1 .
+    ds:hasReference ml:DataOutPredictedValueTestTestMethod .
 
 ml:DataInPredictedY4_1 a ml:DataInPredictedY ;
-    ds:hasReference ml:DataOutPredictedValueTest1 .
+    ds:hasReference ml:DataOutPredictedValueTestTestMethod .
 
 ml:DataInRealY1_1 a ml:DataInRealY ;
     ds:hasReference ml:DataOutSplittedTestDataYTrainTestSplit .
@@ -164,15 +167,20 @@ ml:Test1 a ml:Test ;
     ds:hasInput ml:DataInTestModel1_1,
         ml:DataInTestX1_1 ;
     ds:hasNextTask ml:PerformanceCalculation1 ;
-    ds:hasOutput ml:DataOutPredictedValueTest1 .
+    ds:hasOutput ml:DataOutPredictedValueTestTestMethod ;
+    ml:hasTestMethod ml:TestMethod1 .
+
+ml:TestMethod1 a ml:TestMethod .
 
 ml:TrainTestSplit1 a ml:TrainTestSplit ;
     ml:hasParamRandomState 0 ;
     ml:hasParamTestSize "0.2"^^xsd:float .
 
-visu:Bar1 a visu:Bar .
+visu:Bar1 a visu:Bar ;
+    visu:hasParamTitle "Test Accuracy & F1"^^xsd:string .
 
-visu:Bar2 a visu:Bar .
+visu:Bar2 a visu:Bar ;
+    visu:hasParamTitle "Test Precision & Recall"^^xsd:string .
 
 visu:BarPlot1 a visu:BarPlot ;
     ds:hasInput visu:DataInToPlot1_1,
@@ -204,7 +212,7 @@ visu:DataInToPlot2_1 a visu:DataInToPlot ;
 visu:DataInToPlot2_2 a visu:DataInToPlot ;
     ds:hasReference ml:DataOutScoreRecallScore .
 
-ml:DataOutConcatenatedData1 a ds:Tabular,
+ml:DataOutConcatenatedDataConcatenationMethod a ds:Tabular,
         ml:DataOutConcatenatedData .
 
 ml:DataOutScoreAccuracyScore a ds:SingleValue,
@@ -237,7 +245,7 @@ ml:DataOutSplittedTrainDataYTrainTestSplit a ds:Matrix,
 ml:DataOutTrainModelSVC a ds:Model,
         ml:DataOutTrainModel .
 
-ml:DataOutPredictedValueTest1 a ds:Matrix,
+ml:DataOutPredictedValueTestTestMethod a ds:Matrix,
         ds:Vector,
         ml:DataOutPredictedValueTest .
 

@@ -13,7 +13,8 @@ from exe_kg_lib.classes.kg_schema import KGSchema
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.classes.tasks import ml_tasks, statistic_tasks, visual_tasks
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
-from exe_kg_lib.utils.query_utils import (get_first_query_result_if_exists,
+from exe_kg_lib.utils.query_utils import (get_data_properties_by_entity_iri,
+                                          get_first_query_result_if_exists,
                                           get_input_triples,
                                           get_method_by_task_iri,
                                           get_module_hierarchy_chain,
@@ -200,19 +201,18 @@ class ExeKGExecutionMixin:
         else:
             task = Class(task_iri, Task(task_parent_iri))
 
-        if method is not None:
-            module_chain_names = get_module_hierarchy_chain(
-                self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
+        module_chain_names = get_module_hierarchy_chain(
+            self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
+        )
+        if module_chain_names is None:
+            print(
+                f"Cannot retrieve module chain for method class: {method.parent_entity.iri}. Proceeding without it..."
             )
-            if module_chain_names is None:
-                print(
-                    f"Cannot retrieve module chain for method class: {method.parent_entity.iri}. Proceeding without it..."
-                )
-            else:
-                module_chain_names = [class_name_to_module_name(name) for name in module_chain_names]
-                module_chain_names = [method.type] + module_chain_names
-                module_chain_names.reverse()
-                task.method_module_chain = module_chain_names
+        else:
+            module_chain_names = [class_name_to_module_name(name) for name in module_chain_names]
+            module_chain_names = [method.type] + module_chain_names
+            module_chain_names.reverse()
+            task.method_module_chain = module_chain_names
 
         task_related_triples = list(get_input_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri))
         task_related_triples += list(
@@ -227,6 +227,10 @@ class ExeKGExecutionMixin:
             else []
         )
 
+        method_class_data_properties = list(get_data_properties_by_entity_iri(method.parent_entity.iri, self.input_kg))
+        method_class_data_property_iris = None
+        if method_class_data_properties:
+            method_class_data_property_iris = [str(pair[0]) for pair in method_class_data_properties]
         for s, p, o in itertools.chain(task_related_triples, method_related_triples):
             # parse property name and value
             field_name = property_iri_to_field_name(str(p))
@@ -237,7 +241,10 @@ class ExeKGExecutionMixin:
             elif field_name == "next_task":
                 setattr(task, field_name, field_value)
             else:  # method parameter
-                task.method_params_dict[field_name] = field_value
+                if str(p) in method_class_data_property_iris:
+                    task.method_params_dict[field_name] = field_value
+                else:
+                    task.method_inherited_params_dict[field_name] = field_value
 
         return task
 
