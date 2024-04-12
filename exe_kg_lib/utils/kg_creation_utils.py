@@ -1,26 +1,21 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-from typing import Dict, Union
-
-from rdflib import RDF, RDFS, XSD, Graph, Literal, Namespace, URIRef
+from rdflib import RDF, XSD, Graph, Literal, Namespace, URIRef
 
 from ..classes.data_entity import DataEntity
 from ..classes.entity import Entity
 from ..classes.task import Task
-from .query_utils import (get_first_query_result_if_exists,
-                          get_method_params_plus_inherited)
 
 
 def add_instance(kg: Graph, entity_instance: Entity) -> None:
     """
-    Adds entity instance to KG only if its parent entity exists and there is no instance with the same IRI
+    Adds entity instance to KG
     Args:
         kg: Graph object to add to
         entity_instance: the entity instance to create
     """
-    if entity_instance.parent_entity and (entity_instance.iri, None, None) not in kg:
-        kg.add((entity_instance.iri, RDF.type, entity_instance.parent_entity.iri))
+    kg.add((entity_instance.iri, RDF.type, entity_instance.parent_entity.iri))
 
 
 def add_relation(kg: Graph, from_entity: Entity, relation_iri: str, to_entity: Entity) -> None:
