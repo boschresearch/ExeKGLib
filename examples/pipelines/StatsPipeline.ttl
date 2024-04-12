@@ -65,12 +65,14 @@ visu:Plot1 a visu:Plot ;
 
 stats:DataOutStatisticCalculationMean a ds:Matrix,
         ds:SingleValue,
+        ds:Tabular,
         ds:Tensor,
         ds:Vector,
         stats:DataOutStatisticCalculation .
 
 stats:DataOutStatisticCalculationStd a ds:Matrix,
         ds:SingleValue,
+        ds:Tabular,
         ds:Tensor,
         ds:Vector,
         stats:DataOutStatisticCalculation .
