@@ -13,16 +13,17 @@ from exe_kg_lib.classes.kg_schema import KGSchema
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.classes.tasks import ml_tasks, statistic_tasks, visual_tasks
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
-from exe_kg_lib.utils.query_utils import (get_first_query_result_if_exists,
-                                          get_input_triples,
+from exe_kg_lib.utils.query_utils import (NoResultsError,
+                                          get_first_query_result_if_exists,
                                           get_method_by_task_iri,
-                                          get_method_params,
                                           get_module_hierarchy_chain,
-                                          get_output_triples,
-                                          get_parameters_triples,
                                           get_pipeline_and_first_task_iri,
                                           query_data_entity_reference_iri,
+                                          query_input_triples,
                                           query_instance_parent_iri,
+                                          query_method_params,
+                                          query_output_triples,
+                                          query_parameters_triples,
                                           query_top_level_task_iri)
 from exe_kg_lib.utils.string_utils import (class_name_to_module_name,
                                            property_iri_to_field_name)
@@ -46,12 +47,12 @@ class ExeKGExecutionMixin:
         """
         property_value_s = str(property_value)
         if "#" in property_value_s:
-            data_entity = self._parse_data_entity_by_iri(property_value_s)
-            if data_entity is None:
+            try:
+                return self._parse_data_entity_by_iri(property_value_s)
+            except NoResultsError:  # property_value_s isn't an IRI of a DataEntity instance
                 if not isinstance(property_value, Literal):
                     return property_value
                 return self._literal_to_field_value(property_value)
-            return data_entity
 
         if not isinstance(property_value, Literal):
             return property_value
@@ -98,7 +99,9 @@ class ExeKGExecutionMixin:
             self.top_level_schema.namespace.DataEntity,
         )
         if query_result is None:
-            return None
+            raise NoResultsError(
+                f"Given IRI {in_out_data_entity_iri} doesn't belong to an instance of a subclass of {str(self.top_level_schema.namespace.DataEntity)}"
+            )
 
         data_entity_parent_iri = str(query_result[0])
 
@@ -153,8 +156,7 @@ class ExeKGExecutionMixin:
         if (
             query_result is None
         ):  # given IRI does not belong to an instance of a sub-class of self.top_level_schema.namespace.AtomicTask
-            print(f"Cannot retrieve parent of task with iri {task_iri}. Exiting...")
-            exit(1)
+            raise NoResultsError(f"Cannot retrieve parent of task with iri {task_iri}")
 
         task_parent_iri = str(query_result[0])
 
@@ -201,34 +203,39 @@ class ExeKGExecutionMixin:
         else:
             task = Class(task_iri, Task(task_parent_iri))
 
-        module_chain_names = get_module_hierarchy_chain(
-            self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
-        )
-        if module_chain_names is None:
+        module_chain_names = None
+        try:
+            module_chain_names = get_module_hierarchy_chain(
+                self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
+            )
+        except NoResultsError:
             print(
                 f"Cannot retrieve module chain for method class: {method.parent_entity.iri}. Proceeding without it..."
             )
-        else:
+
+        if module_chain_names:
             module_chain_names = [class_name_to_module_name(name) for name in module_chain_names]
             module_chain_names = [method.type] + module_chain_names
             module_chain_names.reverse()
             task.method_module_chain = module_chain_names
 
-        task_related_triples = list(get_input_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri))
+        task_related_triples = list(
+            query_input_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri)
+        )
         task_related_triples += list(
-            get_output_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri)
+            query_output_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri)
         )
         task_related_triples += list(
             self.input_kg.triples((URIRef(task_iri), self.top_level_schema.namespace.hasNextTask, None))
         )
         method_related_triples = (
-            list(get_parameters_triples(self.input_kg, self.top_level_schema.namespace_prefix, method.iri))
+            list(query_parameters_triples(self.input_kg, self.top_level_schema.namespace_prefix, method.iri))
             if method is not None
             else []
         )
 
         method_class_data_properties = list(
-            get_method_params(method.parent_entity.iri, self.top_level_schema.namespace_prefix, self.input_kg)
+            query_method_params(method.parent_entity.iri, self.top_level_schema.namespace_prefix, self.input_kg)
         )
         method_class_data_property_iris = None
         if method_class_data_properties:
@@ -268,14 +275,23 @@ class ExeKGExecutionMixin:
         elif input_data_path.endswith(".pq") or input_data_path.endswith(".parquet"):
             input_data = pd.read_parquet(input_data_path)
         else:
-            print(f"Unsupported file format for input data: {input_data_path}")
-            exit(1)
+            raise ValueError(f"Unsupported file format for input data: {input_data_path}")
 
         canvas_task = None  # stores Task object that corresponds to a task of type CanvasTask
         task_output_dict = {}  # gradually filled with outputs of executed tasks
         while next_task_iri is not None:
-            next_task = self._parse_task_by_iri(next_task_iri, plots_output_dir, canvas_task)
-            output = next_task.run_method(task_output_dict, input_data)
+            try:
+                next_task = self._parse_task_by_iri(next_task_iri, plots_output_dir, canvas_task)
+            except NoResultsError as e:
+                print(e)
+                raise RuntimeError(f"Parsing of task with IRI {next_task_iri} failed with the above exception")
+
+            try:
+                output = next_task.run_method(task_output_dict, input_data)
+            except NotImplementedError as e:
+                print(e)
+                raise RuntimeError(f"Execution of method for task {next_task_iri} failed with the above exception")
+
             if output:
                 task_output_dict.update(output)
 

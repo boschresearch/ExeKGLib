@@ -16,9 +16,9 @@ from exe_kg_lib.utils.kg_creation_utils import (
     add_and_attach_data_entity, add_data_entity_instance,
     add_instance_from_parent_with_relation, add_literal, create_pipeline_task)
 from exe_kg_lib.utils.query_utils import (
-    get_grouped_inherited_inputs, get_grouped_inherited_outputs,
-    get_method_grouped_params_plus_inherited,
-    get_method_properties_and_methods)
+    NoResultsError, get_grouped_inherited_inputs,
+    get_grouped_inherited_outputs, get_method_grouped_params_plus_inherited,
+    query_method_properties_and_methods)
 
 
 class ExeKGConstructionMixin:
@@ -148,7 +148,7 @@ class ExeKGConstructionMixin:
 
         # fetch compatible methods and their properties from KG schema
         results = list(
-            get_method_properties_and_methods(
+            query_method_properties_and_methods(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
                 task_instance.parent_entity.iri,
@@ -160,8 +160,7 @@ class ExeKGConstructionMixin:
         # print(chosen_property_method)
 
         if chosen_property_method is None:
-            print(f"Property connecting task of type {task} with method of type {method} not found")
-            exit(1)
+            raise NoResultsError(f"Property connecting task of type {task} with method of type {method} not found")
 
         method_parent = Entity(kg_schema_to_use.namespace + method, self.atomic_method)
         # instantiate method and link it with the task using the appropriate chosen_property_method[0] relation
@@ -374,7 +373,7 @@ class ExeKGConstructionMixin:
 
         # fetch compatible methods and their properties from KG schema
         results = list(
-            get_method_properties_and_methods(
+            query_method_properties_and_methods(
                 self.input_kg,
                 self.top_level_schema.namespace_prefix,
                 task_to_attach_to.parent_entity.iri,
@@ -514,8 +513,7 @@ class ExeKGConstructionMixin:
         elif parent_entity.type == "AtomicMethod":
             entity_type_dict = self.method_type_dict
         else:
-            print("Error: Invalid parent entity type")
-            return None
+            raise ValueError(f"Cannot create instance's name due to invalid parent entity type: {parent_entity.type}")
 
         instance_name = parent_entity.name + str(entity_type_dict[parent_entity.name])
         entity_type_dict[parent_entity.name] += 1

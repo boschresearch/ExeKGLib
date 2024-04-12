@@ -11,6 +11,10 @@ from exe_kg_lib.utils.string_utils import camel_to_snake
 from ..classes.entity import Entity
 
 
+class NoResultsError(Exception):
+    pass
+
+
 def query_parent_classes(kg, entity_iri):
     return kg.query(
         f"SELECT ?c WHERE {{ ?entity rdfs:subClassOf ?c . }}",
@@ -98,7 +102,7 @@ def get_first_query_result_if_exists(query_method: Callable, *args) -> Optional[
     return query_result
 
 
-def get_method_params(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
+def query_method_params(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
     return kg.query(
         f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?task_iri . "
         f"?p rdfs:range ?r . "
@@ -107,7 +111,7 @@ def get_method_params(method_iri: str, namespace_prefix: str, kg: Graph) -> quer
     )
 
 
-def get_method_params_plus_inherited(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
+def query_method_params_plus_inherited(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
     return kg.query(
         f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?domain . "
         f"?task_iri rdfs:subClassOf* ?domain . "
@@ -117,7 +121,7 @@ def get_method_params_plus_inherited(method_iri: str, namespace_prefix: str, kg:
     )
 
 
-def get_method_properties_and_methods(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
+def query_method_properties_and_methods(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m . "
@@ -126,7 +130,7 @@ def get_method_properties_and_methods(input_kg, namespace_prefix, entity_parent_
     )
 
 
-def get_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
+def query_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
     return input_kg.query(
         "\nSELECT ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
@@ -140,7 +144,7 @@ def get_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query.R
     )
 
 
-def get_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
+def query_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
     return input_kg.query(
         "\nSELECT ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
@@ -163,14 +167,14 @@ def query_pipeline_info(kg, namespace_prefix):
     )
 
 
-def get_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
+def query_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
     return kg.query(
         "\nSELECT ?t WHERE {?t rdfs:subClassOf ?class_iri . }",
         initBindings={"class_iri": class_iri},
     )
 
 
-def get_input_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+def query_input_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
     return kg.query(
         f"""
         SELECT DISTINCT ?s ?p ?o
@@ -184,7 +188,7 @@ def get_input_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> quer
     )
 
 
-def get_output_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+def query_output_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
     return kg.query(
         f"""
         SELECT DISTINCT ?s ?p ?o
@@ -198,7 +202,7 @@ def get_output_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> que
     )
 
 
-def get_parameters_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+def query_parameters_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
     return kg.query(
         f"""
         SELECT ?s ?p ?o
@@ -227,8 +231,7 @@ def get_pipeline_and_first_task_iri(kg: Graph, namespace_prefix: str) -> Tuple[s
         namespace_prefix,
     )
     if query_result is None:
-        print("Error: Pipeline info not found")
-        exit(1)
+        raise NoResultsError("Pipeline info not found in the KG")
 
     pipeline_iri, input_data_path, plots_output_dir, task_iri = query_result
 
@@ -260,7 +263,7 @@ def get_method_by_task_iri(
         task_iri,
     )
     if query_result is None:
-        return None
+        raise NoResultsError(f"Task with IRI {task_iri} isn't connected with any method in the KG")
 
     method_iri = str(query_result[0])
 
@@ -272,7 +275,9 @@ def get_method_by_task_iri(
     )
 
     if query_result is None:
-        return None
+        raise NoResultsError(
+            f"Method with IRI {method_iri} doesn't have a type that is a subclass of {str(namespace.AtomicMethod)}"
+        )
 
     method_parent_iri = str(query_result[0])
 
@@ -303,7 +308,9 @@ def get_module_hierarchy_chain(
     )
 
     if query_result is None:
-        return None
+        raise NoResultsError(
+            f"Method with IRI {method_iri} doesn't have a subclass that is subclass of {namespace_prefix}:Module"
+        )
 
     module_iri = str(query_result[0])
     module_chain_query_res = list(query_hierarchy_chain(kg, module_iri))
@@ -326,7 +333,7 @@ def get_method_grouped_params_plus_inherited(
     Returns:
         List: contains rows of data property IRIs and their range
     """
-    property_list = list(get_method_params_plus_inherited(method_iri, namespace_prefix, kg))
+    property_list = list(query_method_params_plus_inherited(method_iri, namespace_prefix, kg))
     property_list = [
         (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
     ]
@@ -345,7 +352,7 @@ def get_grouped_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) ->
     Returns:
         List: contains rows of data entity IRIs and their data structure IRIs
     """
-    property_list = list(get_inherited_inputs(input_kg, namespace_prefix, entity_iri))
+    property_list = list(query_inherited_inputs(input_kg, namespace_prefix, entity_iri))
     property_list = [
         (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
     ]
@@ -364,7 +371,7 @@ def get_grouped_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -
     Returns:
         List: contains rows of data entity IRIs and their data structure IRIs
     """
-    property_list = list(get_inherited_outputs(input_kg, namespace_prefix, entity_iri))
+    property_list = list(query_inherited_outputs(input_kg, namespace_prefix, entity_iri))
     property_list = [
         (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
     ]

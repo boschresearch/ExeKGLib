@@ -7,7 +7,7 @@ from rdflib import Graph
 
 from exe_kg_lib.config import KG_SCHEMAS
 
-from ..utils.query_utils import get_subclasses_of
+from ..utils.query_utils import query_subclasses_of
 from .entity import Entity
 from .kg_schema import KGSchema
 
@@ -96,31 +96,31 @@ class ExeKGBase:
         """
         Fills lists with subclasses of top-level KG schema classes and initializes dicts used for unique naming
         """
-        atomic_task_subclasses = get_subclasses_of(self.atomic_task.iri, self.input_kg)
+        atomic_task_subclasses = query_subclasses_of(self.atomic_task.iri, self.input_kg)
         for t in list(atomic_task_subclasses):
             task = Entity(t[0], self.atomic_task)
             self.atomic_task_list.append(task)
             self.task_type_dict[task.name] = 1
 
-        atomic_method_subclasses = get_subclasses_of(self.atomic_method.iri, self.input_kg)
+        atomic_method_subclasses = query_subclasses_of(self.atomic_method.iri, self.input_kg)
         for m in list(atomic_method_subclasses):
             method = Entity(m[0], self.atomic_method)
             self.atomic_method_list.append(method)
             self.method_type_dict[method.name] = 1
 
-        data_type_subclasses = get_subclasses_of(self.data_entity.iri, self.input_kg)
+        data_type_subclasses = query_subclasses_of(self.data_entity.iri, self.input_kg)
         for d in list(data_type_subclasses):
             data_type = Entity(d[0], self.data_entity)
             self.data_type_list.append(data_type)
 
-        data_semantics_subclasses = get_subclasses_of(self.data_semantics.iri, self.top_level_schema.kg)
+        data_semantics_subclasses = query_subclasses_of(self.data_semantics.iri, self.top_level_schema.kg)
         for d in list(data_semantics_subclasses):
             if d[0] == self.data_entity.iri:
                 continue
             data_semantics = Entity(d[0], self.data_semantics)
             self.data_semantics_list.append(data_semantics)
 
-        data_structure_subclasses = get_subclasses_of(self.data_structure.iri, self.top_level_schema.kg)
+        data_structure_subclasses = query_subclasses_of(self.data_structure.iri, self.top_level_schema.kg)
         for d in list(data_structure_subclasses):
             if d[0] == self.data_entity.iri:
                 continue
