@@ -140,7 +140,7 @@ if __name__ == "__main__":
         task="CanvasCreation",
         input_data_entity_dict={},
         method="CanvasMethod",
-        method_params_dict={"hasParamLayout": "2 1"},
+        method_params_dict={"hasParamLayout": "2 1", "hasParamFigureSize": "10 10"},
     )
 
     exe_kg.add_task(

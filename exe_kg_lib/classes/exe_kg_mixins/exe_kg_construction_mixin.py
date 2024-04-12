@@ -44,7 +44,6 @@ class ExeKGConstructionMixin:
     existing_data_entity_list: List[DataEntity]
     last_created_task: Union[None, Task]
     canvas_task_created: bool
-    name_instance: Callable[["ExeKGConstructionMixin", Entity], Union[None, str]]
 
     def create_pipeline_task(self, pipeline_name: str, input_data_path: str, plots_output_dir: str) -> Task:
         """
@@ -242,7 +241,7 @@ class ExeKGConstructionMixin:
             same_input_index = 1
             for input_data_entity in input_data_entity_list:
                 # instantiate data entity corresponding to the found input_entity_name
-                data_entity_iri = input_entity_iri + str(task_type_index) + "_" + str(same_input_index)
+                data_entity_iri = input_entity_iri + "_" + task_instance.name + "_" + str(same_input_index)
                 # instantiate given data entity
                 add_data_entity_instance(
                     self.output_kg,
@@ -491,3 +490,31 @@ class ExeKGConstructionMixin:
 
         self.output_kg.serialize(destination=file_path)
         print(f"Executable KG saved in {file_path}")
+
+    def name_instance(
+        self,
+        parent_entity: Entity,
+    ) -> Union[None, str]:
+        """
+        Creates a unique name for a new instance by concatenating the parent entity's name (which is the instance type) with a number
+        Also increments the relevant number of the corresponding dict
+        Args:
+            task_type_dict: contains pairs of task types and numbers
+            method_type_dict: contains pairs of method types and numbers
+            parent_entity: instance's parent entity
+
+        Returns:
+            str: name to be given to the new instance
+            None: if the type of the given parent entity is not equal with "AtomicTask" or "AtomicMethod"
+        """
+        if parent_entity.type == "AtomicTask":
+            entity_type_dict = self.task_type_dict
+        elif parent_entity.type == "AtomicMethod":
+            entity_type_dict = self.method_type_dict
+        else:
+            print("Error: Invalid parent entity type")
+            return None
+
+        instance_name = parent_entity.name + str(entity_type_dict[parent_entity.name])
+        entity_type_dict[parent_entity.name] += 1
+        return instance_name

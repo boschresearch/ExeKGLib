@@ -4,64 +4,78 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ds:StatsPipeline a ds:Pipeline ;
-    ds:hasInputDataPath "./examples/data/dummy_data.csv"^^xsd:string ;
-    ds:hasStartTask stats:NormalizationTask1 .
+    ds:hasInputDataPath "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\data\\dummy_data.csv"^^xsd:string ;
+    ds:hasPlotsOutputDir "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\plots\\StatsPipeline"^^xsd:string ;
+    ds:hasStartTask stats:CentralTendencyMeasure1 .
 
-stats:DataInNormalization1_1 a stats:DataInNormalization ;
-    ds:hasDataStructure ds:Vector ;
+stats:CentralTendencyMeasure1 a stats:CentralTendencyMeasure ;
+    ds:hasInput stats:DataInStatisticCalculation_CentralTendencyMeasure1_1 ;
+    ds:hasNextTask stats:DispersionMeasure1 ;
+    ds:hasOutput stats:DataOutStatisticCalculationMean ;
+    stats:hasCentralTendencyMeasureMethod stats:Mean1 .
+
+stats:DataInStatisticCalculation_CentralTendencyMeasure1_1 a stats:DataInStatisticCalculation ;
     ds:hasReference ds:feature_1 .
 
-stats:NormalizationMethod1 a stats:NormalizationMethod .
+stats:DataInStatisticCalculation_DispersionMeasure1_1 a stats:DataInStatisticCalculation ;
+    ds:hasReference ds:feature_1 .
 
-stats:NormalizationTask1 a stats:NormalizationTask ;
-    ds:hasInput stats:DataInNormalization1_1 ;
-    ds:hasNextTask visu:CanvasTask1 ;
-    ds:hasOutput stats:DataOutNormalization1 ;
-    stats:hasNormalizationMethod stats:NormalizationMethod1 .
+stats:DispersionMeasure1 a stats:DispersionMeasure ;
+    ds:hasInput stats:DataInStatisticCalculation_DispersionMeasure1_1 ;
+    ds:hasNextTask visu:CanvasCreation1 ;
+    ds:hasOutput stats:DataOutStatisticCalculationStd ;
+    stats:hasDispersionMeasureMethod stats:Std1 .
+
+stats:Mean1 a stats:Mean .
+
+stats:Std1 a stats:Std .
+
+visu:Bar1 a visu:Bar ;
+    visu:hasParamTitle "Feature 1's Mean and Standard Deviation"^^xsd:string .
+
+visu:BarPlot1 a visu:BarPlot ;
+    ds:hasInput visu:DataInToPlot_BarPlot1_1,
+        visu:DataInToPlot_BarPlot1_2 ;
+    visu:hasBarPlotMethod visu:Bar1 .
+
+visu:CanvasCreation1 a visu:CanvasCreation ;
+    ds:hasNextTask visu:LinePlot1 ;
+    visu:hasCanvasCreationMethod visu:CanvasMethod1 .
 
 visu:CanvasMethod1 a visu:CanvasMethod ;
-    visu:hasCanvasName "MyCanvas"^^xsd:string ;
-    visu:hasLayout "1 1"^^xsd:string .
+    visu:hasParamFigureSize "10 10"^^xsd:string ;
+    visu:hasParamLayout "2 1"^^xsd:string .
 
-visu:CanvasTask1 a visu:CanvasTask ;
-    ds:hasNextTask visu:PlotTask1 ;
-    visu:hasCanvasMethod visu:CanvasMethod1 .
+visu:DataInToPlot_BarPlot1_1 a visu:DataInToPlot ;
+    ds:hasReference stats:DataOutStatisticCalculationMean .
 
-visu:DataInVector1_1 a visu:DataInVector ;
-    ds:hasDataStructure ds:Vector ;
+visu:DataInToPlot_BarPlot1_2 a visu:DataInToPlot ;
+    ds:hasReference stats:DataOutStatisticCalculationStd .
+
+visu:DataInToPlot_LinePlot1_1 a visu:DataInToPlot ;
     ds:hasReference ds:feature_1 .
 
-visu:DataInVector2_1 a visu:DataInVector ;
-    ds:hasDataStructure ds:Vector ;
-    ds:hasReference stats:DataOutNormalization1 .
+visu:LinePlot1 a visu:LinePlot ;
+    ds:hasInput visu:DataInToPlot_LinePlot1_1 ;
+    ds:hasNextTask visu:BarPlot1 ;
+    visu:hasLinePlotMethod visu:Plot1 .
 
-visu:PlotTask1 a visu:PlotTask ;
-    ds:hasInput visu:DataInVector1_1 ;
-    ds:hasNextTask visu:PlotTask2 ;
-    visu:hasPlotMethod visu:ScatterplotMethod1 .
+visu:Plot1 a visu:Plot ;
+    visu:hasParamTitle "Feature 1"^^xsd:string .
 
-visu:PlotTask2 a visu:PlotTask ;
-    ds:hasInput visu:DataInVector2_1 ;
-    visu:hasPlotMethod visu:ScatterplotMethod2 .
+stats:DataOutStatisticCalculationMean a ds:Matrix,
+        ds:SingleValue,
+        ds:Tensor,
+        ds:Vector,
+        stats:DataOutStatisticCalculation .
 
-visu:ScatterplotMethod1 a visu:ScatterplotMethod ;
-    visu:hasLegendName "Feature 1 before normalization"^^xsd:string ;
-    visu:hasLineStyle "o"^^xsd:string ;
-    visu:hasLineWidth "1"^^xsd:int ;
-    visu:hasScatterSize "1"^^xsd:int ;
-    visu:hasScatterStyle "o"^^xsd:string .
+stats:DataOutStatisticCalculationStd a ds:Matrix,
+        ds:SingleValue,
+        ds:Tensor,
+        ds:Vector,
+        stats:DataOutStatisticCalculation .
 
-visu:ScatterplotMethod2 a visu:ScatterplotMethod ;
-    visu:hasLegendName "Normalized feature 1"^^xsd:string ;
-    visu:hasLineStyle "o"^^xsd:string ;
-    visu:hasLineWidth "1"^^xsd:int ;
-    visu:hasScatterSize "1"^^xsd:int ;
-    visu:hasScatterStyle "o"^^xsd:string .
-
-ds:feature_1 a ds:DataEntity ;
-    ds:hasDataSemantics ds:TimeSeries ;
-    ds:hasDataStructure ds:Vector ;
+ds:feature_1 a ds:DataEntity,
+        ds:TimeSeries,
+        ds:Vector ;
     ds:hasSource "feature_1"^^xsd:string .
-
-stats:DataOutNormalization1 a stats:DataOutNormalization ;
-    ds:hasDataStructure ds:Vector .

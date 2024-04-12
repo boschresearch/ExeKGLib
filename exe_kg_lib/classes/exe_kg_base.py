@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-from typing import List, Union
+from typing import List
 
 from rdflib import Graph
 
@@ -126,31 +126,3 @@ class ExeKGBase:
                 continue
             data_structure = Entity(d[0], self.data_structure)
             self.data_structure_list.append(data_structure)
-
-    def name_instance(
-        self,
-        parent_entity: Entity,
-    ) -> Union[None, str]:
-        """
-        Creates a unique name for a new instance by concatenating the parent entity's name (which is the instance type) with a number
-        Also increments the relevant number of the corresponding dict
-        Args:
-            task_type_dict: contains pairs of task types and numbers
-            method_type_dict: contains pairs of method types and numbers
-            parent_entity: instance's parent entity
-
-        Returns:
-            str: name to be given to the new instance
-            None: if the type of the given parent entity is not equal with "AtomicTask" or "AtomicMethod"
-        """
-        if parent_entity.type == "AtomicTask":
-            entity_type_dict = self.task_type_dict
-        elif parent_entity.type == "AtomicMethod":
-            entity_type_dict = self.method_type_dict
-        else:
-            print("Error: Invalid parent entity type")
-            return None
-
-        instance_name = parent_entity.name + str(entity_type_dict[parent_entity.name])
-        entity_type_dict[parent_entity.name] += 1
-        return instance_name

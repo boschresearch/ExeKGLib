@@ -25,7 +25,7 @@ class Train(Task):
 
             # self.method_module = getattr(module, module_name)
             assert isinstance(method_module, type), "The method_module should be a class"
-            model = method_module(**self.method_inherited_params_dict)
+            model = method_module(**self.method_params_dict)
             model.fit(input_x, input_y)
 
             print(f"{model.__class__.__name__} training finished")
@@ -76,7 +76,7 @@ class PrepareTransformer(Task):
         method_module = self.resolve_module()
         if "sklearn" in method_module.__module__:
             assert isinstance(method_module, type), "The method_module should be a class"
-            transformer = method_module(**self.method_inherited_params_dict)
+            transformer = method_module(**self.method_params_dict)
             transformer.fit(input)
 
             print(f"{transformer.__class__.__name__} transforming finished")
@@ -132,11 +132,11 @@ class DataSplitting(Task):
         # train_x, train_y, test_x, test_y = self.abstract_method(input_x, input_y)
         if "sklearn" in method_module.__module__:
             if method_module.__name__ == "train_test_split":
-                train_x, test_x, train_y, test_y = method_module(input_x, input_y, **self.method_inherited_params_dict)
+                train_x, test_x, train_y, test_y = method_module(input_x, input_y, **self.method_params_dict)
                 print("train_test_split splitting finished")
             else:
                 assert isinstance(method_module, type), "The method_module should be a class"
-                splitter = method_module(**self.method_inherited_params_dict)
+                splitter = method_module(**self.method_params_dict)
 
                 # TODO: handle sklearn's splitters like KFold, StratifiedKFold, etc. that allow for multiple splits via n_splits
                 #       https://scikit-learn.org/stable/modules/cross_validation.html
@@ -172,7 +172,7 @@ class PerformanceCalculation(Task):
 
         if "sklearn" in method_module.__module__:
             assert callable(method_module), "The method_module should be a function"
-            metric_value = method_module(input_real_y, input_predicted_y, **self.method_inherited_params_dict)
+            metric_value = method_module(input_real_y, input_predicted_y, **self.method_params_dict)
         else:
             raise NotImplementedError("Only sklearn metrics are supported for now")
 

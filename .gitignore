@@ -51,3 +51,6 @@ pylint-report.txt
 
 # mkdocs site_dir
 .site/
+
+# CUSTOM
+examples/plots/
