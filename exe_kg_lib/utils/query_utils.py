@@ -98,22 +98,22 @@ def get_first_query_result_if_exists(query_method: Callable, *args) -> Optional[
     return query_result
 
 
-def get_data_properties_by_entity_iri(entity_iri: str, kg: Graph) -> query.Result:
+def get_method_params(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
     return kg.query(
-        "\nSELECT ?p ?r WHERE {?p rdfs:domain ?entity_iri . "
-        "?p rdfs:range ?r . "
-        "?p rdf:type owl:DatatypeProperty . }",
-        initBindings={"entity_iri": URIRef(entity_iri)},
+        f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?task_iri . "
+        f"?p rdfs:range ?r . "
+        f"?p rdfs:subPropertyOf {namespace_prefix}:hasParameter . }}",
+        initBindings={"task_iri": URIRef(method_iri)},
     )
 
 
-def get_data_properties_plus_inherited_by_entity_iri(entity_iri: str, kg: Graph) -> query.Result:
+def get_method_params_plus_inherited(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
     return kg.query(
-        "\nSELECT ?p ?r WHERE {?p rdfs:domain ?domain . "
-        "?entity_iri rdfs:subClassOf* ?domain . "
-        "?p rdfs:range ?r . "
-        "?p rdf:type owl:DatatypeProperty . }",
-        initBindings={"entity_iri": URIRef(entity_iri)},
+        f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?domain . "
+        f"?task_iri rdfs:subClassOf* ?domain . "
+        f"?p rdfs:range ?r . "
+        f"?p rdfs:subPropertyOf {namespace_prefix}:hasParameter . }}",
+        initBindings={"task_iri": URIRef(method_iri)},
     )
 
 
@@ -314,7 +314,9 @@ def get_module_hierarchy_chain(
     return module_chain_names
 
 
-def get_grouped_data_properties_plus_inherited_by_entity_iri(entity_iri: str, kg: Graph) -> List[Tuple[str, List[str]]]:
+def get_method_grouped_params_plus_inherited(
+    method_iri: str, namespace_prefix: str, kg: Graph
+) -> List[Tuple[str, List[str]]]:
     """
     Retrieves data properties grouped by their property IRI
     Args:
@@ -324,7 +326,7 @@ def get_grouped_data_properties_plus_inherited_by_entity_iri(entity_iri: str, kg
     Returns:
         List: contains rows of data property IRIs and their range
     """
-    property_list = list(get_data_properties_plus_inherited_by_entity_iri(entity_iri, kg))
+    property_list = list(get_method_params_plus_inherited(method_iri, namespace_prefix, kg))
     property_list = [
         (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
     ]

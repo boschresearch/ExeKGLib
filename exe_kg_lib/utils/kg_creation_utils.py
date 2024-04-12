@@ -8,8 +8,8 @@ from rdflib import RDF, RDFS, XSD, Graph, Literal, Namespace, URIRef
 from ..classes.data_entity import DataEntity
 from ..classes.entity import Entity
 from ..classes.task import Task
-from .query_utils import (get_data_properties_plus_inherited_by_entity_iri,
-                          get_first_query_result_if_exists)
+from .query_utils import (get_first_query_result_if_exists,
+                          get_method_params_plus_inherited)
 
 
 def add_instance(kg: Graph, entity_instance: Entity) -> None:
@@ -102,16 +102,16 @@ def add_data_entity_instance(
     add_instance(kg, data_entity)
 
     if data_entity.source:
-        has_source_iri, range_iri = get_first_query_result_if_exists(
-            get_data_properties_plus_inherited_by_entity_iri, data_entity.parent_entity.iri, top_level_kg
-        )
+        # has_source_iri, range_iri = get_first_query_result_if_exists(
+        #     get_method_params_plus_inherited, data_entity.parent_entity.iri, top_level_kg
+        # )
 
         source_literal = Literal(
             lexical_or_value=data_entity.source,
-            datatype=range_iri,
+            datatype=XSD.string,
         )
 
-        add_literal(kg, data_entity, has_source_iri, source_literal)
+        add_literal(kg, data_entity, top_level_schema_namespace.hasSource, source_literal)
 
     if data_entity.data_structure:
         add_relation(

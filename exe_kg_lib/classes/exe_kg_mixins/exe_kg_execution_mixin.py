@@ -13,10 +13,10 @@ from exe_kg_lib.classes.kg_schema import KGSchema
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.classes.tasks import ml_tasks, statistic_tasks, visual_tasks
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
-from exe_kg_lib.utils.query_utils import (get_data_properties_by_entity_iri,
-                                          get_first_query_result_if_exists,
+from exe_kg_lib.utils.query_utils import (get_first_query_result_if_exists,
                                           get_input_triples,
                                           get_method_by_task_iri,
+                                          get_method_params,
                                           get_module_hierarchy_chain,
                                           get_output_triples,
                                           get_parameters_triples,
@@ -227,7 +227,9 @@ class ExeKGExecutionMixin:
             else []
         )
 
-        method_class_data_properties = list(get_data_properties_by_entity_iri(method.parent_entity.iri, self.input_kg))
+        method_class_data_properties = list(
+            get_method_params(method.parent_entity.iri, self.top_level_schema.namespace_prefix, self.input_kg)
+        )
         method_class_data_property_iris = None
         if method_class_data_properties:
             method_class_data_property_iris = [str(pair[0]) for pair in method_class_data_properties]
