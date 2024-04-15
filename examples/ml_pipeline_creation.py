@@ -18,7 +18,7 @@ if __name__ == "__main__":
             exe_kg.create_data_entity(
                 name=feature_column,
                 source_value=feature_column,
-                data_semantics_name="TimeSeries",
+                data_semantics_name="Numerical",
                 data_structure_name="Vector",
             )
         )
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     label_data_entity = exe_kg.create_data_entity(
         name=label_column,
         source_value=label_column,
-        data_semantics_name="TimeSeries",
+        data_semantics_name="Categorical",
         data_structure_name="Vector",
     )
 

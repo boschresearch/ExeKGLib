@@ -13,13 +13,13 @@ if __name__ == "__main__":
     feature_1 = exe_kg.create_data_entity(
         name="feature_1",
         source_value="feature_1",
-        data_semantics_name="TimeSeries",
+        data_semantics_name="Numerical",
         data_structure_name="Vector",
     )
     feature_2 = exe_kg.create_data_entity(
         name="feature_2",
         source_value="feature_2",
-        data_semantics_name="TimeSeries",
+        data_semantics_name="Numerical",
         data_structure_name="Vector",
     )
 
@@ -54,4 +54,4 @@ if __name__ == "__main__":
         method_params_dict={"hasParamTitle": "Feature 2"},
     )
 
-    exe_kg.save_created_kg(f"./pipelines/{pipeline_name}.ttl")
+    exe_kg.save_created_kg(HERE / "pipelines" / f"{pipeline_name}.ttl")
