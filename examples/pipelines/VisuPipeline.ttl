@@ -8,12 +8,12 @@ ds:VisuPipeline a ds:Pipeline ;
     ds:hasStartTask visu:CanvasCreation1 .
 
 ds:feature_1 a ds:DataEntity,
-        ds:TimeSeries,
+        ds:Numerical,
         ds:Vector ;
     ds:hasSource "feature_1"^^xsd:string .
 
 ds:feature_2 a ds:DataEntity,
-        ds:TimeSeries,
+        ds:Numerical,
         ds:Vector ;
     ds:hasSource "feature_2"^^xsd:string .
 
@@ -32,13 +32,13 @@ visu:DataInToPlot_LinePlot2_1 a visu:DataInToPlot ;
     ds:hasReference ds:feature_2 .
 
 visu:LinePlot1 a visu:LinePlot ;
-    ds:hasInput visu:DataInToPlot_LinePlot1_1 ;
     ds:hasNextTask visu:LinePlot2 ;
-    visu:hasLinePlotMethod visu:Plot1 .
+    visu:hasLinePlotMethod visu:Plot1 ;
+    visu:hasPlotInput visu:DataInToPlot_LinePlot1_1 .
 
 visu:LinePlot2 a visu:LinePlot ;
-    ds:hasInput visu:DataInToPlot_LinePlot2_1 ;
-    visu:hasLinePlotMethod visu:Plot2 .
+    visu:hasLinePlotMethod visu:Plot2 ;
+    visu:hasPlotInput visu:DataInToPlot_LinePlot2_1 .
 
 visu:Plot1 a visu:Plot ;
     visu:hasParamTitle "Feature 1"^^xsd:string .

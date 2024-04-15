@@ -245,8 +245,10 @@ class ExeKGExecutionMixin:
             field_name = property_iri_to_field_name(str(p))
             field_value = self._property_value_to_field_value(o)
             # set field value dynamically
-            if field_name == "input" or field_name == "output":
-                getattr(task, f"{field_name}s").append(field_value)
+            if field_name.endswith("input"):
+                getattr(task, "inputs").append(field_value)
+            elif field_name.endswith("output"):
+                getattr(task, "outputs").append(field_value)
             elif field_name == "next_task":
                 setattr(task, field_name, field_value)
             else:  # method parameter

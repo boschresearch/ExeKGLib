@@ -222,7 +222,9 @@ class ExeKGConstructionMixin:
         # task_type_index was incremented when creating the task entity
         # reset the index to match the currently created task's index
         task_type_index = self.task_type_dict[task_instance.type] - 1
-        for input_entity_iri, data_structure_iris in results:
+        for input_entity_iri, info_l in results:
+            data_structure_iris = [pair[0] for pair in info_l]
+            input_property_iri = info_l[0][1]  # common input property for all data structures
             input_entity_name = input_entity_iri.split("#")[1]
             data_structure_names = [iri.split("#")[1] for iri in data_structure_iris]
 
@@ -264,7 +266,7 @@ class ExeKGConstructionMixin:
                     self.top_level_schema.kg,
                     self.top_level_schema.namespace,
                     data_entity,
-                    self.top_level_schema.namespace.hasInput,
+                    input_property_iri,
                     task_instance,
                 )
                 task_instance.input_dict[input_entity_name] = data_entity
@@ -291,7 +293,9 @@ class ExeKGConstructionMixin:
         # task_type_index was incremented when creating the task entity
         # reset the index to match the currently created task's index
         task_type_index = self.task_type_dict[task_instance.type] - 1
-        for output_parent_entity_iri, data_structure_iris in results:
+        for output_parent_entity_iri, info_l in results:
+            data_structure_iris = [pair[0] for pair in info_l]
+            output_property_iri = info_l[0][1]  # common input property for all data structures
             # instantiate and add data entity
             output_data_entity_iri = (
                 output_parent_entity_iri + method_instance_type
@@ -312,7 +316,7 @@ class ExeKGConstructionMixin:
                     self.top_level_schema.kg,
                     self.top_level_schema.namespace,
                     output_data_entity,
-                    self.top_level_schema.namespace.hasOutput,
+                    output_property_iri,
                     task_instance,
                 )
             task_instance.output_dict[output_parent_entity_iri.split("#")[1]] = output_data_entity

@@ -9,10 +9,10 @@ ds:StatsPipeline a ds:Pipeline ;
     ds:hasStartTask stats:CentralTendencyMeasure1 .
 
 stats:CentralTendencyMeasure1 a stats:CentralTendencyMeasure ;
-    ds:hasInput stats:DataInStatisticCalculation_CentralTendencyMeasure1_1 ;
     ds:hasNextTask stats:DispersionMeasure1 ;
-    ds:hasOutput stats:DataOutStatisticCalculationMean ;
-    stats:hasCentralTendencyMeasureMethod stats:Mean1 .
+    stats:hasCentralTendencyMeasureMethod stats:Mean1 ;
+    stats:hasStatisticCalculationInput stats:DataInStatisticCalculation_CentralTendencyMeasure1_1 ;
+    stats:hasStatisticCalculationOutput stats:DataOutStatisticCalculationMean .
 
 stats:DataInStatisticCalculation_CentralTendencyMeasure1_1 a stats:DataInStatisticCalculation ;
     ds:hasReference ds:feature_1 .
@@ -21,10 +21,10 @@ stats:DataInStatisticCalculation_DispersionMeasure1_1 a stats:DataInStatisticCal
     ds:hasReference ds:feature_1 .
 
 stats:DispersionMeasure1 a stats:DispersionMeasure ;
-    ds:hasInput stats:DataInStatisticCalculation_DispersionMeasure1_1 ;
     ds:hasNextTask visu:CanvasCreation1 ;
-    ds:hasOutput stats:DataOutStatisticCalculationStd ;
-    stats:hasDispersionMeasureMethod stats:Std1 .
+    stats:hasDispersionMeasureMethod stats:Std1 ;
+    stats:hasStatisticCalculationInput stats:DataInStatisticCalculation_DispersionMeasure1_1 ;
+    stats:hasStatisticCalculationOutput stats:DataOutStatisticCalculationStd .
 
 stats:Mean1 a stats:Mean .
 
@@ -34,9 +34,9 @@ visu:Bar1 a visu:Bar ;
     visu:hasParamTitle "Feature 1's Mean and Standard Deviation"^^xsd:string .
 
 visu:BarPlot1 a visu:BarPlot ;
-    ds:hasInput visu:DataInToPlot_BarPlot1_1,
-        visu:DataInToPlot_BarPlot1_2 ;
-    visu:hasBarPlotMethod visu:Bar1 .
+    visu:hasBarPlotMethod visu:Bar1 ;
+    visu:hasPlotInput visu:DataInToPlot_BarPlot1_1,
+        visu:DataInToPlot_BarPlot1_2 .
 
 visu:CanvasCreation1 a visu:CanvasCreation ;
     ds:hasNextTask visu:LinePlot1 ;
@@ -56,9 +56,9 @@ visu:DataInToPlot_LinePlot1_1 a visu:DataInToPlot ;
     ds:hasReference ds:feature_1 .
 
 visu:LinePlot1 a visu:LinePlot ;
-    ds:hasInput visu:DataInToPlot_LinePlot1_1 ;
     ds:hasNextTask visu:BarPlot1 ;
-    visu:hasLinePlotMethod visu:Plot1 .
+    visu:hasLinePlotMethod visu:Plot1 ;
+    visu:hasPlotInput visu:DataInToPlot_LinePlot1_1 .
 
 visu:Plot1 a visu:Plot ;
     visu:hasParamTitle "Feature 1"^^xsd:string .
@@ -78,6 +78,6 @@ stats:DataOutStatisticCalculationStd a ds:Matrix,
         stats:DataOutStatisticCalculation .
 
 ds:feature_1 a ds:DataEntity,
-        ds:TimeSeries,
+        ds:Numerical,
         ds:Vector ;
     ds:hasSource "feature_1"^^xsd:string .

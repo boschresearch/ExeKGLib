@@ -9,53 +9,53 @@ ds:MLPipeline a ds:Pipeline ;
     ds:hasStartTask ml:Concatenation1 .
 
 ds:feature_1 a ds:DataEntity,
-        ds:TimeSeries,
+        ds:Numerical,
         ds:Vector ;
     ds:hasSource "feature_1"^^xsd:string .
 
 ds:feature_2 a ds:DataEntity,
-        ds:TimeSeries,
+        ds:Numerical,
         ds:Vector ;
     ds:hasSource "feature_2"^^xsd:string .
 
 ds:feature_3 a ds:DataEntity,
-        ds:TimeSeries,
+        ds:Numerical,
         ds:Vector ;
     ds:hasSource "feature_3"^^xsd:string .
 
 ds:feature_4 a ds:DataEntity,
-        ds:TimeSeries,
+        ds:Numerical,
         ds:Vector ;
     ds:hasSource "feature_4"^^xsd:string .
 
 ds:feature_5 a ds:DataEntity,
-        ds:TimeSeries,
+        ds:Numerical,
         ds:Vector ;
     ds:hasSource "feature_5"^^xsd:string .
 
-ds:label a ds:DataEntity,
-        ds:TimeSeries,
+ds:label a ds:Categorical,
+        ds:DataEntity,
         ds:Vector ;
     ds:hasSource "label"^^xsd:string .
 
 ml:AccuracyScore1 a ml:AccuracyScore .
 
 ml:BinaryClassification1 a ml:BinaryClassification ;
-    ds:hasInput ml:DataInTrainX_BinaryClassification1_1,
-        ml:DataInTrainY_BinaryClassification1_1 ;
     ds:hasNextTask ml:Test1 ;
-    ds:hasOutput ml:DataOutTrainModelSVC ;
-    ml:hasBinaryClassificationMethod ml:SVC1 .
+    ml:hasBinaryClassificationMethod ml:SVC1 ;
+    ml:hasTrainInput ml:DataInTrainX_BinaryClassification1_1,
+        ml:DataInTrainY_BinaryClassification1_1 ;
+    ml:hasTrainOutput ml:DataOutTrainModelSVC .
 
 ml:Concatenation1 a ml:Concatenation ;
-    ds:hasInput ml:DataInConcatenation_Concatenation1_1,
+    ds:hasNextTask ml:DataSplitting1 ;
+    ml:hasConcatenationInput ml:DataInConcatenation_Concatenation1_1,
         ml:DataInConcatenation_Concatenation1_2,
         ml:DataInConcatenation_Concatenation1_3,
         ml:DataInConcatenation_Concatenation1_4,
         ml:DataInConcatenation_Concatenation1_5 ;
-    ds:hasNextTask ml:DataSplitting1 ;
-    ds:hasOutput ml:DataOutConcatenatedDataConcatenationMethod ;
-    ml:hasConcatenationMethod ml:ConcatenationMethod1 .
+    ml:hasConcatenationMethod ml:ConcatenationMethod1 ;
+    ml:hasConcatenationOutput ml:DataOutConcatenatedDataConcatenationMethod .
 
 ml:ConcatenationMethod1 a ml:ConcatenationMethod .
 
@@ -117,44 +117,44 @@ ml:DataInTrainY_BinaryClassification1_1 a ml:DataInTrainY ;
     ds:hasReference ml:DataOutSplittedTrainDataYTrainTestSplit .
 
 ml:DataSplitting1 a ml:DataSplitting ;
-    ds:hasInput ml:DataInDataSplittingX_DataSplitting1_1,
-        ml:DataInDataSplittingY_DataSplitting1_1 ;
     ds:hasNextTask ml:BinaryClassification1 ;
-    ds:hasOutput ml:DataOutSplittedTestDataXTrainTestSplit,
+    ml:hasDataSplittingInput ml:DataInDataSplittingX_DataSplitting1_1,
+        ml:DataInDataSplittingY_DataSplitting1_1 ;
+    ml:hasDataSplittingMethod ml:TrainTestSplit1 ;
+    ml:hasDataSplittingOutput ml:DataOutSplittedTestDataXTrainTestSplit,
         ml:DataOutSplittedTestDataYTrainTestSplit,
         ml:DataOutSplittedTrainDataXTrainTestSplit,
-        ml:DataOutSplittedTrainDataYTrainTestSplit ;
-    ml:hasDataSplittingMethod ml:TrainTestSplit1 .
+        ml:DataOutSplittedTrainDataYTrainTestSplit .
 
 ml:F1Score1 a ml:F1Score .
 
 ml:PerformanceCalculation1 a ml:PerformanceCalculation ;
-    ds:hasInput ml:DataInPredictedY_PerformanceCalculation1_1,
-        ml:DataInRealY_PerformanceCalculation1_1 ;
     ds:hasNextTask ml:PerformanceCalculation2 ;
-    ds:hasOutput ml:DataOutScoreAccuracyScore ;
-    ml:hasPerformanceCalculationMethod ml:AccuracyScore1 .
+    ml:hasPerformanceCalculationInput ml:DataInPredictedY_PerformanceCalculation1_1,
+        ml:DataInRealY_PerformanceCalculation1_1 ;
+    ml:hasPerformanceCalculationMethod ml:AccuracyScore1 ;
+    ml:hasPerformanceCalculationOutput ml:DataOutScoreAccuracyScore .
 
 ml:PerformanceCalculation2 a ml:PerformanceCalculation ;
-    ds:hasInput ml:DataInPredictedY_PerformanceCalculation2_1,
-        ml:DataInRealY_PerformanceCalculation2_1 ;
     ds:hasNextTask ml:PerformanceCalculation3 ;
-    ds:hasOutput ml:DataOutScoreF1Score ;
-    ml:hasPerformanceCalculationMethod ml:F1Score1 .
+    ml:hasPerformanceCalculationInput ml:DataInPredictedY_PerformanceCalculation2_1,
+        ml:DataInRealY_PerformanceCalculation2_1 ;
+    ml:hasPerformanceCalculationMethod ml:F1Score1 ;
+    ml:hasPerformanceCalculationOutput ml:DataOutScoreF1Score .
 
 ml:PerformanceCalculation3 a ml:PerformanceCalculation ;
-    ds:hasInput ml:DataInPredictedY_PerformanceCalculation3_1,
-        ml:DataInRealY_PerformanceCalculation3_1 ;
     ds:hasNextTask ml:PerformanceCalculation4 ;
-    ds:hasOutput ml:DataOutScorePrecisionScore ;
-    ml:hasPerformanceCalculationMethod ml:PrecisionScore1 .
+    ml:hasPerformanceCalculationInput ml:DataInPredictedY_PerformanceCalculation3_1,
+        ml:DataInRealY_PerformanceCalculation3_1 ;
+    ml:hasPerformanceCalculationMethod ml:PrecisionScore1 ;
+    ml:hasPerformanceCalculationOutput ml:DataOutScorePrecisionScore .
 
 ml:PerformanceCalculation4 a ml:PerformanceCalculation ;
-    ds:hasInput ml:DataInPredictedY_PerformanceCalculation4_1,
-        ml:DataInRealY_PerformanceCalculation4_1 ;
     ds:hasNextTask visu:CanvasCreation1 ;
-    ds:hasOutput ml:DataOutScoreRecallScore ;
-    ml:hasPerformanceCalculationMethod ml:RecallScore1 .
+    ml:hasPerformanceCalculationInput ml:DataInPredictedY_PerformanceCalculation4_1,
+        ml:DataInRealY_PerformanceCalculation4_1 ;
+    ml:hasPerformanceCalculationMethod ml:RecallScore1 ;
+    ml:hasPerformanceCalculationOutput ml:DataOutScoreRecallScore .
 
 ml:PrecisionScore1 a ml:PrecisionScore .
 
@@ -164,11 +164,11 @@ ml:SVC1 a ml:SVC ;
     ml:hasParamRandomState 0 .
 
 ml:Test1 a ml:Test ;
-    ds:hasInput ml:DataInTestModel_Test1_1,
-        ml:DataInTestX_Test1_1 ;
     ds:hasNextTask ml:PerformanceCalculation1 ;
-    ds:hasOutput ml:DataOutPredictedValueTestTestMethod ;
-    ml:hasTestMethod ml:TestMethod1 .
+    ml:hasTestInput ml:DataInTestModel_Test1_1,
+        ml:DataInTestX_Test1_1 ;
+    ml:hasTestMethod ml:TestMethod1 ;
+    ml:hasTestOutput ml:DataOutPredictedValueTestTestMethod .
 
 ml:TestMethod1 a ml:TestMethod .
 
@@ -183,15 +183,15 @@ visu:Bar2 a visu:Bar ;
     visu:hasParamTitle "Test Precision & Recall"^^xsd:string .
 
 visu:BarPlot1 a visu:BarPlot ;
-    ds:hasInput visu:DataInToPlot_BarPlot1_1,
-        visu:DataInToPlot_BarPlot1_2 ;
     ds:hasNextTask visu:BarPlot2 ;
-    visu:hasBarPlotMethod visu:Bar1 .
+    visu:hasBarPlotMethod visu:Bar1 ;
+    visu:hasPlotInput visu:DataInToPlot_BarPlot1_1,
+        visu:DataInToPlot_BarPlot1_2 .
 
 visu:BarPlot2 a visu:BarPlot ;
-    ds:hasInput visu:DataInToPlot_BarPlot2_1,
-        visu:DataInToPlot_BarPlot2_2 ;
-    visu:hasBarPlotMethod visu:Bar2 .
+    visu:hasBarPlotMethod visu:Bar2 ;
+    visu:hasPlotInput visu:DataInToPlot_BarPlot2_1,
+        visu:DataInToPlot_BarPlot2_2 .
 
 visu:CanvasCreation1 a visu:CanvasCreation ;
     ds:hasNextTask visu:BarPlot1 ;

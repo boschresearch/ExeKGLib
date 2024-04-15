@@ -132,7 +132,7 @@ def query_method_properties_and_methods(input_kg, namespace_prefix, entity_paren
 
 def query_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
     return input_kg.query(
-        "\nSELECT ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
+        "\nSELECT ?m ?s ?p WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
@@ -146,7 +146,7 @@ def query_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query
 
 def query_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
     return input_kg.query(
-        "\nSELECT ?m ?s WHERE {?entity_iri rdfs:subClassOf* ?parent . "
+        "\nSELECT ?m ?s ?p WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasOutput ."
@@ -354,7 +354,8 @@ def get_grouped_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) ->
     """
     property_list = list(query_inherited_inputs(input_kg, namespace_prefix, entity_iri))
     property_list = [
-        (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
+        (key, [(elem[1], elem[2]) for elem in group])
+        for key, group in itertools.groupby(property_list, lambda pair: pair[0])
     ]
 
     return property_list
@@ -373,7 +374,8 @@ def get_grouped_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -
     """
     property_list = list(query_inherited_outputs(input_kg, namespace_prefix, entity_iri))
     property_list = [
-        (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
+        (key, [(elem[1], elem[2]) for elem in group])
+        for key, group in itertools.groupby(property_list, lambda pair: pair[0])
     ]
 
     return property_list
