@@ -18,30 +18,30 @@ ds:feature_2 a ds:DataEntity,
     ds:hasSource "feature_2"^^xsd:string .
 
 visu:CanvasCreation1 a visu:CanvasCreation ;
-    ds:hasNextTask visu:LinePlot1 ;
+    ds:hasNextTask visu:LinePlotting1 ;
     visu:hasCanvasCreationMethod visu:CanvasMethod1 .
 
 visu:CanvasMethod1 a visu:CanvasMethod ;
     visu:hasParamFigureSize "10 5"^^xsd:string ;
     visu:hasParamLayout "1 2"^^xsd:string .
 
-visu:DataInToPlot_LinePlot1_1 a visu:DataInToPlot ;
+visu:DataInToPlot_LinePlotting1_1 a visu:DataInToPlot ;
     ds:hasReference ds:feature_1 .
 
-visu:DataInToPlot_LinePlot2_1 a visu:DataInToPlot ;
+visu:DataInToPlot_LinePlotting2_1 a visu:DataInToPlot ;
     ds:hasReference ds:feature_2 .
 
-visu:LinePlot1 a visu:LinePlot ;
-    ds:hasNextTask visu:LinePlot2 ;
-    visu:hasLinePlotMethod visu:Plot1 ;
-    visu:hasPlotInput visu:DataInToPlot_LinePlot1_1 .
+visu:LinePlotting1 a visu:LinePlotting ;
+    ds:hasNextTask visu:LinePlotting2 ;
+    visu:hasLinePlottingMethod visu:PlotMethod1 ;
+    visu:hasPlottingInput visu:DataInToPlot_LinePlotting1_1 .
 
-visu:LinePlot2 a visu:LinePlot ;
-    visu:hasLinePlotMethod visu:Plot2 ;
-    visu:hasPlotInput visu:DataInToPlot_LinePlot2_1 .
+visu:LinePlotting2 a visu:LinePlotting ;
+    visu:hasLinePlottingMethod visu:PlotMethod2 ;
+    visu:hasPlottingInput visu:DataInToPlot_LinePlotting2_1 .
 
-visu:Plot1 a visu:Plot ;
+visu:PlotMethod1 a visu:PlotMethod ;
     visu:hasParamTitle "Feature 1"^^xsd:string .
 
-visu:Plot2 a visu:Plot ;
+visu:PlotMethod2 a visu:PlotMethod ;
     visu:hasParamTitle "Feature 2"^^xsd:string .

@@ -11,7 +11,15 @@ class KGSchema:
     Stores a Graph object and some metadata corresponding to a KG schema
     """
 
-    def __init__(self, path: str, generated_schema_path: str, namespace: str, namespace_prefix: str):
+    def __init__(
+        self,
+        path: str,
+        shacl_shapes_path: str,
+        generated_schema_path: str,
+        generated_shacl_shapes_path: str,
+        namespace: str,
+        namespace_prefix: str,
+    ):
         self.path = path  # path of the KG schema definition, can be local or remote
         self.generated_schema_path = (
             generated_schema_path  # path of file containing generated schema for this schema, can be local or remote
@@ -26,11 +34,25 @@ class KGSchema:
         if self.generated_schema_path:
             self.generated_schema_kg.parse(self.generated_schema_path, format="n3")
 
+        # shacl
+        self.shacl_shapes_path = shacl_shapes_path
+        self.generated_shacl_shapes_path = generated_shacl_shapes_path
+
+        self.shacl_shapes_s = ""
+        with open(self.shacl_shapes_path) as f:
+            self.shacl_shapes_s = f.read()
+
+        if self.generated_shacl_shapes_path:
+            with open(self.generated_shacl_shapes_path) as f:
+                self.shacl_shapes_s += f.read()
+
     @classmethod
     def from_schema_info(cls, schema_info: Dict[str, str]):
         return cls(
             schema_info["path"],
+            schema_info["shacl_shapes_path"],
             schema_info["generated_schema_path"],
+            schema_info["generated_shacl_shapes_path"],
             schema_info["namespace"],
             schema_info["namespace_prefix"],
         )

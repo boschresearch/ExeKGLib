@@ -27,7 +27,7 @@ if __name__ == "__main__":
         kg_schema_short="stats",
         task="CentralTendencyMeasure",
         input_data_entity_dict={"DataInStatisticCalculation": [feature_1]},
-        method="Mean",
+        method="MeanMethod",
         method_params_dict={},
     )
     mean = mean_task.output_dict["DataOutStatisticCalculation"]
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         kg_schema_short="stats",
         task="DispersionMeasure",
         input_data_entity_dict={"DataInStatisticCalculation": [feature_1]},
-        method="Std",
+        method="StdMethod",
         method_params_dict={},
     )
     std = std_task.output_dict["DataOutStatisticCalculation"]
@@ -51,17 +51,17 @@ if __name__ == "__main__":
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        task="LinePlot",
+        task="LinePlotting",
         input_data_entity_dict={"DataInToPlot": [feature_1]},
-        method="Plot",
+        method="PlotMethod",
         method_params_dict={"hasParamTitle": "Feature 1"},
     )
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        task="BarPlot",
+        task="BarPlotting",
         input_data_entity_dict={"DataInToPlot": [mean, std]},
-        method="Bar",
+        method="BarMethod",
         method_params_dict={"hasParamTitle": "Feature 1's Mean and Standard Deviation"},
     )
 

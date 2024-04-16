@@ -32,7 +32,13 @@ def property_iri_to_field_name(property_name: str) -> str:
 
 
 def class_name_to_module_name(class_name):
-    return camel_to_snake(class_name.replace("Module", ""))
+    name = re.sub("Module$", "", class_name)
+    return camel_to_snake(name)
+
+
+def class_name_to_method_name(class_name):
+    name = re.sub("Method$", "", class_name)
+    return name
 
 
 def concat_paths(*paths):

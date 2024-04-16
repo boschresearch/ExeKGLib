@@ -52,7 +52,7 @@ if __name__ == "__main__":
             "DataInDataSplittingX": [concatenate_task.output_dict["DataOutConcatenatedData"]],
             "DataInDataSplittingY": [label_data_entity],
         },
-        method="TrainTestSplit",
+        method="TrainTestSplitMethod",
         method_params_dict={"hasParamTestSize": 0.2, "hasParamRandomState": 0},
     )
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
             "DataInTrainX": [train_x],
             "DataInTrainY": [train_real_y],
         },
-        method="SVC",
+        method="SVCMethod",
         method_params_dict={"hasParamRandomState": 0},
     )
     model = knn_train_task.output_dict["DataOutTrainModel"]
@@ -94,7 +94,7 @@ if __name__ == "__main__":
             "DataInRealY": [test_real_y],
             "DataInPredictedY": [test_predicted_y],
         },
-        method="AccuracyScore",
+        method="AccuracyScoreMethod",
         method_params_dict={},
     )
     test_accuracy = performance_calc_task.output_dict["DataOutScore"]
@@ -106,7 +106,7 @@ if __name__ == "__main__":
             "DataInRealY": [test_real_y],
             "DataInPredictedY": [test_predicted_y],
         },
-        method="F1Score",
+        method="F1ScoreMethod",
         method_params_dict={},
     )
     test_f1 = performance_calc_task.output_dict["DataOutScore"]
@@ -118,7 +118,7 @@ if __name__ == "__main__":
             "DataInRealY": [test_real_y],
             "DataInPredictedY": [test_predicted_y],
         },
-        method="PrecisionScore",
+        method="PrecisionScoreMethod",
         method_params_dict={},
     )
     test_precision = performance_calc_task.output_dict["DataOutScore"]
@@ -130,7 +130,7 @@ if __name__ == "__main__":
             "DataInRealY": [test_real_y],
             "DataInPredictedY": [test_predicted_y],
         },
-        method="RecallScore",
+        method="RecallScoreMethod",
         method_params_dict={},
     )
     test_recall = performance_calc_task.output_dict["DataOutScore"]
@@ -145,11 +145,11 @@ if __name__ == "__main__":
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        task="BarPlot",
+        task="BarPlotting",
         input_data_entity_dict={
             "DataInToPlot": [test_accuracy, test_f1],
         },
-        method="Bar",
+        method="BarMethod",
         method_params_dict={
             "hasParamTitle": "Test Accuracy & F1",
         },
@@ -157,11 +157,11 @@ if __name__ == "__main__":
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        task="BarPlot",
+        task="BarPlotting",
         input_data_entity_dict={
             "DataInToPlot": [test_precision, test_recall],
         },
-        method="Bar",
+        method="BarMethod",
         method_params_dict={
             "hasParamTitle": "Test Precision & Recall",
         },

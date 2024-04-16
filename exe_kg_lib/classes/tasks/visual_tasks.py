@@ -42,7 +42,7 @@ class CanvasCreation(Task):
         self.grid = None if (n_rows == n_cols and n_rows == 1) else plt.GridSpec(n_rows, n_cols, hspace=0.3, wspace=0.3)
 
 
-class Plot(Task):
+class Plotting(Task):
     def __init__(self, iri: str, parent_entity: Entity, plots_output_dir: str, canvas_task: CanvasCreation):
         super().__init__(iri, parent_entity)
         self.fig = canvas_task.fig

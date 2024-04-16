@@ -40,17 +40,17 @@ if __name__ == "__main__":
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        task="LinePlot",
+        task="LinePlotting",
         input_data_entity_dict={"DataInToPlot": [feature_1]},
-        method="Plot",
+        method="PlotMethod",
         method_params_dict={"hasParamTitle": "Feature 1"},
     )
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        task="LinePlot",
+        task="LinePlotting",
         input_data_entity_dict={"DataInToPlot": [feature_2]},
-        method="Plot",
+        method="PlotMethod",
         method_params_dict={"hasParamTitle": "Feature 2"},
     )
 

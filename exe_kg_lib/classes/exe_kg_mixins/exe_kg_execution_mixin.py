@@ -25,13 +25,15 @@ from exe_kg_lib.utils.query_utils import (NoResultsError,
                                           query_output_triples,
                                           query_parameters_triples,
                                           query_top_level_task_iri)
-from exe_kg_lib.utils.string_utils import (class_name_to_module_name,
+from exe_kg_lib.utils.string_utils import (class_name_to_method_name,
+                                           class_name_to_module_name,
                                            property_iri_to_field_name)
 
 
 class ExeKGExecutionMixin:
     input_kg: Graph
     top_level_schema: KGSchema
+    shacl_shapes_s: str
 
     def _property_value_to_field_value(self, property_value: Union[str, Literal]) -> Union[str, DataEntity]:
         """
@@ -215,7 +217,7 @@ class ExeKGExecutionMixin:
 
         if module_chain_names:
             module_chain_names = [class_name_to_module_name(name) for name in module_chain_names]
-            module_chain_names = [method.type] + module_chain_names
+            module_chain_names = [class_name_to_method_name(method.type)] + module_chain_names
             module_chain_names.reverse()
             task.method_module_chain = module_chain_names
 
@@ -267,7 +269,7 @@ class ExeKGExecutionMixin:
         input_exe_kg.parse(input_exe_kg_path, format="n3")  # parse input executable KG
 
         self.input_kg += input_exe_kg
-        # check_kg_executability(self.input_kg)
+        check_kg_executability(self.input_kg, self.shacl_shapes_s)
 
         pipeline_iri, input_data_path, plots_output_dir, next_task_iri = get_pipeline_and_first_task_iri(
             self.input_kg, self.top_level_schema.namespace_prefix

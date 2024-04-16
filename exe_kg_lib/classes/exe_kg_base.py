@@ -43,11 +43,15 @@ class ExeKGBase:
         # self.input_kg: KG eventually filled with 3 KG schemas and the input executable KG in case of KG execution
         self.input_kg = Graph(bind_namespaces="rdflib")
 
+        # self.shacl_shapes_s: string containing SHACL shapes of all KG schemas
+        self.shacl_shapes_s = self.top_level_schema.shacl_shapes_s
+
         # bottom_level_schemata_kgs = [kg_schema.kg for kg_schema in self.bottom_level_schemata.values()]
         bottom_level_schemata_kgs = []
         for kg_schema in self.bottom_level_schemata.values():
             bottom_level_schemata_kgs.append(kg_schema.kg)
             bottom_level_schemata_kgs.append(kg_schema.generated_schema_kg)
+            self.shacl_shapes_s += kg_schema.shacl_shapes_s
 
         self.input_kg += self.top_level_schema.kg  # + self.visu_schema.kg  # combine all KG schemas in input KG
 
