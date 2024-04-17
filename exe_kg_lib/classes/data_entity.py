@@ -6,12 +6,9 @@ from .entity import Entity
 
 class DataEntity(Entity):
     """
-    Abstraction of owl:class DataEntity.
+    Abstraction of owl:class ds:DataEntity.
 
-    ❗ Important for contributors ❗
-    The fields that contain "_" are by convention the snake-case conversions of the equivalent camel-case property names in the KG.
-    e.g. has_source field corresponds to hasSource property in the KG.
-    This is necessary for automatically mapping KG properties to Python object fields while parsing the KG.
+    ❗ Important for contributors: See Section "Naming conventions" in README.md of "classes.tasks" package before extending the code's functionality.
     """
 
     def __init__(

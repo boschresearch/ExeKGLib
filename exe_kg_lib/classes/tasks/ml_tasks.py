@@ -3,6 +3,7 @@
 
 import importlib
 from abc import abstractmethod
+from typing import Any, Dict
 
 from ...utils.task_utils.ml_utils import *
 from ..entity import Entity
@@ -14,16 +15,34 @@ from ..task import Task
 
 
 class Train(Task):
+    """
+    Abstraction of owl:class ml:Train.
+
+    This class represents a training task for machine learning models.
+    """
+
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
+        """
+        Trains the machine learning model determined by self.method_module_chain.
+        The data to use are determined by self.inputs. Parameters to use for the model are in self.method_params_dict.
+        Expects one input data value with name "DataInTrainX" and one with name "DataInTrainY".
+
+        Args:
+            other_task_output_dict (dict): A dictionary containing the output of other tasks.
+            input_data (pd.DataFrame): The input data of the ExeKG's pipeline.
+
+        Returns:
+            dict: A dictionary containing the trained model with the key "DataOutTrainModel".
+
+        Raises:
+            NotImplementedError: If the model is not supported.
+        """
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_x = input_dict["DataInTrainX"][0]["value"]
         input_y = input_dict["DataInTrainY"][0]["value"]
 
         method_module = self.resolve_module()
         if "sklearn" in method_module.__module__:
-            # module_name = self.method_module_chain.split(".")[-1]
-
-            # self.method_module = getattr(module, module_name)
             assert isinstance(method_module, type), "The method_module should be a class"
             model = method_module(**self.method_params_dict)
             model.fit(input_x, input_y)
@@ -36,7 +55,28 @@ class Train(Task):
 
 
 class Test(Task):
+    """
+    Abstraction of owl:class ml:Test.
+
+    This class represents a test task for machine learning models.
+    """
+
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
+        """
+        Tests the machine learning model.
+        The model and data to use are determined by self.inputs.
+        Expects one input data value with name "DataInTestModel" and one with name "DataInTestX".
+
+        Args:
+            other_task_output_dict (dict): A dictionary containing the output of other tasks.
+            input_data (pd.DataFrame): The input data of the ExeKG's pipeline.
+
+        Returns:
+            dict: A dictionary containing the predicted values with the key "DataOutPredictedValueTest".
+
+        Raises:
+            NotImplementedError: If the model is not supported.
+        """
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         model = input_dict["DataInTestModel"][0]["value"]
         input_x = input_dict["DataInTestX"][0]["value"]
@@ -69,7 +109,28 @@ class TrainAndTest(Train, Test):
 
 
 class PrepareTransformer(Task):
-    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
+    """
+    Abstraction of owl:class ml:PrepareTransformer.
+
+    This class represents a task for preparing a data transformer.
+    """
+
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Prepares the transformer determined by self.method_module_chain.
+        The data to use are determined by self.inputs. Parameters to use for the transformer are in self.method_params_dict.
+        Expects one input data value with name "DataInToPrepareTransformer".
+
+        Args:
+            other_task_output_dict (dict): A dictionary containing the output of other tasks.
+            input_data (pd.DataFrame): The input data of the ExeKG's pipeline.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the transformer with the key "DataOutTransformer".
+
+        Raises:
+            NotImplementedError: If the transformer is not supported.
+        """
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input = input_dict["DataInToPrepareTransformer"][0]["value"]
 
@@ -87,7 +148,28 @@ class PrepareTransformer(Task):
 
 
 class Transform(Task):
-    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
+    """
+    Abstraction of owl:class ml:Transform.
+
+    This class represents a task for transforming data.
+    """
+
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Applies a transformation to the data.
+        The model and data to use are determined by self.inputs.
+        Expects one input data value with name "DataInTransformer" and one with name "DataInToTransform".
+
+        Args:
+            other_task_output_dict (dict): A dictionary containing the output of other tasks.
+            input_data (pd.DataFrame): The input data of the ExeKG's pipeline.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the transformed data with the key "DataOutTransformed".
+
+        Raises:
+            NotImplementedError: If the transformer is not supported.
+        """
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         transformer = input_dict["DataInTransformer"][0]["value"]
         input = input_dict["DataInToTransform"][0]["value"]
@@ -119,7 +201,28 @@ class PrepareTransformerAndTransform(PrepareTransformer, Transform):
 
 
 class DataSplitting(Task):
-    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
+    """
+    Abstraction of owl:class ml:DataSplitting.
+
+    This class represents a task for splitting data.
+    """
+
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Splits the data using the splitter determined by self.method_module_chain.
+        The data to use are determined by self.inputs. Parameters to use for the splitter are in self.method_params_dict.
+        Expects one input data value with name "DataInDataSplittingX" and one with name "DataInDataSplittingY".
+
+        Args:
+            other_task_output_dict (dict): A dictionary containing the output of other tasks.
+            input_data (pd.DataFrame): The input data of the ExeKG's pipeline.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the splitted data with the keys "DataOutSplittedTrainDataX", "DataOutSplittedTrainDataY", "DataOutSplittedTestDataX", and "DataOutSplittedTestDataY".
+
+        Raises:
+            NotImplementedError: If the data splitter is not supported.
+        """
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_x = input_dict["DataInDataSplittingX"][0]["value"]
         input_y = input_dict["DataInDataSplittingY"][0]["value"]
@@ -161,7 +264,28 @@ class DataSplitting(Task):
 
 
 class PerformanceCalculation(Task):
-    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
+    """
+    Abstraction of owl:class ml:PerformanceCalculation.
+
+    This class represents a task for calculating the performance of a machine learning model.
+    """
+
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Calculates a score using a metric determined by self.method_module_chain.
+        The data to use are determined by self.inputs. Parameters to use for the score calculation are in self.method_params_dict.
+        Expects one input data value with name "DataInRealY" and one with name "DataInPredictedY".
+
+        Args:
+            other_task_output_dict (dict): A dictionary containing the output of other tasks.
+            input_data (pd.DataFrame): The input data of the ExeKG's pipeline.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the calculated score with the key "DataOutScore".
+
+        Raises:
+            NotImplementedError: If the metric is not supported.
+        """
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         # real_train_y = input_dict["DataInTrainRealY"]
         input_real_y = input_dict["DataInRealY"][0]["value"]
@@ -180,7 +304,24 @@ class PerformanceCalculation(Task):
 
 
 class Concatenation(Task):
-    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> dict:
+    """
+    Abstraction of owl:class ml:Concatenation.
+
+    This class represents a task for concatenating data.
+    """
+
+    def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Concatenates data. The data to use are determined by self.inputs.
+        Expects multiple input data values with name "DataInConcatenation".
+
+        Args:
+            other_task_output_dict (dict): A dictionary containing the output of other tasks.
+            input_data (pd.DataFrame): The input data of the ExeKG's pipeline.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the concatenated data with the key "DataOutConcatenatedData".
+        """
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         inputs = input_dict["DataInConcatenation"]
         input_values = [input["value"] for input in inputs]

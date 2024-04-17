@@ -17,6 +17,12 @@ from ..task import Task
 
 
 class CanvasCreation(Task):
+    """
+    Abstraction of owl:class visu:CanvasCreation.
+
+    This class represents a task for creating a canvas which can be used by Plotting tasks (defined in this file).
+    """
+
     def __init__(self, iri: str, parent_entity: Entity):
         super().__init__(iri, parent_entity)
         self.fig = None
@@ -26,6 +32,16 @@ class CanvasCreation(Task):
         # self.canvas_name = None
 
     def run_method(self, *args):
+        """
+        Creates a "canvas" i.e. a figure and a grid to be used while plotting.
+        Parameters to use while creating the canvas are in self.method_params_dict.
+
+        Args:
+            *args: Variable length argument list.
+
+        Returns:
+            None
+        """
         n_rows, n_cols = (
             [int(i) for i in self.method_params_dict["layout"].split(" ")]
             if "layout" in self.method_params_dict
@@ -43,6 +59,12 @@ class CanvasCreation(Task):
 
 
 class Plotting(Task):
+    """
+    Abstraction of owl:class visu:Plotting.
+
+    This class represents a task for creating plots.
+    """
+
     def __init__(self, iri: str, parent_entity: Entity, plots_output_dir: str, canvas_task: CanvasCreation):
         super().__init__(iri, parent_entity)
         self.fig = canvas_task.fig
@@ -55,6 +77,19 @@ class Plotting(Task):
 
     @abstractmethod
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
+        """
+        Plots data.
+        The data to use are determined by self.inputs. Parameters to use for the plot method are in self.method_params_dict and self.method_inherited_params_dict.
+        Expects one/multiple input data values with name "DataInToPlot".
+
+        Args:
+            other_task_output_dict (dict): A dictionary containing the output of other tasks.
+            input_data (pd.DataFrame): The input data of the ExeKG's pipeline.
+
+        Returns:
+            None
+        """
+
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_data = input_dict["DataInToPlot"]
         # input_labels = input_dict["DataInPlotLabels"]
