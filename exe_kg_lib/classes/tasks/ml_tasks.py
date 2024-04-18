@@ -5,7 +5,8 @@ import importlib
 from abc import abstractmethod
 from typing import Any, Dict
 
-from ...utils.task_utils.ml_utils import *
+import pandas as pd
+
 from ..entity import Entity
 from ..task import Task
 
@@ -326,6 +327,6 @@ class Concatenation(Task):
         inputs = input_dict["DataInConcatenation"]
         input_values = [input["value"] for input in inputs]
 
-        concatenation_result = concatenation(input_values)
+        concatenation_result = pd.concat(input_values, axis=1)
 
         return self.create_output_dict({"DataOutConcatenatedData": concatenation_result})

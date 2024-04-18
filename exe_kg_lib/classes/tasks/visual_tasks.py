@@ -7,7 +7,6 @@ from pathlib import Path
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from ...utils.task_utils.visual_utils import *
 from ..entity import Entity
 from ..task import Task
 
