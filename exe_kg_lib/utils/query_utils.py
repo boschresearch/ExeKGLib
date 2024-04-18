@@ -15,14 +15,35 @@ class NoResultsError(Exception):
     pass
 
 
-def query_parent_classes(kg, entity_iri):
+def query_parent_classes(kg: Graph, entity_iri: str) -> query.Result:
+    """
+    Queries the knowledge graph to retrieve the parent classes of a given entity.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        entity_iri (str): The IRI of the entity.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"SELECT ?c WHERE {{ ?entity rdfs:subClassOf ?c . }}",
         initBindings={"entity": URIRef(entity_iri)},
     )
 
 
-def query_instance_parent_iri(kg, entity_iri: str, upper_class_uri_ref: URIRef):
+def query_instance_parent_iri(kg: Graph, entity_iri: str, upper_class_uri_ref: URIRef) -> query.Result:
+    """
+    Queries the knowledge graph to find the types of a given entity, that are subclasses of a given upper class.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        entity_iri (str): The IRI of the entity.
+        upper_class_uri_ref (URIRef): The URI reference of the upper class.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"SELECT ?t WHERE {{ ?entity rdf:type ?t ." f"                   ?t rdfs:subClassOf* ?upper_class .}}",
         initBindings={
@@ -32,7 +53,18 @@ def query_instance_parent_iri(kg, entity_iri: str, upper_class_uri_ref: URIRef):
     )
 
 
-def query_top_level_task_iri(kg, task_iri: str, namespace_prefix: str):
+def query_top_level_task_iri(kg: Graph, task_iri: str, namespace_prefix: str) -> query.Result:
+    """
+    Queries the knowledge graph to find the top-level task for a given task.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        task_iri (str): The IRI of the task.
+        namespace_prefix (str): The namespace prefix used in the query.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"SELECT ?t2 WHERE {{ ?t1 rdfs:subClassOf* ?t2 ."
         f"                    ?t2 rdfs:subClassOf {namespace_prefix}:Task . "
@@ -43,7 +75,17 @@ def query_top_level_task_iri(kg, task_iri: str, namespace_prefix: str):
     )
 
 
-def query_hierarchy_chain(kg, entity_iri: str):
+def query_hierarchy_chain(kg: Graph, entity_iri: str) -> query.Result:
+    """
+    Queries the class hierarchy chain of a given entity in a knowledge graph.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        entity_iri (str): The IRI of the entity.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"SELECT ?m2 WHERE {{ ?m1 rdfs:subClassOf+ ?m2 . }}",
         initBindings={
@@ -53,10 +95,21 @@ def query_hierarchy_chain(kg, entity_iri: str):
 
 
 def query_module_iri_by_method_iri(
-    kg,
+    kg: Graph,
     method_iri: str,
     namespace_prefix,
-):
+) -> query.Result:
+    """
+    Queries the knowledge graph to retrieve the module IRI associated with a given method IRI.
+
+    Args:
+        kg (Graph): The Knowledge Graph to query.
+        method_iri (str): The IRI of the method.
+        namespace_prefix: The namespace prefix used in the query.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"SELECT ?module WHERE {{ ?method rdfs:subClassOf ?module . "
         f"                        ?module rdfs:subClassOf+ {namespace_prefix}:Module . "
@@ -65,7 +118,18 @@ def query_module_iri_by_method_iri(
     )
 
 
-def query_data_entity_reference_iri(kg, namespace_prefix, entity_iri: str):
+def query_data_entity_reference_iri(kg: Graph, namespace_prefix, entity_iri: str) -> query.Result:
+    """
+    Queries the knowledge graph for the reference IRIs associated with a given entity.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        namespace_prefix (str): The namespace prefix used in the query.
+        entity_iri (str): The IRI of the entity to query.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"SELECT ?r WHERE {{ ?entity {namespace_prefix}:hasReference ?r . }}",
         initBindings={
@@ -74,7 +138,18 @@ def query_data_entity_reference_iri(kg, namespace_prefix, entity_iri: str):
     )
 
 
-def query_method_iri_by_task_iri(kg, namespace_prefix, task_iri: str):
+def query_method_iri_by_task_iri(kg: Graph, namespace_prefix, task_iri: str) -> query.Result:
+    """
+    Queries the method IRI associated with a given task IRI.
+
+    Args:
+        kg (Graph): The RDF graph to query.
+        namespace_prefix (str): The namespace prefix for the method property.
+        task_iri (str): The IRI of the task.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"SELECT ?m WHERE {{ ?task ?m_property ?m ."
         f"                   ?m_property rdfs:subPropertyOf* {namespace_prefix}:hasMethod .}}",
@@ -82,7 +157,18 @@ def query_method_iri_by_task_iri(kg, namespace_prefix, task_iri: str):
     )
 
 
-def query_linked_task_and_property(kg, namespace_prefix, method_iri: str):
+def query_linked_task_and_property(kg: Graph, namespace_prefix, method_iri: str) -> query.Result:
+    """
+    Queries the linked task and linking property based on the given method IRI.
+
+    Args:
+        kg (Graph): The RDF graph to query.
+        namespace_prefix (str): The namespace prefix for the AtomicTask.
+        method_iri (str): The IRI of the method.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"SELECT ?task WHERE {{ ?task ?m_property ?m ."
         f"                      ?task rdfs:subPropertyOf* {namespace_prefix}:AtomicTask .}}",
@@ -91,6 +177,16 @@ def query_linked_task_and_property(kg, namespace_prefix, method_iri: str):
 
 
 def get_first_query_result_if_exists(query_method: Callable, *args) -> Optional[str]:
+    """
+    Executes the given query method with the provided arguments and returns the first result if it exists.
+
+    Args:
+        query_method (Callable): The query method to execute.
+        *args: Variable number of arguments to pass to the query method.
+
+    Returns:
+        Optional[str]: The first query result if it exists, otherwise None.
+    """
     query_result = next(
         iter(list(query_method(*args))),
         None,
@@ -103,6 +199,17 @@ def get_first_query_result_if_exists(query_method: Callable, *args) -> Optional[
 
 
 def query_method_params(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
+    """
+    Queries the parameters and their ranges for a given method IRI.
+
+    Args:
+        method_iri (str): The IRI (Internationalized Resource Identifier) of the method.
+        namespace_prefix (str): The namespace prefix used in the knowledge graph.
+        kg (Graph): The knowledge graph to query.
+
+    Returns:
+        query.Result: The result of the query, containing the parameters of the method.
+    """
     return kg.query(
         f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?task_iri . "
         f"?p rdfs:range ?r . "
@@ -112,6 +219,17 @@ def query_method_params(method_iri: str, namespace_prefix: str, kg: Graph) -> qu
 
 
 def query_method_params_plus_inherited(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
+    """
+    Queries the parameters and their ranges for a given method IRI, including inherited parameters.
+
+    Args:
+        method_iri (str): The IRI of the method.
+        namespace_prefix (str): The namespace prefix for the `hasParameter` property.
+        kg (Graph): The RDF graph to query.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?domain . "
         f"?task_iri rdfs:subClassOf* ?domain . "
@@ -121,7 +239,18 @@ def query_method_params_plus_inherited(method_iri: str, namespace_prefix: str, k
     )
 
 
-def query_method_properties_and_methods(input_kg, namespace_prefix, entity_parent_iri: str) -> query.Result:
+def query_method_properties_and_methods(input_kg: Graph, namespace_prefix: str, entity_parent_iri: str) -> query.Result:
+    """
+    Queries the input knowledge graph for methods and the properties that connect them to the given entity.
+
+    Args:
+        input_kg (Graph): The input knowledge graph to query.
+        namespace_prefix (str): The namespace prefix used in the query.
+        entity_parent_iri (str): The IRI of the parent entity.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return input_kg.query(
         "\nSELECT ?p ?m WHERE {?p rdfs:domain ?entity_iri . "
         "?p rdfs:range ?m . "
@@ -130,7 +259,19 @@ def query_method_properties_and_methods(input_kg, namespace_prefix, entity_paren
     )
 
 
-def query_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
+def query_inherited_inputs(input_kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+    """
+    Queries the input knowledge graph to find (inherited) inputs, their structure and the properties that connect them to the given entity.
+
+    Args:
+        input_kg (Graph): The input knowledge graph.
+        namespace_prefix (str): The namespace prefix used in the SPARQL query.
+        entity_iri (str): The IRI of the entity for which inherited inputs are to be found.
+
+    Returns:
+        query.Result: The result of the SPARQL query.
+
+    """
     return input_kg.query(
         "\nSELECT ?m ?s ?p WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
@@ -144,7 +285,19 @@ def query_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> query
     )
 
 
-def query_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> query.Result:
+def query_inherited_outputs(input_kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+    """
+    Queries the input knowledge graph to find (inherited) outputs, their structure and the properties that connect them to the given entity.
+
+    Args:
+        input_kg (Graph): The input knowledge graph.
+        namespace_prefix (str): The namespace prefix used in the SPARQL query.
+        entity_iri (str): The IRI of the entity for which inherited inputs are to be found.
+
+    Returns:
+        query.Result: The result of the SPARQL query.
+
+    """
     return input_kg.query(
         "\nSELECT ?m ?s ?p WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
@@ -158,7 +311,18 @@ def query_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> quer
     )
 
 
-def query_pipeline_info(kg, namespace_prefix):
+def query_pipeline_info(kg: Graph, namespace_prefix: str) -> query.Result:
+    """
+    Queries the knowledge graph for pipeline information.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        namespace_prefix (str): The namespace prefix used in the query.
+
+    Returns:
+        query.Result: The result of the query.
+
+    """
     return kg.query(
         f"\nSELECT ?p ?i ?o ?t WHERE {{?p rdf:type {namespace_prefix}:Pipeline ;"
         f"                          {namespace_prefix}:hasInputDataPath ?i ;"
@@ -168,6 +332,16 @@ def query_pipeline_info(kg, namespace_prefix):
 
 
 def query_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
+    """
+    Queries the knowledge graph to retrieve the subclasses of a given class.
+
+    Args:
+        class_iri (str): The IRI of the class.
+        kg (Graph): The knowledge graph to query.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         "\nSELECT ?t WHERE {?t rdfs:subClassOf ?class_iri . }",
         initBindings={"class_iri": class_iri},
@@ -175,6 +349,17 @@ def query_subclasses_of(class_iri: str, kg: Graph) -> query.Result:
 
 
 def query_input_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+    """
+    Queries the triples that connect the given entity with its inputs.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        namespace_prefix (str): The namespace prefix used in the query.
+        entity_iri (str): The IRI of the entity to query input triples for.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"""
         SELECT DISTINCT ?s ?p ?o
@@ -189,6 +374,17 @@ def query_input_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> qu
 
 
 def query_output_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+    """
+    Queries the triples that connect the given entity with its outputs.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        namespace_prefix (str): The namespace prefix used in the query.
+        entity_iri (str): The IRI of the entity to query input triples for.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"""
         SELECT DISTINCT ?s ?p ?o
@@ -203,6 +399,17 @@ def query_output_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> q
 
 
 def query_parameters_triples(kg: Graph, namespace_prefix: str, entity_iri: str) -> query.Result:
+    """
+    Queries the triples that connect the given entity with its parameters.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        namespace_prefix (str): The namespace prefix used in the query.
+        entity_iri (str): The IRI of the entity to query input triples for.
+
+    Returns:
+        query.Result: The result of the query.
+    """
     return kg.query(
         f"""
         SELECT ?s ?p ?o
@@ -216,14 +423,19 @@ def query_parameters_triples(kg: Graph, namespace_prefix: str, entity_iri: str) 
 
 def get_pipeline_and_first_task_iri(kg: Graph, namespace_prefix: str) -> Tuple[str, str, str]:
     """
-    Retrieves the necessary information needed to start parsing a pipeline
+    Retrieves the pipeline and first task IRI from the knowledge graph.
+
     Args:
-        kg: Graph object to use when querying
-        namespace_prefix: namespace prefix to use when querying
+        kg (Graph): The knowledge graph to query.
+        namespace_prefix (str): The namespace prefix used in the KG.
 
     Returns:
-        Tuple[str, str, str]: contains the pipeline IRI, the input data path and the first task's IRI
+        Tuple[str, str, str]: A tuple containing the pipeline IRI, input data path, plots output directory, and task IRI.
+
+    Raises:
+        NoResultsError: If the pipeline info is not found in the KG.
     """
+
     # assume one pipeline per file
     query_result = get_first_query_result_if_exists(
         query_pipeline_info,
@@ -245,17 +457,22 @@ def get_method_by_task_iri(
     task_iri: str,
 ) -> Optional[Entity]:
     """
-    Retrieves a task's method, given a task IRI
+    Retrieves the method associated with a given task IRI from the knowledge graph.
+
     Args:
-        kg: Graph object to use when querying
-        namespace_prefix: namespace prefix to use when querying
-        namespace: namespace to use when querying
-        task_iri: IRI of task to query
+        kg (Graph): The knowledge graph.
+        namespace_prefix (str): The namespace prefix.
+        namespace (Namespace): The namespace.
+        task_iri (str): The IRI of the task.
 
     Returns:
-        Optional[Entity]: object containing found method's basic info
-                          is equal to None if method IRI wasn't found in KG
+        Optional[Entity]: The method entity associated with the task IRI, or None if no method is found.
+
+    Raises:
+        NoResultsError: If the task with the given IRI is not connected with any method in the KG.
+        NoResultsError: If the method with the retrieved IRI doesn't have a type that is a subclass of `namespace.AtomicMethod`.
     """
+
     query_result = get_first_query_result_if_exists(
         query_method_iri_by_task_iri,
         kg,
@@ -290,14 +507,18 @@ def get_module_hierarchy_chain(
     method_iri: str,
 ) -> List:
     """
-    Retrieves the hierarchy chain of a method's module
+    Retrieves the hierarchy chain of the modules starting from the module connected to the given method IRI.
+
     Args:
-        kg: Graph object to use when querying
-        namespace_prefix: namespace prefix to use when querying
-        method_iri: IRI of method to query
+        kg (Graph): The knowledge graph.
+        namespace_prefix (str): The namespace prefix of the module.
+        method_iri (str): The IRI of the method.
 
     Returns:
-        List: contains the hierarchy chain of the method's module
+        List: The hierarchy chain of the module, represented as a list of module names.
+
+    Raises:
+        NoResultsError: If the method doesn't have a subclass that is a subclass of {namespace_prefix}:Module.
     """
 
     query_result = get_first_query_result_if_exists(
@@ -325,14 +546,17 @@ def get_method_grouped_params_plus_inherited(
     method_iri: str, namespace_prefix: str, kg: Graph
 ) -> List[Tuple[str, List[str]]]:
     """
-    Retrieves data properties grouped by their property IRI
+    Retrieves the (inherited) parameters for a given method, grouped by property IRI.
+
     Args:
-        entity_iri: IRI of entity to query
-        kg: Graph object to use when querying
+        method_iri (str): The IRI of the method.
+        namespace_prefix (str): The namespace prefix.
+        kg (Graph): The knowledge graph.
 
     Returns:
-        List: contains rows of data property IRIs and their range
+        List[Tuple[str, List[str]]]: A list of tuples, where each tuple contains a parameter name and a list of its values.
     """
+
     property_list = list(query_method_params_plus_inherited(method_iri, namespace_prefix, kg))
     property_list = [
         (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
@@ -341,16 +565,20 @@ def get_method_grouped_params_plus_inherited(
     return property_list
 
 
-def get_grouped_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) -> List[Tuple[str, List[str]]]:
+def get_grouped_inherited_inputs(
+    input_kg: Graph, namespace_prefix: str, entity_iri: str
+) -> List[Tuple[str, List[str]]]:
     """
-    Retrieves the inherited inputs grouped by their data entity IRI
+    Retrieves the inherited inputs for a given entity, grouped by data entity IRI.
+
     Args:
-        input_kg: The input knowledge graph.
-        namespace_prefix: The namespace prefix.
-        entity_iri: The IRI of the parent entity.
+        input_kg (Graph): The input knowledge graph.
+        namespace_prefix (str): The namespace prefix for the entity.
+        entity_iri (str): The IRI of the entity.
 
     Returns:
-        List: contains rows of data entity IRIs and their data structure IRIs
+        List[Tuple[str, List[str]]]: A list of tuples, where each tuple contains a property name and a list of input values.
+
     """
     property_list = list(query_inherited_inputs(input_kg, namespace_prefix, entity_iri))
     property_list = [
@@ -361,16 +589,20 @@ def get_grouped_inherited_inputs(input_kg, namespace_prefix, entity_iri: str) ->
     return property_list
 
 
-def get_grouped_inherited_outputs(input_kg, namespace_prefix, entity_iri: str) -> List[Tuple[str, List[str]]]:
+def get_grouped_inherited_outputs(
+    input_kg: Graph, namespace_prefix: str, entity_iri: str
+) -> List[Tuple[str, List[str]]]:
     """
-    Retrieves the inherited outputs grouped by their data entity IRI
+    Retrieves the inherited outputs for a given entity, grouped by data entity IRI.
+
     Args:
-        input_kg: Graph object to use when querying
-        namespace_prefix: namespace prefix to use when querying
-        entity_iri: IRI of entity to query
+        input_kg (Graph): The input knowledge graph.
+        namespace_prefix (str): The namespace prefix for the entity.
+        entity_iri (str): The IRI of the entity.
 
     Returns:
-        List: contains rows of data entity IRIs and their data structure IRIs
+        List[Tuple[str, List[str]]]: A list of tuples, where each tuple contains a property name and a list of input values.
+
     """
     property_list = list(query_inherited_outputs(input_kg, namespace_prefix, entity_iri))
     property_list = [
