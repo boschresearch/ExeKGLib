@@ -3,6 +3,7 @@
 
 from typing import Dict
 
+import requests
 from rdflib import Graph, Namespace
 
 
@@ -38,13 +39,10 @@ class KGSchema:
         self.shacl_shapes_path = shacl_shapes_path
         self.generated_shacl_shapes_path = generated_shacl_shapes_path
 
-        self.shacl_shapes_s = ""
-        with open(self.shacl_shapes_path) as f:
-            self.shacl_shapes_s = f.read()
+        self.shacl_shapes_s = self.read_shacl_shapes(self.shacl_shapes_path)
 
         if self.generated_shacl_shapes_path:
-            with open(self.generated_shacl_shapes_path) as f:
-                self.shacl_shapes_s += f.read()
+            self.shacl_shapes_s += self.read_shacl_shapes(self.generated_shacl_shapes_path)
 
     @classmethod
     def from_schema_info(cls, schema_info: Dict[str, str]):
@@ -56,3 +54,11 @@ class KGSchema:
             schema_info["namespace"],
             schema_info["namespace_prefix"],
         )
+
+    @staticmethod
+    def read_shacl_shapes(path: str):
+        if path.startswith("http"):
+            return requests.get(path).text
+        else:
+            with open(path) as f:
+                return f.read()

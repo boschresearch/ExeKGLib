@@ -53,4 +53,4 @@ def concat_paths(*paths):
                 else f"{output_path}/{path}"
             )
 
-    return output_path
+    return str(output_path)
