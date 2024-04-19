@@ -8,27 +8,29 @@ from typing import Union
 
 def camel_to_snake(text: str) -> str:
     """
-    Converts camel-case string to snake-case
+    Converts a camel case string to snake case.
+
     Args:
-        text: string to convert
+        text (str): The camel case string to be converted.
 
     Returns:
-        str: converted string
+        str: The snake case version of the input string.
     """
     text = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", text)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", text).lower()
 
 
-def property_iri_to_field_name(property_name: str) -> str:
+def property_iri_to_field_name(property_iri: str) -> str:
     """
-    Extracts property name from IRI and converts it to a Python field name
+    Converts a property IRI to a Python field name.
+
     Args:
-        property_name: IRI to parse
+        property_iri (str): The property IRI.
 
     Returns:
-        str: converted string
+        str: The converted field name.
     """
-    snake_case = camel_to_snake(property_name.split("#")[1])
+    snake_case = camel_to_snake(property_iri.split("#")[1])
     return snake_case.replace("has_", "").replace("param_", "")
 
 

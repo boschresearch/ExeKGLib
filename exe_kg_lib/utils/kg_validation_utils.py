@@ -12,10 +12,18 @@ class KGValidationError(Exception):
 
 
 def check_kg_executability(kg: Union[rdflib.Graph, str], shacl_shapes_s: str) -> None:
-    """Checks if the given KG is executable as an ML pipeline, based on a pre-defined SHACL shape graph
+    """
+    Checks the executability of a KG by validating it against a set of SHACL shapes.
 
     Args:
-        kg (rdflib.Graph or str): object or path of graph to check
+        kg (Union[rdflib.Graph, str]): The KG to be validated. It can be either an rdflib.Graph object or a string representing the path to the KG file.
+        shacl_shapes_s (str): The SHACL shapes to validate the KG against.
+
+    Raises:
+        KGValidationError: If the KG is not executable, an exception is raised with an error message.
+
+    Returns:
+        None: This function does not return any value.
     """
     r = validate(data_graph=kg, shacl_graph=shacl_shapes_s)
     conforms, _, results_text = r

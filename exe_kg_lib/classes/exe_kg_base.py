@@ -83,8 +83,9 @@ class ExeKGBase:
 
     def _bind_used_namespaces(self, kgs: List[Graph]):
         """
-        Binds top-level, bottom-level and Visualization KG schemas' namespaces with their prefixes
+        Binds top-level and bottom-level KG schemas' namespaces with their prefixes
         Adds these bindings to the Graphs of kgs list
+
         Args:
             kgs: list of Graph objects to which the namespace bindings are added
         """

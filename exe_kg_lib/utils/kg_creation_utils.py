@@ -10,22 +10,30 @@ from ..classes.task import Task
 
 def add_instance(kg: Graph, entity_instance: Entity) -> None:
     """
-    Adds entity instance to KG
-    Args:
-        kg: Graph object to add to
-        entity_instance: the entity instance to create
+    Adds an instance of an entity to the knowledge graph.
+
+    Parameters:
+        kg (Graph): The knowledge graph to add the instance to.
+        entity_instance (Entity): The entity instance to be added.
+
+    Returns:
+        None
     """
     kg.add((entity_instance.iri, RDF.type, entity_instance.parent_entity.iri))
 
 
 def add_relation(kg: Graph, from_entity: Entity, relation_iri: str, to_entity: Entity) -> None:
     """
-    Adds relation between 2 given entities to KG
+    Adds a relation between two entities in the knowledge graph.
+
     Args:
-        kg: Graph object to add to
-        from_entity: relation source
-        relation_iri: IRI that connects the 2 given entities
-        to_entity: relation destination
+        kg (Graph): The knowledge graph to add the relation to.
+        from_entity (Entity): The entity from which the relation originates.
+        relation_iri (str): The IRI of the relation.
+        to_entity (Entity): The entity to which the relation points.
+
+    Returns:
+        None
     """
     kg.add(
         (
@@ -38,12 +46,16 @@ def add_relation(kg: Graph, from_entity: Entity, relation_iri: str, to_entity: E
 
 def add_literal(kg: Graph, from_entity: Entity, relation_iri: str, literal: Literal) -> None:
     """
-    Adds relation between a given entity and a given literal to KG
-    Args:
-        kg: Graph object to add to
-        from_entity: relation source
-        relation_iri: IRI that connects the given entity with the given literal
-        literal: literal to add to Graph object
+    Adds a literal value to the knowledge graph.
+
+    Parameters:
+        kg (Graph): The knowledge graph to add the literal to.
+        from_entity (Entity): The entity from which the relation originates.
+        relation_iri (str): The IRI of the relation.
+        literal (Literal): The literal value to add.
+
+    Returns:
+        None
     """
     kg.add((from_entity.iri, URIRef(relation_iri), literal))
 
@@ -57,17 +69,18 @@ def add_instance_from_parent_with_relation(
     instance_name: str,
 ) -> Entity:
     """
-    Creates an entity object based on the arguments and calls add_instance() and add_relation() to create a new entity instance and relation
+    Adds an instance to the knowledge graph with a relation to a given entity.
+
     Args:
-        namespace: namespace for the new instance
-        kg: Graph object to add to
-        parent_entity: parent entity for the new instance
-        relation_iri: IRI that connects the given related_entity with the new instance
-        related_entity: relation source
-        instance_name: name for the new instance
+        namespace (Namespace): The namespace for the instance.
+        kg (Graph): The knowledge graph.
+        parent_entity (Entity): The parent entity of the instance.
+        relation_iri (str): The IRI of the relation between the related entity and the instance.
+        related_entity (Entity): The related entity.
+        instance_name (str): The name of the instance.
 
     Returns:
-        Entity: object containing the new entity instance's basic info
+        Entity: The created instance.
     """
     entity_iri = namespace + instance_name
     instance = Entity(entity_iri, parent_entity)
@@ -86,13 +99,17 @@ def add_data_entity_instance(
     data_entity: DataEntity,
 ) -> None:
     """
-    Adds data entity instance to kg with the necessary relations
+    Adds a data entity instance to the knowledge graph.
+
     Args:
-        kg: Graph object to add to
-        data: object representing top-level DataEntity class in KG
-        top_level_kg: KG corresponding to the top-level KG schema
-        top_level_schema_namespace: namespace of the top-level KG schema
-        data_entity: data entity to add
+        kg (Graph): The knowledge graph to add the data entity instance to.
+        data (Entity): The data entity instance to be added.
+        top_level_kg (Graph): The top-level knowledge graph.
+        top_level_schema_namespace (Namespace): The namespace for the top-level schema.
+        data_entity (DataEntity): The data entity object.
+
+    Returns:
+        None
     """
     add_instance(kg, data_entity)
 
@@ -143,15 +160,19 @@ def add_and_attach_data_entity(
     task_entity: Task,
 ) -> None:
     """
-    Adds data entity instance to kg with the necessary relations, and attaches it to the given task
+    Adds a data entity to the knowledge graph and attaches it to a task entity using a specified relation.
+
     Args:
-        kg: Graph object to add to
-        data: object representing top-level DataEntity class in KG
-        top_level_kg: KG corresponding to the top-level KG schema
-        top_level_schema_namespace: namespace of the top-level KG schema
-        data_entity: data entity to add
-        relation: IRI of relation to add
-        task_entity: task to attach the data entity to
+        kg (Graph): The knowledge graph to add the data entity to.
+        data (Entity): The data entity to add.
+        top_level_kg (Graph): The top-level knowledge graph.
+        top_level_schema_namespace (Namespace): The namespace for the top-level schema.
+        data_entity (DataEntity): The data entity to attach.
+        relation (URIRef): The relation to use for attaching the data entity.
+        task_entity (Task): The task entity to attach the data entity to.
+
+    Returns:
+        None
     """
     add_data_entity_instance(kg, data, top_level_kg, top_level_schema_namespace, data_entity)
     add_relation(kg, task_entity, relation, data_entity)
@@ -166,16 +187,18 @@ def create_pipeline_task(
     plots_output_dir: str,
 ) -> Task:
     """
-    Adds instance of pipeline task to kg
+    Create a pipeline task in the knowledge graph.
+
     Args:
-        top_level_schema_namespace: namespace of the top-level KG schema
-        parent_entity: parent entity of pipeline instance
-        kg: Graph object to add to
-        pipeline_name: name for the pipeline
-        input_data_path: path for the input data to be used by the pipeline's tasks
+        top_level_schema_namespace (Namespace): The top-level schema namespace.
+        parent_entity (Entity): The parent entity of the pipeline task.
+        kg (Graph): The knowledge graph.
+        pipeline_name (str): The name of the pipeline.
+        input_data_path (str): The path to the input data for the pipeline.
+        plots_output_dir (str): The directory to store the output plots when executing the pipeline.
 
     Returns:
-        Task: created pipeline task
+        Task: The created pipeline task.
     """
     pipeline = Task(top_level_schema_namespace + pipeline_name, parent_entity)
     add_instance(kg, pipeline)

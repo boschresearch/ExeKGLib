@@ -37,15 +37,14 @@ class ExeKGExecutionMixin:
 
     def _property_value_to_field_value(self, property_value: Union[str, Literal]) -> Union[str, DataEntity]:
         """
-        Converts property value to Python class field value
-        If property_value is not a data entity's IRI, it is returned as is
-        Else, its property values are converted recursively and stored in a DataEntity object
+        Converts a KG property value to a Python field value.
+
         Args:
-            property_value: value of the property as found in KG
+            property_value (Union[str, Literal]): The property value to be converted.
 
         Returns:
-            str: property_value parameter as is
-            DataEntity: object containing parsed data entity properties
+            Union[str, DataEntity]: The converted field value.
+
         """
         property_value_s = str(property_value)
         if "#" in property_value_s:
@@ -62,15 +61,14 @@ class ExeKGExecutionMixin:
 
     def _literal_to_field_value(self, literal: Literal) -> Union[str, int, float, bool]:
         """
-        Converts a Literal to a Python class field value
+        Converts a Literal object to a Python field value of the appropriate type.
+
         Args:
-            literal: Literal object to convert
+            literal (Literal): The Literal object to be converted.
 
         Returns:
-            str: lexical form of the literal
-            int: value of the literal
-            float: value of the literal
-            bool: value of the literal
+            Union[str, int, float, bool]: The converted field value.
+
         """
         if literal.datatype == XSD.string:
             return str(literal)
@@ -83,15 +81,18 @@ class ExeKGExecutionMixin:
         else:
             return literal
 
-    def _parse_data_entity_by_iri(self, in_out_data_entity_iri: str) -> Optional[DataEntity]:
+    def _parse_data_entity_by_iri(self, in_out_data_entity_iri: str) -> DataEntity:
         """
-        Parses an input or output data entity of self.input_kg and stores the parsed info in a Python object
+        Parses an input or output data entity and stores the parsed info in a Python object.
+
         Args:
-            in_out_data_entity_iri: IRI of the KG entity to parse
+            in_out_data_entity_iri (str): The IRI of the data entity to parse.
 
         Returns:
-            None: if given IRI does not belong to an instance of a sub-class of self.top_level_schema.namespace.DataEntity
-            DataEntity: object with data entity's parsed properties
+            DataEntity: The parsed DataEntity object.
+
+        Raises:
+            NoResultsError: If the given IRI doesn't belong to an instance of a subclass of DataEntity.
         """
         # fetch type of entity with given IRI
         query_result = get_first_query_result_if_exists(
@@ -138,14 +139,19 @@ class ExeKGExecutionMixin:
         self, task_iri: str, plots_output_dir: str, canvas_task: visual_tasks.CanvasCreation = None
     ) -> Task:
         """
-        Parses a task of self.input_kg and stores the info in an object of a sub-class of Task
-        The sub-class name and the object's fields are mapped dynamically based on the found KG components
+        Parses a task and stores the info in an object of a sub-class of Task.
+        The sub-class name and the object's fields are mapped dynamically based on the found KG components.
+
         Args:
-            task_iri: IRI of the task to be parsed
-            canvas_method: optional object to pass as argument for task object initialization
+            task_iri (str): The IRI of the task to be parsed.
+            plots_output_dir (str): The directory where plots will be saved.
+            canvas_task (visual_tasks.CanvasCreation, optional): The canvas task associated with the task, if applicable.
 
         Returns:
-            Task: object of a sub-class of Task, containing all the parsed info
+            Task: The parsed Task object.
+
+        Raises:
+            NoResultsError: If the given IRI does not belong to an instance of a sub-class of self.top_level_schema.namespace.AtomicTask.
         """
         # fetch type of entity with given IRI
         query_result = get_first_query_result_if_exists(
@@ -216,26 +222,32 @@ class ExeKGExecutionMixin:
             )
 
         if module_chain_names:
+            # convert KG class names to module names and reverse the module chain to store it in the correct order
             module_chain_names = [class_name_to_module_name(name) for name in module_chain_names]
             module_chain_names = [class_name_to_method_name(method.type)] + module_chain_names
             module_chain_names.reverse()
             task.method_module_chain = module_chain_names
 
+        # input triples
         task_related_triples = list(
             query_input_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri)
         )
+        # output triples
         task_related_triples += list(
             query_output_triples(self.input_kg, self.top_level_schema.namespace_prefix, task_iri)
         )
+        # triple connecting this task with the next one in the pipeline
         task_related_triples += list(
             self.input_kg.triples((URIRef(task_iri), self.top_level_schema.namespace.hasNextTask, None))
         )
+        # triples for the parameters attached to the method of this task
         method_related_triples = (
             list(query_parameters_triples(self.input_kg, self.top_level_schema.namespace_prefix, method.iri))
             if method is not None
             else []
         )
 
+        # data properties attached to the method's class
         method_class_data_properties = list(
             query_method_params(method.parent_entity.iri, self.top_level_schema.namespace_prefix, self.input_kg)
         )
@@ -243,7 +255,7 @@ class ExeKGExecutionMixin:
         if method_class_data_properties:
             method_class_data_property_iris = [str(pair[0]) for pair in method_class_data_properties]
         for s, p, o in itertools.chain(task_related_triples, method_related_triples):
-            # parse property name and value
+            # parse property IRI and value
             field_name = property_iri_to_field_name(str(p))
             field_value = self._property_value_to_field_value(o)
             # set field value dynamically
@@ -254,16 +266,26 @@ class ExeKGExecutionMixin:
             elif field_name == "next_task":
                 setattr(task, field_name, field_value)
             else:  # method parameter
-                if str(p) in method_class_data_property_iris:
+                # separate method class data properties from inherited ones
+                if method_class_data_property_iris and str(p) in method_class_data_property_iris:
                     task.method_params_dict[field_name] = field_value
                 else:
                     task.method_inherited_params_dict[field_name] = field_value
 
         return task
 
-    def execute_pipeline(self, input_exe_kg_path: str):
+    def execute_pipeline(self, input_exe_kg_path: str) -> None:
         """
-        Retrieves and executes pipeline by parsing self.input_kg
+        Executes the pipeline by parsing the input ExeKG task-by-task.
+
+        Args:
+            input_exe_kg_path (str): The path to the input ExeKG file.
+
+        Raises:
+            ValueError: If the input data file format is not supported.
+
+        Returns:
+            None
         """
         input_exe_kg = Graph(bind_namespaces="rdflib")
         input_exe_kg.parse(input_exe_kg_path, format="n3")  # parse input executable KG

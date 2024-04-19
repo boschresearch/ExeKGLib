@@ -32,8 +32,8 @@ class Task(Entity):
         )  # e.g. ['sklearn','model_selection', 'StratifiedShuffleSplit'] Used for resolving the Python module that contains the method to be executed
         self.method_params_dict = {}  # used for storing method parameters during KG execution
         self.method_inherited_params_dict = {}  # used for storing inherited method parameters during KG execution
-        self.inputs = []
-        self.outputs = []
+        self.inputs = []  # used for storing input DataEntity objects during KG execution
+        self.outputs = []  # used for storing output DataEntity objects during KG execution
         self.input_dict = {}  # used for storing input DataEntity objects during KG creation
         self.output_dict = {}  # used for storing output DataEntity objects during KG creation
 
@@ -93,7 +93,7 @@ class Task(Entity):
 
     def resolve_module(self, module_name_to_snakecase=False) -> Any:
         """
-        Resolves and returns the module specified by the method module chain.
+        Resolves and returns the Python module specified by the method module chain.
 
         Args:
             module_name_to_snakecase (bool, optional): Whether to convert the last module name to snake case.
@@ -123,6 +123,7 @@ class Task(Entity):
         """
         Abstract method to be implemented by Task sub-classes that are in the bottom of the hierarchy.
         Executes the logic that is needed to fulfill the Task.
+
         Args:
             *args: defined by sub-classes
         """

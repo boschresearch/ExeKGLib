@@ -21,7 +21,7 @@ class KGSchema:
         namespace: str,
         namespace_prefix: str,
     ):
-        self.path = path  # path of the KG schema definition, can be local or remote
+        self.path = path  # path of the main KG schema definition, can be local or remote
         self.generated_schema_path = (
             generated_schema_path  # path of file containing generated schema for this schema, can be local or remote
         )
@@ -36,10 +36,12 @@ class KGSchema:
             self.generated_schema_kg.parse(self.generated_schema_path, format="n3")
 
         # shacl
-        self.shacl_shapes_path = shacl_shapes_path
-        self.generated_shacl_shapes_path = generated_shacl_shapes_path
+        self.shacl_shapes_path = shacl_shapes_path  # path of file containing main shacl shapes, can be local or remote
+        self.generated_shacl_shapes_path = (
+            generated_shacl_shapes_path  # path of file containing generated shacl shapes, can be local or remote
+        )
 
-        self.shacl_shapes_s = self.read_shacl_shapes(self.shacl_shapes_path)
+        self.shacl_shapes_s = self.read_shacl_shapes(self.shacl_shapes_path)  # shacl shapes are stored as string
 
         if self.generated_shacl_shapes_path:
             self.shacl_shapes_s += self.read_shacl_shapes(self.generated_shacl_shapes_path)

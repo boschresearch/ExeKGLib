@@ -47,13 +47,15 @@ class ExeKGConstructionMixin:
 
     def create_pipeline_task(self, pipeline_name: str, input_data_path: str, plots_output_dir: str) -> Task:
         """
-        Instantiates and adds a new pipeline task entity to self.output_kg
+        Creates a pipeline task with the given parameters and adds it to the output KG.
+
         Args:
-            pipeline_name: name for the pipeline
-            input_data_path: path for the input data to be used by the pipeline's tasks
+            pipeline_name (str): The name of the pipeline.
+            input_data_path (str): The path to the input data for the pipeline.
+            plots_output_dir (str): The directory to save the plots when executing the pipeline.
 
         Returns:
-            Task: created pipeline
+            Task: The created pipeline task.
         """
         pipeline = create_pipeline_task(
             self.top_level_schema.namespace,
@@ -74,15 +76,16 @@ class ExeKGConstructionMixin:
         data_structure_name: str,
     ) -> DataEntity:
         """
-        Creates a DataEntity object
+        Creates a DataEntity object with the given parameters.
+
         Args:
-            name: name of the data entity
-            source_value: name of the data source corresponding to a column of the data
-            data_semantics_name: name of the data semantics entity
-            data_structure_name: name of the data structure entity
+            name (str): The name of the data entity.
+            source_value (str): The source value of the data entity (e.g. column name from the input dataset).
+            data_semantics_name (str): The name of the data semantics.
+            data_structure_name (str): The name of the data structure.
 
         Returns:
-            DataEntity: object initialized with the given parameter values
+            DataEntity: The created DataEntity object.
         """
         return DataEntity(
             self.top_level_schema.namespace + name,
@@ -101,19 +104,21 @@ class ExeKGConstructionMixin:
         method: str = None,
     ) -> Task:
         """
-        Instantiates and adds a new task entity to self.output_kg
-        Components attached to the task during creation: input and output data entities, and a method with properties
+        Instantiates and adds a new task entity to the output KG.
+        Components attached to the task during creation: input and output data entities, and a method with properties.
+
         Args:
-            kg_schema_short: abbreviated name of the KG schema in which the task and method belong
-            task: task name
-            input_data_entity_dict: keys -> input names of the specified task
-                                    values -> lists of DataEntity objects to be added as input to the task
-            method: method name
-            properties_dict: keys -> property names of the specified method
-                             values -> values to be added as parameters to the method
+            kg_schema_short (str): The short name of the KG schema to use (e.g. ml, visu, etc.).
+            input_data_entity_dict (Dict[str, List[DataEntity]]): A dictionary containing input data entities for the task.
+            method_params_dict (Dict[str, Union[str, int, float]]): A dictionary containing method parameters.
+            task (str, optional): The type of the task. Defaults to None.
+            method (str, optional): The type of the method. Defaults to None.
 
         Returns:
-            Task: object of the created task
+            Task: The created task object.
+
+        Raises:
+            NoResultsError: If the property connecting the task and method is not found.
         """
 
         kg_schema_to_use = self.bottom_level_schemata[kg_schema_short]
@@ -200,12 +205,16 @@ class ExeKGConstructionMixin:
         input_data_entity_dict: Dict[str, List[DataEntity]] = None,
     ) -> None:
         """
-        Instantiates and adds given input data entities to the given task of self.output_kg
-        if input_data_entity_dict is None, user is asked to specify input data entities
+        Instantiates and adds given input data entities to the given task of the output KG.
+        if input_data_entity_dict is None, user is asked to specify input data entities via CLI.
+
         Args:
-            task_entity: the task to add the input to
-            input_data_entity_dict: keys -> input entity names corresponding to the given task as defined in the chosen bottom-level KG schema
-                                    values -> list of corresponding data entities to be added as input to the task
+            namespace (Namespace): The namespace of the task instance.
+            task_instance (Task): The task instance to add inputs to.
+            input_data_entity_dict (Dict[str, List[DataEntity]], optional): A dictionary mapping input entity names to a list of DataEntity instances. Defaults to None.
+
+        Returns:
+            None
         """
 
         use_cli = input_data_entity_dict is None
@@ -277,10 +286,18 @@ class ExeKGConstructionMixin:
 
     def _add_outputs_to_task(self, task_instance: Task, method_instance_type: str) -> None:
         """
-        Instantiates and adds output data entities to the given task of self.output_kg, based on the task's definition in the KG schema
+        Instantiates and adds output data entities to the given task of the output KG.
+
         Args:
-            task_entity: the task to add the output to
+            task_instance (Task): The task instance to add outputs to.
+            method_instance_type (str): The type of the method instance.
+                                        If not None, it will be appended to the output data entity IRI.
+                                        If None, the task type index will be appended instead.
+
+        Returns:
+            None
         """
+
         # fetch compatible outputs from KG schema
         results = list(
             get_grouped_inherited_outputs(
@@ -324,11 +341,11 @@ class ExeKGConstructionMixin:
 
     def _create_next_task_cli(self) -> Union[None, Task]:
         """
-        Instantiates and adds task (without method) based on user input to self.output_kg
-        Adds task's output data entities to self.existing_data_entity_list
+        Prompts the user to choose the next task and creates a Task object based on the user's input.
+        Adds the task to the output KG and adds its output data entities to self.existing_data_entity_list.
+
         Returns:
-            None: in case user wants to end the pipeline creation
-            Task: object of the created task
+            Union[None, Task]: The created Task object or None if the user chooses to end the pipeline.
         """
         print("Please choose the next task")
         for i, t in enumerate(self.atomic_task_list):
@@ -367,11 +384,16 @@ class ExeKGConstructionMixin:
 
         return task_entity
 
-    def _create_method(self, task_to_attach_to: Entity) -> None:
+    def _create_method_cli(self, task_to_attach_to: Entity) -> Entity:
         """
-        Instantiate and attach method to task of self.output_kg
+        Prompts the user to choose a method to attach to the given task.
+        Links the method to the given task in the output KG and adds method parameters as literals.
+
         Args:
-            task_to_attach_to: the task to attach the created method to
+            task_to_attach_to (Entity): The task entity to attach the method to.
+
+        Returns:
+            method_instance (Entity): The instance of the selected method linked to the task.
         """
         print(f"Please choose a method for {task_to_attach_to.type}:")
 
@@ -434,12 +456,14 @@ class ExeKGConstructionMixin:
 
     def _field_value_to_literal(self, field_value: Union[str, int, float, bool]) -> Literal:
         """
-        Converts a Python class field value to a Literal
+        Converts a Python field value to a Literal object with the appropriate datatype.
+
         Args:
-            field_value: field value to convert
+            field_value (Union[str, int, float, bool]): The value to be converted.
 
         Returns:
-            Literal: object containing the given field value
+            Literal: The converted Literal object.
+
         """
         if isinstance(field_value, str):
             return Literal(field_value, datatype=XSD.string)
@@ -452,12 +476,19 @@ class ExeKGConstructionMixin:
         else:
             return field_value
 
-    def start_pipeline_creation(self, pipeline_name: str, input_data_path: str, input_plots_output_dir: str) -> None:
+    def start_pipeline_creation_cli(
+        self, pipeline_name: str, input_data_path: str, input_plots_output_dir: str
+    ) -> None:
         """
-        Handles the pipeline creation through CLI
+        Starts the creation of a pipeline in the form of ExeKG via CLI.
+
         Args:
-            pipeline_name: name for the pipeline
-            input_data_path: path for the input data to be used by the pipeline's tasks
+            pipeline_name (str): The name of the pipeline.
+            input_data_path (str): The path to the input data.
+            input_plots_output_dir (str): The directory to output the input plots.
+
+        Returns:
+            None
         """
         pipeline = create_pipeline_task(
             self.top_level_schema.namespace,
@@ -475,7 +506,7 @@ class ExeKGConstructionMixin:
             if next_task is None:
                 break
 
-            method_instance = self._create_method(next_task)
+            method_instance = self._create_method_cli(next_task)
 
             # instantiate and add input data entities to the task based on user input
             self._add_inputs_to_task(next_task.parent_entity.namespace, next_task)
@@ -484,9 +515,13 @@ class ExeKGConstructionMixin:
 
     def save_created_kg(self, file_path: str) -> None:
         """
-        Saves self.output_kg to a file
+        Save the created pipeline in form of ExeKG to a file.
+
         Args:
-            file_path: path of the output file
+            file_path (str): The path to the file where the KG will be saved.
+
+        Returns:
+            None
         """
         # check_kg_executability(self.output_kg)
 
@@ -501,17 +536,18 @@ class ExeKGConstructionMixin:
         parent_entity: Entity,
     ) -> Union[None, str]:
         """
-        Creates a unique name for a new instance by concatenating the parent entity's name (which is the instance type) with a number
-        Also increments the relevant number of the corresponding dict
+        Generates a unique name for an instance based on its given parent entity.
+
         Args:
-            task_type_dict: contains pairs of task types and numbers
-            method_type_dict: contains pairs of method types and numbers
-            parent_entity: instance's parent entity
+            parent_entity (Entity): The parent entity for which the instance name is generated.
 
         Returns:
-            str: name to be given to the new instance
-            None: if the type of the given parent entity is not equal with "AtomicTask" or "AtomicMethod"
+            Union[None, str]: The generated instance name.
+
+        Raises:
+            ValueError: If the parent entity type is invalid.
         """
+
         if parent_entity.type == "AtomicTask":
             entity_type_dict = self.task_type_dict
         elif parent_entity.type == "AtomicMethod":

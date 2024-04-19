@@ -19,7 +19,7 @@ def create_pipeline():
     pipeline_name, input_data_path, input_plots_output_dir = input_pipeline_info()
 
     exe_kg = ExeKGConstructor()
-    exe_kg.start_pipeline_creation(pipeline_name, input_data_path, input_plots_output_dir)
+    exe_kg.start_pipeline_creation_cli(pipeline_name, input_data_path, input_plots_output_dir)
     exe_kg.save_created_kg(f"pipelines/{pipeline_name}.ttl")
 
 
