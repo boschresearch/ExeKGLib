@@ -81,13 +81,13 @@ For detailed installation instructions, refer to the [installation page](https:/
 ## Adding a new ML-related task and method
 
 [//]: # (--8<-- [start:extending])
-To perform this type of **ExeKGLib** extension, there are 3 required steps:
+For detailed guidelines, refer to the [relevant page](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/) of **ExeKGLib**'s website.
 
-1. Selection of a relevant bottom-level KG schema (Statistics, ML, or Visualization) according to the type of the new task and method.
-2. Addition of new semantic components (entities, properties, etc) to the selected KG schema.
-3. Addition of a Python class to the corresponding module of `exe_kg_lib.classes.tasks` package.
+In summary, these are the steps:
 
-For steps 2 and 3, refer to the [relevant page](https://boschresearch.github.io/ExeKGLib/adding-new-task-and-method/) of **ExeKGLib**'s website.
+1. Selecting a bottom-level KG schema (Statistics, ML, or Visualization) based on the type of the new task and method.
+2. Adding new semantic components (entities, properties, etc.) to the selected KG schema and the corresponding SHACL shapes graph.
+3. Modifying the Python code in the corresponding file of `exe_kg_lib.classes.tasks` package.
 
 [//]: # (--8<-- [end:extending])
 
