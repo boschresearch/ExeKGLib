@@ -556,8 +556,9 @@ def get_method_grouped_params_plus_inherited(
     """
 
     property_list = list(query_method_params_plus_inherited(method_iri, namespace_prefix, kg))
+    property_list = sorted(property_list, key=lambda elem: elem[0])  # prepare for grouping
     property_list = [
-        (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda pair: pair[0])
+        (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda elem: elem[0])
     ]
 
     return property_list
@@ -579,9 +580,10 @@ def get_grouped_inherited_inputs(
 
     """
     property_list = list(query_inherited_inputs(input_kg, namespace_prefix, entity_iri))
+    property_list = sorted(property_list, key=lambda elem: elem[0])  # prepare for grouping
     property_list = [
         (key, [(elem[1], elem[2]) for elem in group])
-        for key, group in itertools.groupby(property_list, lambda pair: pair[0])
+        for key, group in itertools.groupby(property_list, key=lambda elem: elem[0])
     ]
 
     return property_list
@@ -603,9 +605,10 @@ def get_grouped_inherited_outputs(
 
     """
     property_list = list(query_inherited_outputs(input_kg, namespace_prefix, entity_iri))
+    property_list = sorted(property_list, key=lambda elem: elem[0])  # prepare for grouping
     property_list = [
         (key, [(elem[1], elem[2]) for elem in group])
-        for key, group in itertools.groupby(property_list, lambda pair: pair[0])
+        for key, group in itertools.groupby(property_list, key=lambda elem: elem[0])
     ]
 
     return property_list
