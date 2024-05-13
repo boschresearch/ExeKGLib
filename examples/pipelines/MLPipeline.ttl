@@ -161,7 +161,7 @@ ml:PrecisionScoreMethod1 a ml:PrecisionScoreMethod .
 ml:RecallScoreMethod1 a ml:RecallScoreMethod .
 
 ml:SVCMethod1 a ml:SVCMethod ;
-    ml:hasParamRandomState 0 .
+    ml:hasParamRandomState "0"^^xsd:int .
 
 ml:Test1 a ml:Test ;
     ds:hasNextTask ml:PerformanceCalculation1 ;
@@ -173,7 +173,7 @@ ml:Test1 a ml:Test ;
 ml:TestMethod1 a ml:TestMethod .
 
 ml:TrainTestSplitMethod1 a ml:TrainTestSplitMethod ;
-    ml:hasParamRandomState 0 ;
+    ml:hasParamRandomState "0"^^xsd:int ;
     ml:hasParamTestSize "0.2"^^xsd:float .
 
 visu:BarMethod1 a visu:BarMethod ;

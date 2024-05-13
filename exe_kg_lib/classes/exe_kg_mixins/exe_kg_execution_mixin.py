@@ -72,7 +72,7 @@ class ExeKGExecutionMixin:
         """
         if literal.datatype == XSD.string:
             return str(literal)
-        elif literal.datatype == XSD.integer:
+        elif literal.datatype == XSD.int:
             return int(literal)
         elif literal.datatype == XSD.float:
             return float(literal)

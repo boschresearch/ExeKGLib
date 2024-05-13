@@ -339,7 +339,7 @@ class ExeKGConstructionMixin:
         if isinstance(field_value, str):
             return Literal(field_value, datatype=XSD.string)
         elif isinstance(field_value, int):
-            return Literal(field_value, datatype=XSD.integer)
+            return Literal(field_value, datatype=XSD.int)
         elif isinstance(field_value, float):
             return Literal(field_value, datatype=XSD.float)
         elif isinstance(field_value, bool):
