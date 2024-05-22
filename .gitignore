@@ -54,3 +54,4 @@ pylint-report.txt
 
 # CUSTOM
 examples/plots/
+examples/pipelines/
