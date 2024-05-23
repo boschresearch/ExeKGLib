@@ -7,6 +7,8 @@ from pathlib import Path
 import pandas as pd
 from matplotlib import pyplot as plt
 
+from exe_kg_lib.utils.string_utils import prettify_data_entity_name
+
 from ..entity import Entity
 from ..task import Task
 
@@ -103,7 +105,11 @@ class Plotting(Task):
                 input_name = input["name"]
                 input_value = input["value"]
 
-                x = input_value.index if isinstance(input_value, pd.DataFrame) else input_name
+                x = (
+                    input_value.index
+                    if isinstance(input_value, pd.DataFrame)
+                    else prettify_data_entity_name(input_name)
+                )
                 y = input_value
 
                 method_to_call = method_module if plot is None else getattr(plot, method_module.__name__)

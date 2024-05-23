@@ -167,4 +167,4 @@ if __name__ == "__main__":
         },
     )
 
-    exe_kg.save_created_kg(HERE / "pipelines" / f"{pipeline_name}.ttl")
+    exe_kg.save_created_kg(HERE / "pipelines")

@@ -5,6 +5,7 @@ from typing import List
 
 from rdflib import Graph
 
+from exe_kg_lib.classes.exe_kg_serialization.pipeline import Pipeline
 from exe_kg_lib.config import KG_SCHEMAS
 
 from ..utils.query_utils import query_subclasses_of
@@ -58,7 +59,9 @@ class ExeKGBase:
         for bottom_level_schema_kg in bottom_level_schemata_kgs:
             self.input_kg += bottom_level_schema_kg
 
-        self.output_kg = Graph(bind_namespaces="rdflib")  # KG to be filled while constructing executable KG
+        self.output_kg = Graph(bind_namespaces="rdflib")  # variable to store the constructed ExeKG
+        self.pipeline_instance = None  # variable to store pipeline's metadata
+        self.pipeline_serializable = Pipeline()  # simplified version of pipeline for serialization purposes
 
         self._bind_used_namespaces([self.input_kg, self.output_kg])
 

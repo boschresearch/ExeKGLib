@@ -5,6 +5,8 @@ import re
 from pathlib import Path
 from typing import Union
 
+TASK_OUTPUT_NAME_REGEX = r"(.*)_(.*)(\d)_(.*)"  # example: DataOutNameEx_TaskEx1_MethodEx
+
 
 def camel_to_snake(text: str) -> str:
     """
@@ -88,3 +90,54 @@ def concat_paths(*paths: Union[str, Path]) -> str:
             )
 
     return str(output_path)
+
+
+def get_instance_name(instance_type: str, instance_count: int) -> str:
+    """
+    Generates a unique instance name based on the instance type and count.
+
+    Args:
+        instance_type (str): The type of the instance.
+        instance_count (int): The count of the instance.
+
+    Returns:
+        str: The generated instance name.
+    """
+    return f"{instance_type}{str(instance_count)}"
+
+
+def get_task_output_name(output_type: str, task_instance_name: str, method_type: str) -> str:
+    """
+    Generates the name for a task's output based on the output type, task instance name, and method type.
+
+    Args:
+        output_type (str): The type of the output.
+        task_instance_name (str): The name of the task instance.
+        method_type (str): The type of the method.
+
+    Returns:
+        str: The generated task output name.
+    """
+    return f"{output_type}_{task_instance_name}_{method_type}"
+
+
+def prettify_data_entity_name(data_entity_name: str) -> str:
+    """
+    Prettifies the given data entity name by removing unnecessary prefixes and components.
+
+    Args:
+        data_entity_name (str): The name of the data entity.
+
+    Returns:
+        str: The prettified data entity name.
+    """
+    match = re.match(TASK_OUTPUT_NAME_REGEX, data_entity_name)
+    if match:
+        # data_entity_name refers to a data entity that is an output of a previous task
+        task_output_name = match.group(1)
+        task_output_name = re.sub(r"^DataOut", "", task_output_name)
+        method_type = match.group(4)
+
+        return f"{method_type} {task_output_name}"
+
+    return data_entity_name

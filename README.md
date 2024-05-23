@@ -47,8 +47,11 @@ See [Task hierarchy](task_hierarchy.md).
 [//]: # (--8<-- [start:usage])
 ### Creating an ML pipeline
 
-- **Via code**: See the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples). To fetch them to your working directory for easy access, run `typer exe_kg_lib.cli.main run get-examples`.
+- **Via code**: See `ml_pipeline_creation.py`,  `stats_pipeline_creation.py`,  `visu_pipeline_creation.py` in the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples).
+- **Using JSON**: See `MLPipeline.json` and `ml_pipeline_creation_from_json.py` in the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples).
 - **Step-by-step via CLI**: Run `typer exe_kg_lib.cli.main run create-pipeline`.
+
+**🗒️ Note**: To fetch the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples) to your working directory for easy access, run `typer exe_kg_lib.cli.main run get-examples`.
 
 ### Executing an ML pipeline
 - **Via code**: See [example code](https://github.com/boschresearch/ExeKGLib/blob/21e4df0e7de89c27748c8b61759652b7edf7d9b8/exe_kg_lib/cli/main.py#L28-L29).

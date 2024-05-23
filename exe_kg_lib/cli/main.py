@@ -8,7 +8,8 @@ from distutils.dir_util import copy_tree
 
 import typer
 
-from exe_kg_lib.classes.exe_kg_actors import ExeKGConstructorCLI, ExeKGExecutor
+from exe_kg_lib.classes.exe_kg_actors import (ExeKGConExe, ExeKGConstructorCLI,
+                                              ExeKGExecutor)
 from exe_kg_lib.utils.cli_utils import input_pipeline_info
 
 app = typer.Typer(name="ML pipeline creation and execution", no_args_is_help=True)
@@ -25,7 +26,12 @@ def create_pipeline():
 
 @app.command()
 def run_pipeline(path: str):
-    exe_kg = ExeKGExecutor()
+    if path.endswith(".ttl"):
+        exe_kg = ExeKGExecutor()
+    else:
+        # file needs to be converted to ExeKG first
+        exe_kg = ExeKGConExe()
+
     exe_kg.execute_pipeline(path)
 
 
