@@ -372,7 +372,7 @@ class ExeKGConstructionMixin:
         else:
             return field_value
 
-    def save_created_kg(self, dir_path: str) -> None:
+    def save_created_kg(self, dir_path: str, check_executability=True) -> None:
         """
         Save the created ExeKG and simplified pipeline.
 
@@ -380,7 +380,8 @@ class ExeKGConstructionMixin:
             dir_path (str): The directory path where the files will be saved.
         """
 
-        check_kg_executability(self.output_kg + self.input_kg, self.shacl_shapes_s)
+        if check_executability:
+            check_kg_executability(self.output_kg + self.input_kg, self.shacl_shapes_s)
 
         os.makedirs(dir_path, exist_ok=True)
 
