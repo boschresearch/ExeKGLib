@@ -21,8 +21,8 @@ class Pipeline:
         name: str = "",
         input_data_path: str = "",
         output_plots_dir: str = "",
-        data_entities: List[DataEntitySerializable] = [],
-        tasks: List[TaskSerializable] = [],
+        data_entities: List[DataEntitySerializable] = None,
+        tasks: List[TaskSerializable] = None,
     ):
         """
         Initializes a Pipeline object.
@@ -37,7 +37,13 @@ class Pipeline:
         self.name = name
         self.input_data_path = input_data_path
         self.output_plots_dir = output_plots_dir
+
+        if data_entities is None:
+            data_entities = []
         self.data_entities = data_entities
+
+        if tasks is None:
+            tasks = []
         self.tasks = tasks
 
     @classmethod
