@@ -23,7 +23,7 @@ KG_SCHEMAS = {
         "shacl_shapes_path": concat_paths(KG_SCHEMAS_DIR, "visu_shacl_shapes.ttl"),
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/visu_exeKGOntology.ttl#",
         "namespace_prefix": "visu",
-        "generated_schema_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_visu_ontologies_combined.ttl"),
+        "generated_schema_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_visu_schemata_combined.ttl"),
         "generated_shacl_shapes_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_visu_shacl_shapes.ttl"),
     },
     "Statistics": {
@@ -31,7 +31,7 @@ KG_SCHEMAS = {
         "shacl_shapes_path": concat_paths(KG_SCHEMAS_DIR, "stats_shacl_shapes.ttl"),
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/stats_exeKGOntology.ttl#",
         "namespace_prefix": "stats",
-        "generated_schema_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_stats_ontologies_combined.ttl"),
+        "generated_schema_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_stats_schemata_combined.ttl"),
         "generated_shacl_shapes_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_stats_shacl_shapes.ttl"),
     },
     "Machine Learning": {
@@ -39,7 +39,7 @@ KG_SCHEMAS = {
         "shacl_shapes_path": concat_paths(KG_SCHEMAS_DIR, "ml_shacl_shapes.ttl"),
         "namespace": "https://raw.githubusercontent.com/nsai-uio/ExeKGOntology/main/ml_exeKGOntology.ttl#",
         "namespace_prefix": "ml",
-        "generated_schema_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_ml_ontologies_combined.ttl"),
+        "generated_schema_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_ml_schemata_combined.ttl"),
         "generated_shacl_shapes_path": concat_paths(GENERATED_KG_SCHEMAS_DIR, "generated_ml_shacl_shapes.ttl"),
     },
 }
