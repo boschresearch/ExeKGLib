@@ -16,6 +16,7 @@ nav:
   - Overview:
     - Overview: index.md
     - Ready-to-use ML-related tasks and methods: supported-methods.md
+    - Getting started: getting-started.md
     - Usage: usage.md
     - Installation: installation.md
     - Extending: extending.md

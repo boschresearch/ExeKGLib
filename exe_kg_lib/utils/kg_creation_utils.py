@@ -1,10 +1,17 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+import re
+from typing import Dict, List
+
 from rdflib import RDF, XSD, Graph, Literal, Namespace, URIRef
+
+from exe_kg_lib.utils.string_utils import (TASK_OUTPUT_NAME_REGEX,
+                                           get_instance_name)
 
 from ..classes.data_entity import DataEntity
 from ..classes.entity import Entity
+from ..classes.exe_kg_serialization.task import Task as TaskSerializable
 from ..classes.task import Task
 
 
@@ -210,3 +217,43 @@ def create_pipeline_task(
     add_literal(kg, pipeline, top_level_schema_namespace.hasPlotsOutputDir, plots_output_dir_literal)
 
     return pipeline
+
+
+def deserialize_input_data_entity_dict(
+    input_data_entity_dict_ser: Dict[str, List[str]],
+    data_entities_dict: Dict[str, DataEntity],
+    task_output_dicts: Dict[str, TaskSerializable],
+) -> Dict[str, List[DataEntity]]:
+    """
+    Deserializes the serialized input data entity dictionary.
+
+    Args:
+        input_data_entity_dict_ser (Dict[str, List[str]]): The serialized input data entity dictionary.
+        data_entities_dict (Dict[str, DataEntity]): The dictionary of data entities.
+        task_output_dicts (Dict[str, TaskSerializable]): The dictionary of task output objects.
+
+    Returns:
+        Dict[str, List[DataEntity]]: The deserialized input data entity dictionary.
+    """
+    input_data_entity_dict: Dict[str, List[DataEntity]] = {}
+    for input_name, data_entity_names in input_data_entity_dict_ser.items():
+        input_data_entity_dict[input_name] = []
+        for data_entity_name in data_entity_names:
+            match = re.match(TASK_OUTPUT_NAME_REGEX, data_entity_name)
+            if match:
+                # input entity refers to a data entity that is an output of a previous task
+                prev_task_output_name = match.group(1)
+                prev_task_type = match.group(2)
+                prev_task_pos = int(match.group(3))
+
+                try:
+                    # regex matched so assume that the data_entity_name is an output of a previous task
+                    prev_task_name = get_instance_name(prev_task_type, prev_task_pos)
+                    input_data_entity_dict[input_name].append(task_output_dicts[prev_task_name][prev_task_output_name])
+                except KeyError:
+                    # regex matched but the data_entity_name is NOT an output of a previous task
+                    input_data_entity_dict[input_name].append(data_entities_dict[data_entity_name])
+            else:
+                input_data_entity_dict[input_name].append(data_entities_dict[data_entity_name])
+
+    return input_data_entity_dict

@@ -2,13 +2,17 @@
 # SPDX-License-Identifier: AGPL-3.0
 
 import itertools
-from typing import Optional, Union
+from io import TextIOWrapper
+from pathlib import Path
+from typing import Callable, Union
 
 import pandas as pd
 from rdflib import XSD, Graph, Literal, URIRef
 
 from exe_kg_lib.classes.data_entity import DataEntity
 from exe_kg_lib.classes.entity import Entity
+from exe_kg_lib.classes.exe_kg_mixins.exe_kg_construction_mixin import \
+    ExeKGConstructionMixin
 from exe_kg_lib.classes.kg_schema import KGSchema
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.classes.tasks import ml_tasks, statistic_tasks, visual_tasks
@@ -31,9 +35,12 @@ from exe_kg_lib.utils.string_utils import (class_name_to_method_name,
 
 
 class ExeKGExecutionMixin:
+    # see exe_kg_lib/classes/exe_kg_base.py for the definition of these attributes
     input_kg: Graph
     top_level_schema: KGSchema
     shacl_shapes_s: str
+    # see exe_kg_lib/classes/exe_kg_mixins/exe_kg_construction_mixin.py for the definition of this attribute
+    create_exe_kg_from_json: Callable[[ExeKGConstructionMixin, Union[Path, TextIOWrapper, str]], Graph]
 
     def _property_value_to_field_value(self, property_value: Union[str, Literal]) -> Union[str, DataEntity]:
         """
@@ -274,6 +281,26 @@ class ExeKGExecutionMixin:
 
         return task
 
+    def _load_exe_kg(self, input_path: str) -> Graph:
+        """
+        Loads the ExeKG from the specified input path.
+
+        Args:
+            input_path (str): The path to the ExeKG file.
+
+        Returns:
+            Graph: The loaded ExeKG.
+        """
+        input_exe_kg = Graph(bind_namespaces="rdflib")
+        if input_path.endswith(".ttl"):
+            # parse ExeKG from Turtle file
+            input_exe_kg.parse(input_path, format="n3")
+        elif input_path.endswith(".json"):
+            # convert simplified serialized pipeline to ExeKG
+            input_exe_kg = self.create_exe_kg_from_json(input_path)
+
+        return input_exe_kg
+
     def execute_pipeline(self, input_exe_kg_path: str) -> None:
         """
         Executes the pipeline by parsing the input ExeKG task-by-task.
@@ -287,8 +314,7 @@ class ExeKGExecutionMixin:
         Returns:
             None
         """
-        input_exe_kg = Graph(bind_namespaces="rdflib")
-        input_exe_kg.parse(input_exe_kg_path, format="n3")  # parse input executable KG
+        input_exe_kg = self._load_exe_kg(input_exe_kg_path)
 
         self.input_kg += input_exe_kg
         check_kg_executability(self.input_kg, self.shacl_shapes_s)

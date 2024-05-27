@@ -20,6 +20,7 @@ from exe_kg_lib.utils.query_utils import (
 
 
 class ExeKGConstructionCLIMixin:
+    # see exe_kg_lib/classes/exe_kg_base.py for the definition of these attributes
     output_kg: Graph
     top_level_schema: KGSchema
     data_entity: Entity

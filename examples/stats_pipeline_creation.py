@@ -65,4 +65,4 @@ if __name__ == "__main__":
         method_params_dict={"hasParamTitle": "Feature 1's Mean and Standard Deviation"},
     )
 
-    exe_kg.save_created_kg(HERE / "pipelines" / f"{pipeline_name}.ttl")
+    exe_kg.save_created_kg(HERE / "pipelines")
