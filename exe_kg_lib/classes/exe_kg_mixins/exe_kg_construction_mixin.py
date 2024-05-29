@@ -199,6 +199,9 @@ class ExeKGConstructionMixin:
         property_list = get_method_grouped_params_plus_inherited(
             method_parent.iri, self.top_level_schema.namespace_prefix, self.input_kg
         )
+
+        provided_params_num = len(method_params_dict)
+        added_params_num = 0
         # add data properties to the task with given values
         for property_iri, _ in property_list:
             property_name = property_iri.split("#")[1]
@@ -206,10 +209,16 @@ class ExeKGConstructionMixin:
             if property_name not in method_params_dict:
                 continue
 
-            input_value = method_params_dict[property_name]
+            input_value = method_params_dict.pop(property_name)
             literal = self._field_value_to_literal(input_value)
 
             add_literal(self.output_kg, method_instance, property_iri, literal)
+            added_params_num += 1
+
+        if added_params_num != provided_params_num:
+            raise ValueError(
+                f"Provided method parameters {method_params_dict} could NOT be added to the method instance."
+            )
 
         self.last_created_task = task_instance  # store created task
 
@@ -479,3 +488,22 @@ class ExeKGConstructionMixin:
         check_kg_executability(self.output_kg + self.input_kg, self.shacl_shapes_s)
 
         return self.output_kg
+
+    def clear_created_kg(self) -> None:
+        """
+        Clears the created ExeKG.
+        """
+        self.output_kg = Graph(bind_namespaces="rdflib")
+        self._bind_used_namespaces([self.output_kg])
+
+        self.pipeline_serializable = Pipeline()
+
+        self.existing_data_entity_list = []
+        self.last_created_task = None
+        self.canvas_task_created = False
+
+        for task_type in self.task_type_dict:
+            self.task_type_dict[task_type] = 1
+
+        for method_type in self.method_type_dict:
+            self.method_type_dict[method_type] = 1
