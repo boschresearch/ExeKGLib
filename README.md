@@ -53,9 +53,9 @@ We provide [example Python files and a JSON file](https://github.com/boschresear
 
 [//]: # (--8<-- [end:gettingstarted])
 
-## 🧪 Ready-to-use ML-related tasks and methods
+## 🧪 Supported ML-related tasks and methods
 
-See [Task hierarchy](task_hierarchy.md).
+See [relevant website page](https://boschresearch.github.io/ExeKGLib/supported-tasks-and-methods).
 
 ## 🛠️ Usage
 

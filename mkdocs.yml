@@ -15,7 +15,7 @@ site_dir: .site
 nav:
   - Overview:
     - Overview: index.md
-    - Ready-to-use ML-related tasks and methods: supported-methods.md
+    - Supported tasks and methods: supported-tasks-and-methods.md
     - Getting started: getting-started.md
     - Usage: usage.md
     - Installation: installation.md

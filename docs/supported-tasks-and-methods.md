@@ -1,9 +1,7 @@
-### Hierarchy of supported tasks with their methods
-
-🗒️ **Note**: Only bottom-level tasks (marked with ☑️) can be used while creating a pipeline. Other tasks are marked with 📜.
+🗒️ **Note**: Parent tasks are marked with 📜. Only bottom-level tasks (marked with ☑️) can be used while creating a pipeline.
 
 <details>
-	<summary>Train 📜</summary>
+	<summary>Train 📜<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>ml</code></span></summary>
 	<ul>
 		<details>
 			<summary>Regression 📜</summary>
@@ -1508,6 +1506,460 @@
 								</ul>
 							</details>
 							<details>
+								<summary>BernoulliNBMethod</summary>
+								<ul>
+									<li>hasParamAlpha (float, int, string)</li>
+									<li>hasParamBinarize (float, string)</li>
+									<li>hasParamFitPrior (boolean)</li>
+									<li>hasParamForceAlpha (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>DecisionTreeClassifierMethod</summary>
+								<ul>
+									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCriterion (string)</li>
+									<li>hasParamMaxDepth (int, string)</li>
+									<li>hasParamMaxFeatures (float, int, string)</li>
+									<li>hasParamMaxLeafNodes (int, string)</li>
+									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinSamplesLeaf (float, int)</li>
+									<li>hasParamMinSamplesSplit (float, int)</li>
+									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamSplitter (string)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>ExtraTreeClassifierMethod</summary>
+								<ul>
+									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCriterion (string)</li>
+									<li>hasParamMaxDepth (int, string)</li>
+									<li>hasParamMaxFeatures (float, int, string)</li>
+									<li>hasParamMaxLeafNodes (int, string)</li>
+									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinSamplesLeaf (float, int)</li>
+									<li>hasParamMinSamplesSplit (float, int)</li>
+									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamSplitter (string)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>ExtraTreesClassifierMethod</summary>
+								<ul>
+									<li>hasParamBootstrap (boolean)</li>
+									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCriterion (string)</li>
+									<li>hasParamMaxDepth (int, string)</li>
+									<li>hasParamMaxFeatures (float, int, string)</li>
+									<li>hasParamMaxLeafNodes (int, string)</li>
+									<li>hasParamMaxSamples (float, int)</li>
+									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinSamplesLeaf (float, int)</li>
+									<li>hasParamMinSamplesSplit (float, int)</li>
+									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamNEstimators (int)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamOobScore (boolean, string)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>GaussianNBMethod</summary>
+								<ul>
+									<li>hasParamVarSmoothing (float)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>GradientBoostingClassifierMethod</summary>
+								<ul>
+									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCriterion (string)</li>
+									<li>hasParamInit (string)</li>
+									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLoss (string)</li>
+									<li>hasParamMaxDepth (int, string)</li>
+									<li>hasParamMaxFeatures (float, int, string)</li>
+									<li>hasParamMaxLeafNodes (int, string)</li>
+									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinSamplesLeaf (float, int)</li>
+									<li>hasParamMinSamplesSplit (float, int)</li>
+									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamNEstimators (int)</li>
+									<li>hasParamNIterNoChange (int)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamSubsample (float, int, string)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamValidationFraction (float, int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>HistGradientBoostingClassifierMethod</summary>
+								<ul>
+									<li>hasParamCategoricalFeatures (string)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamEarlyStopping (boolean)</li>
+									<li>hasParamInteractionCst (int, string)</li>
+									<li>hasParamL2Regularization (float)</li>
+									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLoss (string)</li>
+									<li>hasParamMaxBins (int)</li>
+									<li>hasParamMaxDepth (int, string)</li>
+									<li>hasParamMaxFeatures (float, int, string)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamMaxLeafNodes (int, string)</li>
+									<li>hasParamMinSamplesLeaf (float, int)</li>
+									<li>hasParamMonotonicCst (string)</li>
+									<li>hasParamNIterNoChange (int)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamScoring (string)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamValidationFraction (float, int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>KNeighborsClassifierMethod</summary>
+								<ul>
+									<li>hasParamAlgorithm (string)</li>
+									<li>hasParamLeafSize (int)</li>
+									<li>hasParamMetric (string)</li>
+									<li>hasParamMetricParams (string)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamNNeighbors (int)</li>
+									<li>hasParamP (float, int)</li>
+									<li>hasParamWeights (string)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>LinearSVCMethod</summary>
+								<ul>
+									<li>hasParamC (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamDual (boolean)</li>
+									<li>hasParamFitIntercept (boolean)</li>
+									<li>hasParamInterceptScaling (float)</li>
+									<li>hasParamLoss (string)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamMultiClass (string)</li>
+									<li>hasParamPenalty (string)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>LogisticRegressionCVMethod</summary>
+								<ul>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCs (int, string)</li>
+									<li>hasParamCv (int, string)</li>
+									<li>hasParamDual (boolean)</li>
+									<li>hasParamFitIntercept (boolean)</li>
+									<li>hasParamInterceptScaling (float)</li>
+									<li>hasParamL1Ratios (float)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamMultiClass (string)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamPenalty (string)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamRefit (boolean)</li>
+									<li>hasParamScoring (string)</li>
+									<li>hasParamSolver (string)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>LogisticRegressionMethod</summary>
+								<ul>
+									<li>hasParamC (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamDual (boolean)</li>
+									<li>hasParamFitIntercept (boolean)</li>
+									<li>hasParamInterceptScaling (float)</li>
+									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamMultiClass (string)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamPenalty (string)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamSolver (string)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>MLPClassifierMethod</summary>
+								<ul>
+									<li>hasParamActivation (string)</li>
+									<li>hasParamAlpha (float, int, string)</li>
+									<li>hasParamBatchSize (int)</li>
+									<li>hasParamBeta1 (float)</li>
+									<li>hasParamBeta2 (float)</li>
+									<li>hasParamEarlyStopping (boolean)</li>
+									<li>hasParamEpsilon (float)</li>
+									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRateInit (float)</li>
+									<li>hasParamMaxFun (int)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamMomentum (float)</li>
+									<li>hasParamNIterNoChange (int)</li>
+									<li>hasParamNesterovsMomentum (boolean)</li>
+									<li>hasParamPowerT (float)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamShuffle (boolean)</li>
+									<li>hasParamSolver (string)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamValidationFraction (float, int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>NearestCentroidMethod</summary>
+								<ul>
+									<li>hasParamMetric (string)</li>
+									<li>hasParamShrinkThreshold (float)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>NuSVCMethod</summary>
+								<ul>
+									<li>hasParamBreakTies (boolean)</li>
+									<li>hasParamCacheSize (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCoef0 (float)</li>
+									<li>hasParamDecisionFunctionShape (string)</li>
+									<li>hasParamDegree (float, int, string)</li>
+									<li>hasParamGamma (float, string)</li>
+									<li>hasParamKernel (string)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamNu (float)</li>
+									<li>hasParamProbability (boolean)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamShrinking (boolean)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>OneVsOneClassifierMethod</summary>
+								<ul>
+									<li>hasParamEstimator (string)</li>
+									<li>hasParamNJobs (int, string)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>OneVsRestClassifierMethod</summary>
+								<ul>
+									<li>hasParamEstimator (string)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>OutputCodeClassifierMethod</summary>
+								<ul>
+									<li>hasParamCodeSize (float)</li>
+									<li>hasParamEstimator (string)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamRandomState (int, string)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>PassiveAggressiveClassifierMethod</summary>
+								<ul>
+									<li>hasParamAverage (boolean, int, string)</li>
+									<li>hasParamC (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamEarlyStopping (boolean)</li>
+									<li>hasParamFitIntercept (boolean)</li>
+									<li>hasParamLoss (string)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamNIterNoChange (int)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamShuffle (boolean)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamValidationFraction (float, int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>PerceptronMethod</summary>
+								<ul>
+									<li>hasParamAlpha (float, int, string)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamEarlyStopping (boolean)</li>
+									<li>hasParamEta0 (float)</li>
+									<li>hasParamFitIntercept (boolean)</li>
+									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamNIterNoChange (int)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamPenalty (string)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamShuffle (boolean)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamValidationFraction (float, int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>RadiusNeighborsClassifierMethod</summary>
+								<ul>
+									<li>hasParamAlgorithm (string)</li>
+									<li>hasParamLeafSize (int)</li>
+									<li>hasParamMetric (string)</li>
+									<li>hasParamMetricParams (string)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamOutlierLabel (string)</li>
+									<li>hasParamP (float, int)</li>
+									<li>hasParamRadius (float)</li>
+									<li>hasParamWeights (string)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>RandomForestClassifierMethod</summary>
+								<ul>
+									<li>hasParamBootstrap (boolean)</li>
+									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCriterion (string)</li>
+									<li>hasParamMaxDepth (int, string)</li>
+									<li>hasParamMaxFeatures (float, int, string)</li>
+									<li>hasParamMaxLeafNodes (int, string)</li>
+									<li>hasParamMaxSamples (float, int)</li>
+									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinSamplesLeaf (float, int)</li>
+									<li>hasParamMinSamplesSplit (float, int)</li>
+									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamNEstimators (int)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamOobScore (boolean, string)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>RidgeClassifierCVMethod</summary>
+								<ul>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCv (int, string)</li>
+									<li>hasParamFitIntercept (boolean)</li>
+									<li>hasParamScoring (string)</li>
+									<li>hasParamStoreCvValues (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>RidgeClassifierMethod</summary>
+								<ul>
+									<li>hasParamAlpha (float, int, string)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCopyX (boolean)</li>
+									<li>hasParamFitIntercept (boolean)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamPositive (boolean)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamSolver (string)</li>
+									<li>hasParamTol (float, string)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>SGDClassifierMethod</summary>
+								<ul>
+									<li>hasParamAlpha (float, int, string)</li>
+									<li>hasParamAverage (boolean, int, string)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamEarlyStopping (boolean)</li>
+									<li>hasParamEpsilon (float)</li>
+									<li>hasParamEta0 (float)</li>
+									<li>hasParamFitIntercept (boolean)</li>
+									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLoss (string)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamNIterNoChange (int)</li>
+									<li>hasParamNJobs (int, string)</li>
+									<li>hasParamPenalty (string)</li>
+									<li>hasParamPowerT (float)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamShuffle (boolean)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamValidationFraction (float, int, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+									<li>hasParamWarmStart (boolean)</li>
+								</ul>
+							</details>
+							<details>
+								<summary>SVCMethod</summary>
+								<ul>
+									<li>hasParamBreakTies (boolean)</li>
+									<li>hasParamC (float)</li>
+									<li>hasParamCacheSize (float)</li>
+									<li>hasParamClassWeight (string)</li>
+									<li>hasParamCoef0 (float)</li>
+									<li>hasParamDecisionFunctionShape (string)</li>
+									<li>hasParamDegree (float, int, string)</li>
+									<li>hasParamGamma (float, string)</li>
+									<li>hasParamKernel (string)</li>
+									<li>hasParamMaxIter (int)</li>
+									<li>hasParamProbability (boolean)</li>
+									<li>hasParamRandomState (int, string)</li>
+									<li>hasParamShrinking (boolean)</li>
+									<li>hasParamTol (float, string)</li>
+									<li>hasParamVerbose (boolean, int)</li>
+								</ul>
+							</details>
+							</ul>
+						</details>
+					</ul>
+				</details>
+				<details>
+					<summary>MultilabelClassification ☑️</summary>
+					<ul>
+						<details>
+							<summary>Inputs</summary>
+							<ul>
+								<li>DataInTrainX</li>
+								<li>DataInTrainY</li>
+							</ul>
+						</details>
+						<details>
+							<summary>Outputs</summary>
+							<ul>
+								<li>DataOutTrainModel</li>
+							</ul>
+						</details>
+						<details>
+							<summary>Methods</summary>
+							<ul>
+							<details>
+								<summary>AdaBoostClassifierMethod</summary>
+								<ul>
+									<li>hasParamAlgorithm (string)</li>
+									<li>hasParamEstimator (string)</li>
+									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamNEstimators (int)</li>
+									<li>hasParamRandomState (int, string)</li>
+								</ul>
+							</details>
+							<details>
 								<summary>DecisionTreeClassifierMethod</summary>
 								<ul>
 									<li>hasParamCcpAlpha (float)</li>
@@ -1629,13 +2081,6 @@
 								</ul>
 							</details>
 							<details>
-								<summary>NearestCentroidMethod</summary>
-								<ul>
-									<li>hasParamMetric (string)</li>
-									<li>hasParamShrinkThreshold (float)</li>
-								</ul>
-							</details>
-							<details>
 								<summary>OneVsOneClassifierMethod</summary>
 								<ul>
 									<li>hasParamEstimator (string)</li>
@@ -1700,53 +2145,6 @@
 						</details>
 					</ul>
 				</details>
-				<details>
-					<summary>MultilabelClassification ☑️</summary>
-					<ul>
-						<details>
-							<summary>Inputs</summary>
-							<ul>
-								<li>DataInTrainX</li>
-								<li>DataInTrainY</li>
-							</ul>
-						</details>
-						<details>
-							<summary>Outputs</summary>
-							<ul>
-								<li>DataOutTrainModel</li>
-							</ul>
-						</details>
-						<details>
-							<summary>Methods</summary>
-							<ul>
-							<details>
-								<summary>OneVsOneClassifierMethod</summary>
-								<ul>
-									<li>hasParamEstimator (string)</li>
-									<li>hasParamNJobs (int, string)</li>
-								</ul>
-							</details>
-							<details>
-								<summary>OneVsRestClassifierMethod</summary>
-								<ul>
-									<li>hasParamEstimator (string)</li>
-									<li>hasParamNJobs (int, string)</li>
-									<li>hasParamVerbose (boolean, int)</li>
-								</ul>
-							</details>
-							<details>
-								<summary>OutputCodeClassifierMethod</summary>
-								<ul>
-									<li>hasParamCodeSize (float)</li>
-									<li>hasParamEstimator (string)</li>
-									<li>hasParamNJobs (int, string)</li>
-									<li>hasParamRandomState (int, string)</li>
-								</ul>
-							</details>
-							</ul>
-						</details>
-					</ul>
-				</details>
 			</ul>
 		</details>
 		<details>
@@ -1801,7 +2199,7 @@
 							<li>hasParamComputeLabels (boolean)</li>
 							<li>hasParamCopy (boolean)</li>
 							<li>hasParamNClusters (int, string)</li>
-							<li>hasParamThreshold (float)</li>
+							<li>hasParamThreshold (float, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -2044,7 +2442,7 @@
 	</ul>
 </details>
 <details>
-	<summary>Concatenation ☑️</summary>
+	<summary>Concatenation ☑️<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>ml</code></span></summary>
 	<ul>
 		<details>
 			<summary>Inputs</summary>
@@ -2070,7 +2468,7 @@
 	</ul>
 </details>
 <details>
-	<summary>PrepareTransformer 📜</summary>
+	<summary>PrepareTransformer 📜<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>ml</code></span></summary>
 	<ul>
 		<details>
 			<summary>DataProcessing ☑️</summary>
@@ -2094,7 +2492,7 @@
 						<summary>BinarizerMethod</summary>
 						<ul>
 							<li>hasParamCopy (boolean)</li>
-							<li>hasParamThreshold (float)</li>
+							<li>hasParamThreshold (float, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -2140,6 +2538,18 @@
 						</ul>
 					</details>
 					<details>
+						<summary>KNNImputerMethod</summary>
+						<ul>
+							<li>hasParamAddIndicator (boolean)</li>
+							<li>hasParamCopy (boolean)</li>
+							<li>hasParamKeepEmptyFeatures (boolean)</li>
+							<li>hasParamMetric (string)</li>
+							<li>hasParamMissingValues (float, int, string)</li>
+							<li>hasParamNNeighbors (int)</li>
+							<li>hasParamWeights (string)</li>
+						</ul>
+					</details>
+					<details>
 						<summary>KernelCentererMethod</summary>
 						<ul>No parameters</ul>
 					</details>
@@ -2163,6 +2573,15 @@
 							<li>hasParamClip (boolean)</li>
 							<li>hasParamCopy (boolean)</li>
 							<li>hasParamFeatureRange (string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>MissingIndicatorMethod</summary>
+						<ul>
+							<li>hasParamErrorOnNew (boolean)</li>
+							<li>hasParamFeatures (string)</li>
+							<li>hasParamMissingValues (float, int, string)</li>
+							<li>hasParamSparse (boolean)</li>
 						</ul>
 					</details>
 					<details>
@@ -2256,6 +2675,17 @@
 							<li>hasParamUnitVariance (boolean)</li>
 							<li>hasParamWithCentering (boolean)</li>
 							<li>hasParamWithScaling (boolean)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>SimpleImputerMethod</summary>
+						<ul>
+							<li>hasParamAddIndicator (boolean)</li>
+							<li>hasParamCopy (boolean)</li>
+							<li>hasParamFillValue (string)</li>
+							<li>hasParamKeepEmptyFeatures (boolean)</li>
+							<li>hasParamMissingValues (float, int, string)</li>
+							<li>hasParamStrategy (string)</li>
 						</ul>
 					</details>
 					<details>
@@ -2579,10 +3009,160 @@
 				</details>
 			</ul>
 		</details>
+		<details>
+			<summary>FeatureSelection ☑️</summary>
+			<ul>
+				<details>
+					<summary>Inputs</summary>
+					<ul>
+						<li>DataInToPrepareTransformer</li>
+					</ul>
+				</details>
+				<details>
+					<summary>Outputs</summary>
+					<ul>
+						<li>DataOutTransformer</li>
+					</ul>
+				</details>
+				<details>
+					<summary>Methods</summary>
+					<ul>
+					<details>
+						<summary>Chi2Method</summary>
+						<ul>No parameters</ul>
+					</details>
+					<details>
+						<summary>FClassifMethod</summary>
+						<ul>No parameters</ul>
+					</details>
+					<details>
+						<summary>FRegressionMethod</summary>
+						<ul>
+							<li>hasParamCenter (boolean)</li>
+							<li>hasParamForceFinite (boolean)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>GenericUnivariateSelectMethod</summary>
+						<ul>
+							<li>hasParamMode (string)</li>
+							<li>hasParamParam (float, int)</li>
+							<li>hasParamScoreFunc (string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>MutualInfoClassifMethod</summary>
+						<ul>
+							<li>hasParamCopy (boolean)</li>
+							<li>hasParamDiscreteFeatures (boolean, string)</li>
+							<li>hasParamNNeighbors (int)</li>
+							<li>hasParamRandomState (int, string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>MutualInfoRegressionMethod</summary>
+						<ul>
+							<li>hasParamCopy (boolean)</li>
+							<li>hasParamDiscreteFeatures (boolean, string)</li>
+							<li>hasParamNNeighbors (int)</li>
+							<li>hasParamRandomState (int, string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>RFECVMethod</summary>
+						<ul>
+							<li>hasParamCv (int, string)</li>
+							<li>hasParamEstimator (string)</li>
+							<li>hasParamImportanceGetter (string)</li>
+							<li>hasParamMinFeaturesToSelect (int)</li>
+							<li>hasParamNJobs (int, string)</li>
+							<li>hasParamScoring (string)</li>
+							<li>hasParamStep (float, int)</li>
+							<li>hasParamVerbose (boolean, int)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>RFEMethod</summary>
+						<ul>
+							<li>hasParamEstimator (string)</li>
+							<li>hasParamImportanceGetter (string)</li>
+							<li>hasParamNFeaturesToSelect (float, int)</li>
+							<li>hasParamStep (float, int)</li>
+							<li>hasParamVerbose (boolean, int)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>SelectFdrMethod</summary>
+						<ul>
+							<li>hasParamAlpha (float, int, string)</li>
+							<li>hasParamScoreFunc (string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>SelectFprMethod</summary>
+						<ul>
+							<li>hasParamAlpha (float, int, string)</li>
+							<li>hasParamScoreFunc (string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>SelectFromModelMethod</summary>
+						<ul>
+							<li>hasParamEstimator (string)</li>
+							<li>hasParamImportanceGetter (string)</li>
+							<li>hasParamMaxFeatures (float, int, string)</li>
+							<li>hasParamNormOrder (int, string)</li>
+							<li>hasParamPrefit (boolean)</li>
+							<li>hasParamThreshold (float, string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>SelectFweMethod</summary>
+						<ul>
+							<li>hasParamAlpha (float, int, string)</li>
+							<li>hasParamScoreFunc (string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>SelectKBestMethod</summary>
+						<ul>
+							<li>hasParamK (int)</li>
+							<li>hasParamScoreFunc (string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>SelectPercentileMethod</summary>
+						<ul>
+							<li>hasParamPercentile (int)</li>
+							<li>hasParamScoreFunc (string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>SequentialFeatureSelectorMethod</summary>
+						<ul>
+							<li>hasParamCv (int, string)</li>
+							<li>hasParamDirection (string)</li>
+							<li>hasParamEstimator (string)</li>
+							<li>hasParamNFeaturesToSelect (float, int)</li>
+							<li>hasParamNJobs (int, string)</li>
+							<li>hasParamScoring (string)</li>
+							<li>hasParamTol (float, string)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>VarianceThresholdMethod</summary>
+						<ul>
+							<li>hasParamThreshold (float, string)</li>
+						</ul>
+					</details>
+					</ul>
+				</details>
+			</ul>
+		</details>
 	</ul>
 </details>
 <details>
-	<summary>DataSplitting ☑️</summary>
+	<summary>DataSplitting ☑️<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>ml</code></span></summary>
 	<ul>
 		<details>
 			<summary>Inputs</summary>
@@ -2829,7 +3409,7 @@
 	</ul>
 </details>
 <details>
-	<summary>PerformanceCalculation ☑️</summary>
+	<summary>PerformanceCalculation ☑️<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>ml</code></span></summary>
 	<ul>
 		<details>
 			<summary>Inputs</summary>
@@ -3326,7 +3906,7 @@
 	</ul>
 </details>
 <details>
-	<summary>Test ☑️</summary>
+	<summary>Test ☑️<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>ml</code></span></summary>
 	<ul>
 		<details>
 			<summary>Inputs</summary>
@@ -3353,7 +3933,34 @@
 	</ul>
 </details>
 <details>
-	<summary>StatisticCalculation 📜</summary>
+	<summary>Transform ☑️<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>ml</code></span></summary>
+	<ul>
+		<details>
+			<summary>Inputs</summary>
+			<ul>
+				<li>DataInToTransform</li>
+				<li>DataInTransformer</li>
+			</ul>
+		</details>
+		<details>
+			<summary>Outputs</summary>
+			<ul>
+				<li>DataOutTransformed</li>
+			</ul>
+		</details>
+		<details>
+			<summary>Methods</summary>
+			<ul>
+			<details>
+				<summary>TransformMethod</summary>
+				<ul>No parameters</ul>
+			</details>
+			</ul>
+		</details>
+	</ul>
+</details>
+<details>
+	<summary>StatisticCalculation 📜<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>stats</code></span></summary>
 	<ul>
 		<details>
 			<summary>CentralTendencyMeasure ☑️</summary>
@@ -3586,7 +4193,7 @@
 	</ul>
 </details>
 <details>
-	<summary>Plotting 📜</summary>
+	<summary>Plotting 📜<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>visu</code></span></summary>
 	<ul>
 		<details>
 			<summary>AreaPlotting ☑️</summary>
@@ -4230,7 +4837,7 @@
 	</ul>
 </details>
 <details>
-	<summary>CanvasCreation ☑️</summary>
+	<summary>CanvasCreation ☑️<span style="float: right; font-weight: 100;"> 🗒️ belongs to KG schema with abbr. <code>visu</code></span></summary>
 	<ul>
 		<details>
 			<summary>Inputs</summary>
