@@ -200,6 +200,7 @@ class ExeKGConstructionMixin:
             method_parent.iri, self.top_level_schema.namespace_prefix, self.input_kg
         )
 
+        initial_method_params_dict = method_params_dict.copy()
         provided_params_num = len(method_params_dict)
         added_params_num = 0
         # add data properties to the task with given values
@@ -227,7 +228,7 @@ class ExeKGConstructionMixin:
             kg_schema_short,
             task,
             method,
-            method_params_dict,
+            initial_method_params_dict,
             input_data_entity_dict,
             output_names,
         )

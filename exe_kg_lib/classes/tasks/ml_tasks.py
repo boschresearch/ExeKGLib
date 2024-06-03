@@ -46,7 +46,13 @@ class Train(Task):
         if "sklearn" in method_module.__module__:
             assert isinstance(method_module, type), "The method_module should be a class"
             model = method_module(**self.method_params_dict)
-            model.fit(input_x, input_y)
+
+            if not isinstance(input_x, list):
+                model.fit(input_x, input_y)
+            else:
+                # multiple splits
+                for x, y in zip(input_x, input_y):
+                    model.fit(x, y)
 
             print(f"{model.__class__.__name__} training finished")
         else:
@@ -84,7 +90,11 @@ class Test(Task):
 
         # check if model belongs to sklearn library
         if "sklearn" in model.__module__:
-            predicted_y = model.predict(input_x)
+            if not isinstance(input_x, list):
+                predicted_y = model.predict(input_x)
+            else:
+                # multiple splits
+                predicted_y = [model.predict(x) for x in input_x]
         else:
             raise NotImplementedError("Only sklearn models are supported for now")
 
@@ -238,30 +248,39 @@ class DataSplitting(Task):
             if method_module.__name__ == "train_test_split":
                 train_x, test_x, train_y, test_y = method_module(input_x, input_y, **self.method_params_dict)
                 print("train_test_split splitting finished")
+                return self.create_output_dict(
+                    {
+                        "DataOutSplittedTrainDataX": train_x,
+                        "DataOutSplittedTrainDataY": train_y,
+                        "DataOutSplittedTestDataX": test_x,
+                        "DataOutSplittedTestDataY": test_y,
+                    }
+                )
             else:
                 assert isinstance(method_module, type), "The method_module should be a class"
                 splitter = method_module(**self.method_params_dict)
 
-                # TODO: handle sklearn's splitters like KFold, StratifiedKFold, etc. that allow for multiple splits via n_splits
-                #       https://scikit-learn.org/stable/modules/cross_validation.html
-                # NOTE: in this case, the model should be trained and tested for each split, and the metric value should be averaged
-                #       https://www.askpython.com/python/examples/k-fold-cross-validation
-                for train_index, test_index in splitter.split(input_x, input_y):
-                    train_x, test_x = input_x.iloc[train_index], input_x.iloc[test_index]
-                    train_y, test_y = input_y.iloc[train_index], input_y.iloc[test_index]
+                train_x_per_split = []
+                valid_x_per_split = []
+                train_y_per_split = []
+                valid_y_per_split = []
+                for train_index, valid_index in splitter.split(input_x, input_y):
+                    train_x_per_split.append(input_x.iloc[train_index])
+                    valid_x_per_split.append(input_x.iloc[valid_index])
+                    train_y_per_split.append(input_y.iloc[train_index])
+                    valid_y_per_split.append(input_y.iloc[valid_index])
 
-                print(f"{splitter.__class__.__name__} splitting finished")
+                print(f"{splitter.__class__.__name__} splitting finished resulting in {len(train_x_per_split)} splits")
+                return self.create_output_dict(
+                    {
+                        "DataOutSplittedTrainDataX": train_x_per_split,
+                        "DataOutSplittedTrainDataY": train_y_per_split,
+                        "DataOutSplittedTestDataX": valid_x_per_split,
+                        "DataOutSplittedTestDataY": valid_y_per_split,
+                    }
+                )
         else:
             raise NotImplementedError("Only sklearn data splitters are supported for now")
-
-        return self.create_output_dict(
-            {
-                "DataOutSplittedTrainDataX": train_x,
-                "DataOutSplittedTrainDataY": train_y,
-                "DataOutSplittedTestDataX": test_x,
-                "DataOutSplittedTestDataY": test_y,
-            }
-        )
 
 
 class PerformanceCalculation(Task):
@@ -297,7 +316,14 @@ class PerformanceCalculation(Task):
 
         if "sklearn" in method_module.__module__:
             assert callable(method_module), "The method_module should be a function"
-            metric_value = method_module(input_real_y, input_predicted_y, **self.method_params_dict)
+            if not isinstance(input_real_y, list):
+                metric_value = method_module(input_real_y, input_predicted_y, **self.method_params_dict)
+            else:
+                # multiple splits
+                metric_values = [
+                    method_module(y, p, **self.method_params_dict) for y, p in zip(input_real_y, input_predicted_y)
+                ]
+                metric_value = sum(metric_values) / len(metric_values)
         else:
             raise NotImplementedError("Only sklearn metrics are supported for now")
 

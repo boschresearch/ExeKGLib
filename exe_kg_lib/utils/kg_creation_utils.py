@@ -246,11 +246,11 @@ def deserialize_input_data_entity_dict(
                 # input entity refers to a data entity that is an output of a previous task
                 prev_task_output_name = match.group(1)
                 prev_task_type = match.group(2)
-                prev_task_pos = int(match.group(3))
+                prev_task_instance_number = int(match.group(3))
 
                 try:
                     # regex matched so assume that the data_entity_name is an output of a previous task
-                    prev_task_name = get_instance_name(prev_task_type, prev_task_pos, pipeline_name)
+                    prev_task_name = get_instance_name(prev_task_type, prev_task_instance_number, pipeline_name)
                     input_data_entity_dict[input_name].append(task_output_dicts[prev_task_name][prev_task_output_name])
                 except KeyError:
                     # regex matched but the data_entity_name is NOT an output of a previous task
