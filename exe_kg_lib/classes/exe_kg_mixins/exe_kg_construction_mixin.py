@@ -429,7 +429,9 @@ class ExeKGConstructionMixin:
         else:
             raise ValueError(f"Cannot create instance's name due to invalid parent entity type: {parent_entity.type}")
 
-        instance_name = get_instance_name(parent_entity.name, entity_type_dict[parent_entity.name])
+        instance_name = get_instance_name(
+            parent_entity.name, entity_type_dict[parent_entity.name], self.pipeline_serializable.name
+        )
         entity_type_dict[parent_entity.name] += 1
         return instance_name
 
@@ -469,7 +471,7 @@ class ExeKGConstructionMixin:
         for task in pipeline_serializable.tasks:
             # replace input data entity names with DataEntity objects
             input_data_entity_dict = deserialize_input_data_entity_dict(
-                task.input_data_entity_dict, data_entities_dict, task_output_dicts
+                task.input_data_entity_dict, data_entities_dict, task_output_dicts, pipeline_serializable.name
             )
             # add task to the KG
             added_task = self.add_task(
@@ -481,7 +483,9 @@ class ExeKGConstructionMixin:
             )
             pos = pos_per_task_type.get(task.task_type, 1)
             # store output data entities of the added task
-            task_output_dicts[get_instance_name(task.task_type, pos)] = added_task.output_dict
+            task_output_dicts[
+                get_instance_name(task.task_type, pos, self.pipeline_serializable.name)
+            ] = added_task.output_dict
 
             pos_per_task_type[task.task_type] = pos + 1
 

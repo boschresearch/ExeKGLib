@@ -223,6 +223,7 @@ def deserialize_input_data_entity_dict(
     input_data_entity_dict_ser: Dict[str, List[str]],
     data_entities_dict: Dict[str, DataEntity],
     task_output_dicts: Dict[str, TaskSerializable],
+    pipeline_name: str,
 ) -> Dict[str, List[DataEntity]]:
     """
     Deserializes the serialized input data entity dictionary.
@@ -231,6 +232,7 @@ def deserialize_input_data_entity_dict(
         input_data_entity_dict_ser (Dict[str, List[str]]): The serialized input data entity dictionary.
         data_entities_dict (Dict[str, DataEntity]): The dictionary of data entities.
         task_output_dicts (Dict[str, TaskSerializable]): The dictionary of task output objects.
+        pipeline_name (str): The name of the pipeline.
 
     Returns:
         Dict[str, List[DataEntity]]: The deserialized input data entity dictionary.
@@ -248,7 +250,7 @@ def deserialize_input_data_entity_dict(
 
                 try:
                     # regex matched so assume that the data_entity_name is an output of a previous task
-                    prev_task_name = get_instance_name(prev_task_type, prev_task_pos)
+                    prev_task_name = get_instance_name(prev_task_type, prev_task_pos, pipeline_name)
                     input_data_entity_dict[input_name].append(task_output_dicts[prev_task_name][prev_task_output_name])
                 except KeyError:
                     # regex matched but the data_entity_name is NOT an output of a previous task
