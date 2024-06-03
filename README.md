@@ -11,7 +11,7 @@ ExeKGLib is a Python library that simplifies the construction and execution of M
 
 ## 🌟 Features
 
-1. **🔨 Construct** data analytics pipelines that take tabular files (e.g. CSV) as input and process the data using a variety of [available tasks and methods](https://boschresearch.github.io/ExeKGLib/supported-methods/).
+1. **🔨 Construct** data analytics pipelines that take tabular files (e.g. CSV) as input and process the data using a variety of [available tasks and methods](https://boschresearch.github.io/ExeKGLib/supported-tasks-and-methods/).
 2. **💾 Save** the constructed pipelines as ExeKGs in RDF Turtle format.
 3. **▶️ Execute** the generated ExeKGs.
 
@@ -45,11 +45,17 @@ For detailed installation instructions, refer to the [installation page](https:/
 ## 🚀 Getting started
 
 [//]: # (--8<-- [start:gettingstarted])
-We provide [example Python files and a JSON file](https://github.com/boschresearch/ExeKGLib/tree/main/examples) that can be used to create the following pipelines:
+We provide [example Python and JSON files](https://github.com/boschresearch/ExeKGLib/tree/main/examples) that can be used to create the following pipelines:
 
-1. **🧠 ML pipeline**: Loads a CSV dataset, concatenates selected features, splits the data into training and testing sets, trains a Support Vector Classifier model, tests the model, calculates performance metrics (accuracy, F1 score, precision, and recall), and visualizes the results in bar plots.
-2. **📊 Statistics pipeline**: Loads a specific feature from a CSV dataset, calculates its mean and standard deviation, and visualizes the feature's values using a line plot and the calculated statistics using a bar plot.
-3. **📈 Visualization pipeline**: The pipeline loads two numerical features from a CSV dataset and visualizes each feature's values using separate line plots.
+1. **🧠 ML pipeline**:
+    1. `ml_pipeline_creation[from_json].py` and `MLPipeline.json`: Loads a CSV dataset, concatenates selected features, splits the data into training and testing sets, trains a Support Vector Classifier model, tests the model, calculates performance metrics (accuracy, F1 score, precision, and recall), and visualizes the results in bar plots.
+    2. `MLPipelineExtended.json`: An extended version of the above ML pipeline that adds a data splitting step for Stratified K-Fold Cross-Validation. Then, it trains and tests the model using the cross-validation technique and visualizes the validation and test F1 scores in bar plots.
+2. **📊 Statistics pipeline**:
+    - `stats_pipeline_creation.py`: Loads a specific feature from a CSV dataset, calculates its mean and standard deviation, and visualizes the feature's values using a line plot and the calculated statistics using a bar plot.
+3. **📈 Visualization pipeline**:
+    - `visu_pipeline_creation.py`: The pipeline loads two numerical features from a CSV dataset and visualizes each feature's values using separate line plots.
+
+> 🗒️ **Note**: The naming convention for output names (used as inputs for subsequent tasks) in `.json` files can be found in `exe_kg_lib/utils/string_utils.py`. Look for `TASK_OUTPUT_NAME_REGEX`.
 
 [//]: # (--8<-- [end:gettingstarted])
 

@@ -1,7 +1,7 @@
 {
-    "name": "MLPipeline",
+    "name": "MLPipelineExtended",
     "input_data_path": "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\data\\dummy_data.csv",
-    "output_plots_dir": "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\plots\\MLPipeline",
+    "output_plots_dir": "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\plots\\MLPipelineExtended",
     "data_entities": [
         {
             "name": "feature_1",
@@ -84,6 +84,28 @@
         },
         {
             "kg_schema_short": "ml",
+            "task_type": "DataSplitting",
+            "method_type": "StratifiedKFoldMethod",
+            "method_params_dict": {
+                "hasParamNSplits": 3
+            },
+            "input_data_entity_dict": {
+                "DataInDataSplittingX": [
+                    "DataOutSplittedTrainDataX_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                ],
+                "DataInDataSplittingY": [
+                    "DataOutSplittedTrainDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutSplittedTestDataX",
+                "DataOutSplittedTestDataY",
+                "DataOutSplittedTrainDataX",
+                "DataOutSplittedTrainDataY"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
             "task_type": "BinaryClassification",
             "method_type": "SVCMethod",
             "method_params_dict": {
@@ -91,14 +113,31 @@
             },
             "input_data_entity_dict": {
                 "DataInTrainX": [
-                    "DataOutSplittedTrainDataX_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTrainDataX_DataSplitting2_MLPipeline_StratifiedKFoldMethod"
                 ],
                 "DataInTrainY": [
-                    "DataOutSplittedTrainDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTrainDataY_DataSplitting2_MLPipeline_StratifiedKFoldMethod"
                 ]
             },
             "output_names": [
                 "DataOutTrainModel"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "Test",
+            "method_type": "TestMethod",
+            "method_params_dict": {},
+            "input_data_entity_dict": {
+                "DataInTestModel": [
+                    "DataOutTrainModel_BinaryClassification1_MLPipeline_SVCMethod"
+                ],
+                "DataInTestX": [
+                    "DataOutSplittedTestDataX_DataSplitting2_MLPipeline_StratifiedKFoldMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutPredictedValueTest"
             ]
         },
         {
@@ -121,11 +160,11 @@
         {
             "kg_schema_short": "ml",
             "task_type": "PerformanceCalculation",
-            "method_type": "AccuracyScoreMethod",
+            "method_type": "F1ScoreMethod",
             "method_params_dict": {},
             "input_data_entity_dict": {
                 "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTestDataY_DataSplitting2_MLPipeline_StratifiedKFoldMethod"
                 ],
                 "DataInPredictedY": [
                     "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
@@ -145,41 +184,7 @@
                     "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
                 ],
                 "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
-                ]
-            },
-            "output_names": [
-                "DataOutScore"
-            ]
-        },
-        {
-            "kg_schema_short": "ml",
-            "task_type": "PerformanceCalculation",
-            "method_type": "PrecisionScoreMethod",
-            "method_params_dict": {},
-            "input_data_entity_dict": {
-                "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
-                ],
-                "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
-                ]
-            },
-            "output_names": [
-                "DataOutScore"
-            ]
-        },
-        {
-            "kg_schema_short": "ml",
-            "task_type": "PerformanceCalculation",
-            "method_type": "RecallScoreMethod",
-            "method_params_dict": {},
-            "input_data_entity_dict": {
-                "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
-                ],
-                "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
+                    "DataOutPredictedValueTest_Test2_MLPipeline_TestMethod"
                 ]
             },
             "output_names": [
@@ -202,27 +207,12 @@
             "task_type": "BarPlotting",
             "method_type": "BarMethod",
             "method_params_dict": {
-                "hasParamTitle": "Test Accuracy & F1"
+                "hasParamTitle": "Validation F1-score and Test F1-score"
             },
             "input_data_entity_dict": {
                 "DataInToPlot": [
-                    "DataOutScore_PerformanceCalculation1_MLPipeline_AccuracyScoreMethod",
+                    "DataOutScore_PerformanceCalculation1_MLPipeline_F1ScoreMethod",
                     "DataOutScore_PerformanceCalculation2_MLPipeline_F1ScoreMethod"
-                ]
-            },
-            "output_names": []
-        },
-        {
-            "kg_schema_short": "visu",
-            "task_type": "BarPlotting",
-            "method_type": "BarMethod",
-            "method_params_dict": {
-                "hasParamTitle": "Test Precision & Recall"
-            },
-            "input_data_entity_dict": {
-                "DataInToPlot": [
-                    "DataOutScore_PerformanceCalculation3_MLPipeline_PrecisionScoreMethod",
-                    "DataOutScore_PerformanceCalculation4_MLPipeline_RecallScoreMethod"
                 ]
             },
             "output_names": []
