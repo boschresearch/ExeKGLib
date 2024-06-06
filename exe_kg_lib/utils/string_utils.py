@@ -39,10 +39,12 @@ def property_iri_to_field_name(property_iri: str) -> str:
         str: The converted field name.
     """
     snake_case = camel_to_snake(property_iri.split("#")[1])
-    return snake_case.replace("has_", "").replace("param_", "")
+    snake_case = re.sub("^has_", "", snake_case)
+    snake_case = re.sub("^param_", "", snake_case)
+    return snake_case
 
 
-def class_name_to_module_name(class_name: str):
+def class_name_to_module_name(class_name: str) -> str:
     """
     Converts a class name to a module name by removing the "Module" suffix and converting it to snake case.
 
@@ -56,7 +58,7 @@ def class_name_to_module_name(class_name: str):
     return camel_to_snake(name)
 
 
-def class_name_to_method_name(class_name: str):
+def class_name_to_method_name(class_name: str) -> str:
     """
     Converts a class name to a method name by removing the word "Method" from the end of the class name.
 

@@ -59,11 +59,11 @@ class ExeKGBase:
         for bottom_level_schema_kg in bottom_level_schemata_kgs:
             self.input_kg += bottom_level_schema_kg
 
-        self.output_kg = Graph(bind_namespaces="rdflib")  # variable to store the constructed ExeKG
+        self.exe_kg = Graph(bind_namespaces="rdflib")  # variable to store the constructed ExeKG
         self.pipeline_instance = None  # variable to store pipeline's metadata
         self.pipeline_serializable = Pipeline()  # simplified version of pipeline for serialization purposes
 
-        self._bind_used_namespaces([self.input_kg, self.output_kg])
+        self._bind_used_namespaces([self.input_kg, self.exe_kg])
 
         # below variables are filled in self._parse_kgs()
         self.task_type_dict = {}  # dict for uniquely naming each new pipeline task

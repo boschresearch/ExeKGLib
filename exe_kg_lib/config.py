@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
 from pathlib import Path
 
 from exe_kg_lib.utils.string_utils import concat_paths

@@ -1,10 +1,13 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+import ast
 import itertools
+import os
+import pickle
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Callable, Union
+from typing import Callable, Dict, Union
 
 import pandas as pd
 from rdflib import XSD, Graph, Literal, URIRef
@@ -14,13 +17,16 @@ from exe_kg_lib.classes.entity import Entity
 from exe_kg_lib.classes.exe_kg_mixins.exe_kg_construction_mixin import \
     ExeKGConstructionMixin
 from exe_kg_lib.classes.kg_schema import KGSchema
+from exe_kg_lib.classes.method import Method
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.classes.tasks import ml_tasks, statistic_tasks, visual_tasks
+from exe_kg_lib.utils.kg_creation_utils import load_exe_kg, save_exe_kg
+from exe_kg_lib.utils.kg_edit_utils import update_metric_values
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 from exe_kg_lib.utils.query_utils import (NoResultsError,
+                                          get_converted_module_hierarchy_chain,
                                           get_first_query_result_if_exists,
                                           get_method_by_task_iri,
-                                          get_module_hierarchy_chain,
                                           get_pipeline_and_first_task_iri,
                                           query_data_entity_reference_iri,
                                           query_input_triples,
@@ -29,107 +35,151 @@ from exe_kg_lib.utils.query_utils import (NoResultsError,
                                           query_output_triples,
                                           query_parameters_triples,
                                           query_top_level_task_iri)
-from exe_kg_lib.utils.string_utils import (class_name_to_method_name,
-                                           class_name_to_module_name,
-                                           property_iri_to_field_name)
+from exe_kg_lib.utils.string_utils import property_iri_to_field_name
 
 
 class ExeKGExecutionMixin:
     # see exe_kg_lib/classes/exe_kg_base.py for the definition of these attributes
     input_kg: Graph
+    exe_kg: Graph
     top_level_schema: KGSchema
+    bottom_level_schemata: Dict[str, KGSchema]
     shacl_shapes_s: str
     # see exe_kg_lib/classes/exe_kg_mixins/exe_kg_construction_mixin.py for the definition of this attribute
     create_exe_kg_from_json: Callable[[ExeKGConstructionMixin, Union[Path, TextIOWrapper, str]], Graph]
 
-    def _property_value_to_field_value(self, property_value: Union[str, Literal]) -> Union[str, DataEntity]:
+    def _property_value_to_field_value(self, property_value: Union[str, Literal]) -> Union[str, DataEntity, Method]:
         """
-        Converts a KG property value to a Python field value.
+        Converts a property value (from the KG) to a Python field value.
 
         Args:
             property_value (Union[str, Literal]): The property value to be converted.
 
         Returns:
-            Union[str, DataEntity]: The converted field value.
+            Union[str, DataEntity, Method]: The converted field value.
 
+        Raises:
+            NoResultsError: If the extra parent entity that is not a subclass of AtomicMethod cannot be retrieved.
         """
-        property_value_s = str(property_value)
-        if "#" in property_value_s:
-            try:
-                return self._parse_data_entity_by_iri(property_value_s)
-            except NoResultsError:  # property_value_s isn't an IRI of a DataEntity instance
-                if not isinstance(property_value, Literal):
-                    return property_value
-                return self._literal_to_field_value(property_value)
+        if isinstance(property_value, Literal):
+            return self._literal_to_field_value(property_value)
 
-        if not isinstance(property_value, Literal):
-            return property_value
-        return self._literal_to_field_value(property_value)
+        property_value_s = str(property_value)
+
+        # fetch type of entity with given IRI, assuming it's a DataEntity instance
+        query_result = get_first_query_result_if_exists(
+            query_instance_parent_iri,
+            self.input_kg,
+            property_value_s,
+            self.top_level_schema.namespace.DataEntity,
+        )
+        if query_result is not None:
+            data_entity_parent_iri = str(query_result[0])
+            return self._parse_data_entity_by_iri(property_value_s, data_entity_parent_iri)
+
+        # fetch type of entity with given IRI, assuming it's an AtomicMethod instance
+        query_result = get_first_query_result_if_exists(
+            query_instance_parent_iri,
+            self.input_kg,
+            property_value_s,
+            self.top_level_schema.namespace.AtomicMethod,
+        )
+
+        if query_result is None:
+            return property_value_s
+
+        method_parent_iri = str(query_result[0])
+
+        # fetch another type associated with the entity identified by the given IRI
+        query_result = get_first_query_result_if_exists(
+            query_instance_parent_iri,
+            self.input_kg,
+            property_value_s,
+            self.top_level_schema.namespace.AtomicMethod,
+            True,  # negation of inheritance, so the parent that does not inherit AtomicMethod is returned
+        )
+        method_extra_parent_iri = str(query_result[0]) if query_result is not None else None
+        if method_extra_parent_iri is None:
+            raise NoResultsError(
+                f"For method with iri {property_value_s}, cannot retrieve extra parent entity that is not a subclass of AtomicMethod"
+            )
+
+        # NOTE: here we use the method_extra_parent_iri as the parent entity of the method
+        #       this is important for correctly parsing each task's inputs during pipeline execution (see get_inputs() in Task class)
+        method = Method(property_value_s, Entity(method_extra_parent_iri))
+
+        method.module_chain = get_converted_module_hierarchy_chain(
+            self.input_kg, self.top_level_schema.namespace_prefix, method_parent_iri
+        )
+
+        # triples for the parameters attached to the method of this task
+        method_related_triples = list(
+            query_parameters_triples(self.input_kg, self.top_level_schema.namespace_prefix, method.iri)
+        )
+        for s, p, o in method_related_triples:
+            # parse property IRI and value
+            field_name = property_iri_to_field_name(str(p))
+            field_value = self._property_value_to_field_value(o)
+
+            method.params_dict[field_name] = field_value
+
+        return method
 
     def _literal_to_field_value(self, literal: Literal) -> Union[str, int, float, bool]:
         """
-        Converts a Literal object to a Python field value of the appropriate type.
+        Converts a Literal object to a Python object based on its datatype.
 
         Args:
             literal (Literal): The Literal object to be converted.
 
         Returns:
-            Union[str, int, float, bool]: The converted field value.
+            Union[str, int, float, bool]: The converted Python object.
 
+        Raises:
+            ValueError: If the datatype of the literal is unsupported.
         """
         if literal.datatype == XSD.string:
-            return str(literal)
+            try:
+                # try to convert string to Python object e.g. dict
+                return ast.literal_eval(str(literal))
+            except (ValueError, SyntaxError):
+                # if conversion fails, return string
+                return str(literal)
         elif literal.datatype == XSD.int:
             return int(literal)
         elif literal.datatype == XSD.float:
             return float(literal)
         elif literal.datatype == XSD.boolean:
             return bool(literal)
-        else:
-            return literal
 
-    def _parse_data_entity_by_iri(self, in_out_data_entity_iri: str) -> DataEntity:
+        raise ValueError(f"Unsupported datatype for literal: {literal}")
+
+    def _parse_data_entity_by_iri(self, data_entity_instance_iri: str, data_entity_parent_iri: str) -> DataEntity:
         """
-        Parses an input or output data entity and stores the parsed info in a Python object.
+        Parses a data entity and stores the info in a DataEntity object.
 
         Args:
-            in_out_data_entity_iri (str): The IRI of the data entity to parse.
+            data_entity_instance_iri (str): The IRI of the data entity instance to be parsed.
+            data_entity_parent_iri (str): The IRI of the parent entity of the data entity.
 
         Returns:
             DataEntity: The parsed DataEntity object.
-
-        Raises:
-            NoResultsError: If the given IRI doesn't belong to an instance of a subclass of DataEntity.
         """
-        # fetch type of entity with given IRI
-        query_result = get_first_query_result_if_exists(
-            query_instance_parent_iri,
-            self.input_kg,
-            in_out_data_entity_iri,
-            self.top_level_schema.namespace.DataEntity,
-        )
-        if query_result is None:
-            raise NoResultsError(
-                f"Given IRI {in_out_data_entity_iri} doesn't belong to an instance of a subclass of {str(self.top_level_schema.namespace.DataEntity)}"
-            )
-
-        data_entity_parent_iri = str(query_result[0])
-
         # fetch IRI of data entity that is referenced by the given entity
         query_result = get_first_query_result_if_exists(
             query_data_entity_reference_iri,
             self.input_kg,
             self.top_level_schema.namespace_prefix,
-            in_out_data_entity_iri,
+            data_entity_instance_iri,
         )
 
         if query_result is None:  # no referenced data entity found
-            data_entity_ref_iri = in_out_data_entity_iri
+            data_entity_ref_iri = data_entity_instance_iri
         else:
             data_entity_ref_iri = str(query_result[0])
 
         # create DataEntity object to store all the parsed properties
-        data_entity = DataEntity(in_out_data_entity_iri, Entity(data_entity_parent_iri))
+        data_entity = DataEntity(data_entity_instance_iri, Entity(data_entity_parent_iri))
         data_entity.reference = data_entity_ref_iri.split("#")[1]
 
         for s, p, o in self.input_kg.triples((URIRef(data_entity_ref_iri), None, None)):
@@ -141,6 +191,29 @@ class ExeKGExecutionMixin:
             setattr(data_entity, field_name, field_value)  # set field value dynamically
 
         return data_entity
+
+    def _parse_method_of_task(self, task_iri: str) -> Method:
+        """
+        Parses the method associated with a given task IRI.
+
+        Args:
+            task_iri (str): The IRI of the task.
+
+        Returns:
+            Method: The parsed method object.
+        """
+        method = get_method_by_task_iri(
+            self.input_kg,
+            self.top_level_schema.namespace_prefix,
+            self.top_level_schema.namespace,
+            task_iri,
+        )
+
+        method.module_chain = get_converted_module_hierarchy_chain(
+            self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
+        )
+
+        return method
 
     def _parse_task_by_iri(
         self, task_iri: str, plots_output_dir: str, canvas_task: visual_tasks.CanvasCreation = None
@@ -191,15 +264,6 @@ class ExeKGExecutionMixin:
 
         task_top_level_parent = Entity(task_top_level_parent_iri, None)
 
-        method = get_method_by_task_iri(
-            self.input_kg,
-            self.top_level_schema.namespace_prefix,
-            self.top_level_schema.namespace,
-            task_iri,
-        )
-        # if method is None:
-        #     print(f"Cannot retrieve method for task with iri: {task_iri}")
-
         # perform automatic mapping of KG task class to Python sub-class
         class_name = task_top_level_parent.name
 
@@ -218,22 +282,9 @@ class ExeKGExecutionMixin:
         else:
             task = Class(task_iri, Task(task_parent_iri))
 
-        module_chain_names = None
-        try:
-            module_chain_names = get_module_hierarchy_chain(
-                self.input_kg, self.top_level_schema.namespace_prefix, method.parent_entity.iri
-            )
-        except NoResultsError:
-            print(
-                f"Cannot retrieve module chain for method class: {method.parent_entity.iri}. Proceeding without it..."
-            )
-
-        if module_chain_names:
-            # convert KG class names to module names and reverse the module chain to store it in the correct order
-            module_chain_names = [class_name_to_module_name(name) for name in module_chain_names]
-            module_chain_names = [class_name_to_method_name(method.type)] + module_chain_names
-            module_chain_names.reverse()
-            task.method_module_chain = module_chain_names
+        # fetch method of the task and store it in the task object
+        method = self._parse_method_of_task(task_iri)
+        task.method = method
 
         # input triples
         task_related_triples = list(
@@ -275,31 +326,11 @@ class ExeKGExecutionMixin:
             else:  # method parameter
                 # separate method class data properties from inherited ones
                 if method_class_data_property_iris and str(p) in method_class_data_property_iris:
-                    task.method_params_dict[field_name] = field_value
+                    task.method.params_dict[field_name] = field_value
                 else:
-                    task.method_inherited_params_dict[field_name] = field_value
+                    task.method.inherited_params_dict[field_name] = field_value
 
         return task
-
-    def _load_exe_kg(self, input_path: str) -> Graph:
-        """
-        Loads the ExeKG from the specified input path.
-
-        Args:
-            input_path (str): The path to the ExeKG file.
-
-        Returns:
-            Graph: The loaded ExeKG.
-        """
-        input_exe_kg = Graph(bind_namespaces="rdflib")
-        if input_path.endswith(".ttl"):
-            # parse ExeKG from Turtle file
-            input_exe_kg.parse(input_path, format="n3")
-        elif input_path.endswith(".json"):
-            # convert simplified serialized pipeline to ExeKG
-            input_exe_kg = self.create_exe_kg_from_json(input_path)
-
-        return input_exe_kg
 
     def execute_pipeline(self, input_exe_kg_path: str) -> None:
         """
@@ -314,9 +345,11 @@ class ExeKGExecutionMixin:
         Returns:
             None
         """
-        input_exe_kg = self._load_exe_kg(input_exe_kg_path)
+        self.exe_kg = load_exe_kg(
+            input_exe_kg_path, self.create_exe_kg_from_json if input_exe_kg_path.endswith(".json") else None
+        )
 
-        self.input_kg += input_exe_kg
+        self.input_kg += self.exe_kg
         check_kg_executability(self.input_kg, self.shacl_shapes_s)
 
         pipeline_iri, input_data_path, plots_output_dir, next_task_iri = get_pipeline_and_first_task_iri(
@@ -335,14 +368,14 @@ class ExeKGExecutionMixin:
             try:
                 next_task = self._parse_task_by_iri(next_task_iri, plots_output_dir, canvas_task)
             except NoResultsError as e:
-                print(e)
-                raise RuntimeError(f"Parsing of task with IRI {next_task_iri} failed with the above exception")
+                raise RuntimeError(f"{e}\n\nParsing of task with IRI {next_task_iri} failed with the above exception")
 
             try:
                 output = next_task.run_method(task_output_dict, input_data)
             except NotImplementedError as e:
-                print(e)
-                raise RuntimeError(f"Execution of method for task {next_task_iri} failed with the above exception")
+                raise RuntimeError(
+                    f"{e}\n\nExecution of method for task {next_task_iri} failed with the above exception"
+                )
 
             if output:
                 task_output_dict.update(output)
@@ -351,3 +384,21 @@ class ExeKGExecutionMixin:
                 canvas_task = next_task
 
             next_task_iri = next_task.next_task
+
+        update_metric_values(
+            self.exe_kg,
+            task_output_dict,
+            self.bottom_level_schemata["ml"].namespace,
+            self.top_level_schema.namespace,
+        )
+
+        save_exe_kg(
+            self.exe_kg,
+            self.input_kg,
+            self.shacl_shapes_s,
+            None,
+            os.path.dirname(input_exe_kg_path),
+            pipeline_iri.split("#")[-1],
+            check_executability=False,
+            save_to_json=False,
+        )

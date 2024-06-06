@@ -1,0 +1,85 @@
+{
+    "name": "StatsPipeline",
+    "input_data_path": "FULL_PATH_TO_INPUT_FILE",
+    "output_plots_dir": "FULL_PATH_TO_OUTPUT_PLOTS_DIR",
+    "data_entities": [
+        {
+            "name": "feature_1",
+            "source": "feature_1",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        }
+    ],
+    "tasks": [
+        {
+            "kg_schema_short": "stats",
+            "task_type": "CentralTendencyMeasure",
+            "method_type": "MeanMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInStatisticCalculation": [
+                    "feature_1"
+                ]
+            },
+            "output_names": [
+                "DataOutStatisticCalculation"
+            ]
+        },
+        {
+            "kg_schema_short": "stats",
+            "task_type": "DispersionMeasure",
+            "method_type": "StdMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInStatisticCalculation": [
+                    "feature_1"
+                ]
+            },
+            "output_names": [
+                "DataOutStatisticCalculation"
+            ]
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "CanvasCreation",
+            "method_type": "CanvasMethod",
+            "method_params_dict": {
+                "hasParamLayout": "2 1",
+                "hasParamFigureSize": "10 10"
+            },
+            "input_entity_info_dict": {},
+            "output_names": []
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "LinePlotting",
+            "method_type": "PlotMethod",
+            "method_params_dict": {
+                "hasParamTitle": "Feature 1",
+                "hasParamAnnotate": false
+            },
+            "input_entity_info_dict": {
+                "DataInToPlot": [
+                    "feature_1"
+                ]
+            },
+            "output_names": []
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "BarPlotting",
+            "method_type": "BarMethod",
+            "method_params_dict": {
+                "hasParamTitle": "Feature 1's Mean and Standard Deviation",
+                "hasParamAnnotate": true
+            },
+            "input_entity_info_dict": {
+                "DataInToPlot": [
+                    "DataOutStatisticCalculation_CentralTendencyMeasure1_StatsPipeline_MeanMethod",
+                    "DataOutStatisticCalculation_DispersionMeasure1_StatsPipeline_StdMethod"
+                ]
+            },
+            "output_names": []
+        }
+    ]
+}

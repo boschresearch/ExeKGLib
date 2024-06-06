@@ -1,7 +1,7 @@
 {
-    "name": "MLPipelineExtended",
-    "input_data_path": "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\data\\dummy_data.csv",
-    "output_plots_dir": "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\plots\\MLPipelineExtended",
+    "name": "MLPipelineModelSelection",
+    "input_data_path": "FULL_PATH_TO_INPUT_FILE",
+    "output_plots_dir": "FULL_PATH_TO_OUTPUT_PLOTS_DIR",
     "data_entities": [
         {
             "name": "feature_1",
@@ -46,7 +46,7 @@
             "task_type": "Concatenation",
             "method_type": "ConcatenationMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInConcatenation": [
                     "feature_1",
                     "feature_2",
@@ -67,9 +67,9 @@
                 "hasParamTestSize": 0.2,
                 "hasParamRandomState": 0
             },
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInDataSplittingX": [
-                    "DataOutConcatenatedData_Concatenation1_MLPipeline_ConcatenationMethod"
+                    "DataOutConcatenatedData_Concatenation1_MLPipelineModelSelection_ConcatenationMethod"
                 ],
                 "DataInDataSplittingY": [
                     "label"
@@ -84,40 +84,41 @@
         },
         {
             "kg_schema_short": "ml",
-            "task_type": "DataSplitting",
-            "method_type": "StratifiedKFoldMethod",
+            "task_type": "ModelSelection",
+            "method_type": "GridSearchCVMethod",
             "method_params_dict": {
-                "hasParamNSplits": 3
+                "hasParamParamGrid": {
+                    "C": [
+                        0.1,
+                        1,
+                        10,
+                        100
+                    ],
+                    "gamma": [
+                        1,
+                        0.1,
+                        0.01,
+                        0.001
+                    ],
+                    "kernel": [
+                        "rbf",
+                        "linear"
+                    ]
+                }
             },
-            "input_data_entity_dict": {
-                "DataInDataSplittingX": [
-                    "DataOutSplittedTrainDataX_DataSplitting1_MLPipeline_TrainTestSplitMethod"
-                ],
-                "DataInDataSplittingY": [
-                    "DataOutSplittedTrainDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
-                ]
-            },
-            "output_names": [
-                "DataOutSplittedTestDataX",
-                "DataOutSplittedTestDataY",
-                "DataOutSplittedTrainDataX",
-                "DataOutSplittedTrainDataY"
-            ]
-        },
-        {
-            "kg_schema_short": "ml",
-            "task_type": "BinaryClassification",
-            "method_type": "SVCMethod",
-            "method_params_dict": {
-                "hasParamRandomState": 0
-            },
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInTrainX": [
-                    "DataOutSplittedTrainDataX_DataSplitting2_MLPipeline_StratifiedKFoldMethod"
+                    "DataOutSplittedTrainDataX_DataSplitting1_MLPipelineModelSelection_TrainTestSplitMethod"
                 ],
                 "DataInTrainY": [
-                    "DataOutSplittedTrainDataY_DataSplitting2_MLPipeline_StratifiedKFoldMethod"
-                ]
+                    "DataOutSplittedTrainDataY_DataSplitting1_MLPipelineModelSelection_TrainTestSplitMethod"
+                ],
+                "InputModelAsMethod": {
+                    "method_type": "SVCMethod",
+                    "params_dict": {
+                        "hasParamRandomState": 0
+                    }
+                }
             },
             "output_names": [
                 "DataOutTrainModel"
@@ -128,29 +129,12 @@
             "task_type": "Test",
             "method_type": "TestMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInTestModel": [
-                    "DataOutTrainModel_BinaryClassification1_MLPipeline_SVCMethod"
+                    "DataOutTrainModel_ModelSelection1_MLPipelineModelSelection_GridSearchCVMethod"
                 ],
                 "DataInTestX": [
-                    "DataOutSplittedTestDataX_DataSplitting2_MLPipeline_StratifiedKFoldMethod"
-                ]
-            },
-            "output_names": [
-                "DataOutPredictedValueTest"
-            ]
-        },
-        {
-            "kg_schema_short": "ml",
-            "task_type": "Test",
-            "method_type": "TestMethod",
-            "method_params_dict": {},
-            "input_data_entity_dict": {
-                "DataInTestModel": [
-                    "DataOutTrainModel_BinaryClassification1_MLPipeline_SVCMethod"
-                ],
-                "DataInTestX": [
-                    "DataOutSplittedTestDataX_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTestDataX_DataSplitting1_MLPipelineModelSelection_TrainTestSplitMethod"
                 ]
             },
             "output_names": [
@@ -160,14 +144,14 @@
         {
             "kg_schema_short": "ml",
             "task_type": "PerformanceCalculation",
-            "method_type": "F1ScoreMethod",
+            "method_type": "AccuracyScoreMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting2_MLPipeline_StratifiedKFoldMethod"
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineModelSelection_TrainTestSplitMethod"
                 ],
                 "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
+                    "DataOutPredictedValueTest_Test1_MLPipelineModelSelection_TestMethod"
                 ]
             },
             "output_names": [
@@ -179,12 +163,46 @@
             "task_type": "PerformanceCalculation",
             "method_type": "F1ScoreMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineModelSelection_TrainTestSplitMethod"
                 ],
                 "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test2_MLPipeline_TestMethod"
+                    "DataOutPredictedValueTest_Test1_MLPipelineModelSelection_TestMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutScore"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "PerformanceCalculation",
+            "method_type": "PrecisionScoreMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInRealY": [
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineModelSelection_TrainTestSplitMethod"
+                ],
+                "DataInPredictedY": [
+                    "DataOutPredictedValueTest_Test1_MLPipelineModelSelection_TestMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutScore"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "PerformanceCalculation",
+            "method_type": "RecallScoreMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInRealY": [
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineModelSelection_TrainTestSplitMethod"
+                ],
+                "DataInPredictedY": [
+                    "DataOutPredictedValueTest_Test1_MLPipelineModelSelection_TestMethod"
                 ]
             },
             "output_names": [
@@ -199,7 +217,7 @@
                 "hasParamLayout": "2 1",
                 "hasParamFigureSize": "10 10"
             },
-            "input_data_entity_dict": {},
+            "input_entity_info_dict": {},
             "output_names": []
         },
         {
@@ -207,12 +225,27 @@
             "task_type": "BarPlotting",
             "method_type": "BarMethod",
             "method_params_dict": {
-                "hasParamTitle": "Validation F1-score and Test F1-score"
+                "hasParamTitle": "Test Accuracy and F1-score"
             },
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInToPlot": [
-                    "DataOutScore_PerformanceCalculation1_MLPipeline_F1ScoreMethod",
-                    "DataOutScore_PerformanceCalculation2_MLPipeline_F1ScoreMethod"
+                    "DataOutScore_PerformanceCalculation1_MLPipelineModelSelection_AccuracyScoreMethod",
+                    "DataOutScore_PerformanceCalculation2_MLPipelineModelSelection_F1ScoreMethod"
+                ]
+            },
+            "output_names": []
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "BarPlotting",
+            "method_type": "BarMethod",
+            "method_params_dict": {
+                "hasParamTitle": "Test Precision & Recall"
+            },
+            "input_entity_info_dict": {
+                "DataInToPlot": [
+                    "DataOutScore_PerformanceCalculation3_MLPipelineModelSelection_PrecisionScoreMethod",
+                    "DataOutScore_PerformanceCalculation4_MLPipelineModelSelection_RecallScoreMethod"
                 ]
             },
             "output_names": []

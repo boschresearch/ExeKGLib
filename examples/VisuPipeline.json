@@ -1,0 +1,62 @@
+{
+    "name": "VisuPipeline",
+    "input_data_path": "FULL_PATH_TO_INPUT_FILE",
+    "output_plots_dir": "FULL_PATH_TO_OUTPUT_PLOTS_DIR",
+    "data_entities": [
+        {
+            "name": "feature_1",
+            "source": "feature_1",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_2",
+            "source": "feature_2",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        }
+    ],
+    "tasks": [
+        {
+            "kg_schema_short": "visu",
+            "task_type": "CanvasCreation",
+            "method_type": "CanvasMethod",
+            "method_params_dict": {
+                "hasParamLayout": "1 2",
+                "hasParamFigureSize": "10 5"
+            },
+            "input_entity_info_dict": {},
+            "output_names": []
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "LinePlotting",
+            "method_type": "PlotMethod",
+            "method_params_dict": {
+                "hasParamTitle": "Feature 1",
+                "hasParamAnnotate": false
+            },
+            "input_entity_info_dict": {
+                "DataInToPlot": [
+                    "feature_1"
+                ]
+            },
+            "output_names": []
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "LinePlotting",
+            "method_type": "PlotMethod",
+            "method_params_dict": {
+                "hasParamTitle": "Feature 2",
+                "hasParamAnnotate": false
+            },
+            "input_entity_info_dict": {
+                "DataInToPlot": [
+                    "feature_2"
+                ]
+            },
+            "output_names": []
+        }
+    ]
+}

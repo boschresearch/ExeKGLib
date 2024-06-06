@@ -12,23 +12,25 @@ from exe_kg_lib.classes.data_entity import DataEntity
 from exe_kg_lib.classes.entity import Entity
 from exe_kg_lib.classes.exe_kg_serialization.pipeline import Pipeline
 from exe_kg_lib.classes.kg_schema import KGSchema
+from exe_kg_lib.classes.method import Method
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.utils.kg_creation_utils import (
     add_and_attach_data_entity, add_data_entity_instance,
     add_instance_from_parent_with_relation, add_literal, create_pipeline_task,
-    deserialize_input_data_entity_dict)
+    deserialize_input_entity_info_dict, field_value_to_literal, save_exe_kg)
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
-from exe_kg_lib.utils.query_utils import (
-    NoResultsError, get_grouped_inherited_inputs,
-    get_grouped_inherited_outputs, get_method_grouped_params_plus_inherited,
-    query_method_properties_and_methods)
+from exe_kg_lib.utils.query_utils import (NoResultsError,
+                                          get_grouped_inherited_inputs,
+                                          get_grouped_inherited_outputs,
+                                          get_method_grouped_params,
+                                          query_method_properties_and_methods)
 from exe_kg_lib.utils.string_utils import (get_instance_name,
                                            get_task_output_name)
 
 
 class ExeKGConstructionMixin:
     # see exe_kg_lib/classes/exe_kg_base.py for the definition of these attributes
-    output_kg: Graph
+    exe_kg: Graph
     pipeline_instance: Entity
     pipeline_serializable: Pipeline
     top_level_schema: KGSchema
@@ -69,7 +71,7 @@ class ExeKGConstructionMixin:
         self.pipeline_instance = create_pipeline_task(
             self.top_level_schema.namespace,
             self.pipeline,
-            self.output_kg,
+            self.exe_kg,
             pipeline_name,
             input_data_path,
             plots_output_dir,
@@ -113,13 +115,94 @@ class ExeKGConstructionMixin:
             self.top_level_schema.namespace + data_structure_name,
         )
 
+    def create_method(self, method_type: str, params_dict: Dict[str, Union[str, int, float, dict]]) -> Method:
+        """
+        Creates a Method object with the specified method type and parameters.
+
+        Args:
+            method_type (str): The type of the method.
+            params_dict (Dict[str, Union[str, int, float, dict]]): A dictionary containing the parameters for the method.
+
+        Returns:
+            Method: The created Method object.
+        """
+        return Method(
+            self.top_level_schema.namespace + method_type,
+            self.atomic_method,
+            module_chain=None,
+            params_dict=params_dict,
+        )
+
+    def _add_and_link_method(
+        self,
+        method_type: str,
+        method_params_dict: Dict[str, Union[str, int, float, dict]],
+        relation_iri: str,
+        task_instance: Task,
+        namespace_to_use: Namespace,
+        method_extra_parent_iri: str = None,
+    ) -> None:
+        """
+        Adds a method instance to the ExeKG and links it to the task instance.
+
+        Args:
+            method_type (str): The type of the method.
+            method_params_dict (Dict[str, Union[str, int, float, dict]]): A dictionary containing the method parameters.
+            relation_iri (str): The IRI of the relation between the method instance and the task instance.
+            task_instance (Task): The task instance to link the method instance to.
+            namespace_to_use (Namespace): The namespace to use for creating the method instance.
+            method_extra_parent_iri (str, optional): The IRI of an additional parent for the method instance. Defaults to None.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If any of the provided method parameters could not be added to the method instance.
+        """
+        method_parent = Entity(namespace_to_use + method_type, self.atomic_method)
+        method_instance = add_instance_from_parent_with_relation(
+            namespace_to_use,
+            self.exe_kg,
+            method_parent,
+            relation_iri,
+            task_instance,
+            self.name_instance(method_parent),
+            method_extra_parent_iri,
+        )
+
+        # fetch compatible data properties from KG schema
+        property_list = get_method_grouped_params(
+            method_parent.iri,
+            self.top_level_schema.namespace_prefix,
+            self.input_kg,
+            inherited=method_parent.namespace == str(self.bottom_level_schemata["visu"].namespace),
+        )
+
+        method_params_dict_copy = method_params_dict.copy()
+        # add data properties to the task with given values
+        for property_iri, _ in property_list:
+            property_name = property_iri.split("#")[1]
+            # param_name = property_name_to_field_name(property_name)
+            if property_name not in method_params_dict_copy:
+                continue
+
+            input_value = method_params_dict_copy.pop(property_name)
+            literal = field_value_to_literal(input_value)
+
+            add_literal(self.exe_kg, method_instance, property_iri, literal)
+
+        if len(method_params_dict_copy) > 0:
+            raise ValueError(
+                f"Provided method parameters {method_params_dict_copy} could NOT be added to the method instance."
+            )
+
     def add_task(
         self,
         kg_schema_short: str,
-        input_data_entity_dict: Dict[str, List[DataEntity]],
-        method_params_dict: Dict[str, Union[str, int, float]],
-        task: str = None,
-        method: str = None,
+        input_entity_dict: Dict[str, Union[List[DataEntity], Method]],
+        method_params_dict: Dict[str, Union[str, int, float, dict]],
+        task_type: str,
+        method_type: str,
     ) -> Task:
         """
         Instantiates and adds a new task entity to the output KG.
@@ -127,10 +210,10 @@ class ExeKGConstructionMixin:
 
         Args:
             kg_schema_short (str): The short name of the KG schema to use (e.g. ml, visu, etc.).
-            input_data_entity_dict (Dict[str, List[DataEntity]]): A dictionary containing input data entities for the task.
-            method_params_dict (Dict[str, Union[str, int, float]]): A dictionary containing method parameters.
-            task (str, optional): The type of the task. Defaults to None.
-            method (str, optional): The type of the method. Defaults to None.
+            input_entity_dict (Dict[str, Union[List[DataEntity], Method]]): A dictionary containing input data entities for the task.
+            method_params_dict (Dict[str, Union[str, int, float, dict]]): A dictionary containing method parameters.
+            task_type (str): The type of the task. Defaults to None.
+            method_type (str): The type of the method. Defaults to None.
 
         Returns:
             Task: The created task object.
@@ -148,10 +231,10 @@ class ExeKGConstructionMixin:
         )  # use relation depending on the previous task
 
         # instantiate task and link it with the previous one
-        task_class = Task(kg_schema_to_use.namespace + task, self.atomic_task)
+        task_class = Task(kg_schema_to_use.namespace + task_type, self.atomic_task)
         added_entity = add_instance_from_parent_with_relation(
             kg_schema_to_use.namespace,
-            self.output_kg,
+            self.exe_kg,
             task_class,
             relation_iri,
             self.last_created_task,
@@ -160,12 +243,12 @@ class ExeKGConstructionMixin:
         task_instance = Task.from_entity(added_entity)  # create Task object from Entity object
 
         # instantiate and add given input data entities to the task
-        self._add_inputs_to_task(kg_schema_to_use.namespace, task_instance, input_data_entity_dict)
+        self._add_inputs_to_task(kg_schema_to_use.namespace, task_instance, input_entity_dict)
         # instantiate and add output data entities to the task, as specified in the KG schema
-        output_names = self._add_outputs_to_task(task_instance, method)
+        output_names = self._add_outputs_to_task(task_instance, method_type)
 
         # if no method is given, return the task without adding a method
-        if method is None:
+        if method_type is None:
             self.last_created_task = task_instance  # store created task
             return task_instance
 
@@ -178,58 +261,28 @@ class ExeKGConstructionMixin:
             )
         )
         chosen_property_method = next(
-            filter(lambda pair: pair[1].split("#")[1] == method, results), None
+            filter(lambda pair: pair[1].split("#")[1] == method_type, results), None
         )  # match given method_type with query result
 
         if chosen_property_method is None:
-            raise NoResultsError(f"Property connecting task of type {task} with method of type {method} not found")
-
-        method_parent = Entity(kg_schema_to_use.namespace + method, self.atomic_method)
-        # instantiate method and link it with the task using the appropriate chosen_property_method[0] relation
-        method_instance = add_instance_from_parent_with_relation(
-            kg_schema_to_use.namespace,
-            self.output_kg,
-            method_parent,
-            chosen_property_method[0],
-            task_instance,
-            self.name_instance(method_parent),
-        )
-
-        # fetch compatible data properties from KG schema
-        property_list = get_method_grouped_params_plus_inherited(
-            method_parent.iri, self.top_level_schema.namespace_prefix, self.input_kg
-        )
-
-        initial_method_params_dict = method_params_dict.copy()
-        provided_params_num = len(method_params_dict)
-        added_params_num = 0
-        # add data properties to the task with given values
-        for property_iri, _ in property_list:
-            property_name = property_iri.split("#")[1]
-            # param_name = property_name_to_field_name(property_name)
-            if property_name not in method_params_dict:
-                continue
-
-            input_value = method_params_dict.pop(property_name)
-            literal = self._field_value_to_literal(input_value)
-
-            add_literal(self.output_kg, method_instance, property_iri, literal)
-            added_params_num += 1
-
-        if added_params_num != provided_params_num:
-            raise ValueError(
-                f"Provided method parameters {method_params_dict} could NOT be added to the method instance."
+            raise NoResultsError(
+                f"Property connecting task of type {task_type} with method of type {method_type} not found"
             )
+
+        # instantiate method and link it with the task using the appropriate chosen_property_method[0] relation
+        self._add_and_link_method(
+            method_type, method_params_dict, chosen_property_method[0], task_instance, kg_schema_to_use.namespace
+        )
 
         self.last_created_task = task_instance  # store created task
 
         # add task to the serializable simplified pipeline
         self.pipeline_serializable.add_task(
             kg_schema_short,
-            task,
-            method,
-            initial_method_params_dict,
-            input_data_entity_dict,
+            task_type,
+            method_type,
+            method_params_dict,
+            input_entity_dict,
             output_names,
         )
 
@@ -239,7 +292,7 @@ class ExeKGConstructionMixin:
         self,
         namespace: Namespace,
         task_instance: Task,
-        input_data_entity_dict: Dict[str, List[DataEntity]],
+        input_entity_dict: Dict[str, Union[List[DataEntity], Method]],
     ) -> None:
         """
         Instantiates and adds given input data entities to the given task of the output KG.
@@ -247,7 +300,7 @@ class ExeKGConstructionMixin:
         Args:
             namespace (Namespace): The namespace of the task instance.
             task_instance (Task): The task instance to add inputs to.
-            input_data_entity_dict (Dict[str, List[DataEntity]], optional): A dictionary mapping input entity names to a list of DataEntity instances.
+            input_entity_dict (Dict[str, Union[List[DataEntity], Method]]): A dictionary mapping input entity names to a list of DataEntity instances.
         """
 
         results = list(
@@ -260,11 +313,36 @@ class ExeKGConstructionMixin:
 
         for input_entity_iri, info_l in results:
             input_property_iri = info_l[0][1]
-            input_entity_list = input_data_entity_dict[input_entity_iri.split("#")[1]]
+            input_data_structure_iris = [pair[0] for pair in info_l]
+            input_entity_name = input_entity_iri.split("#")[1]
 
-            self._add_input_data_entities_to_task(
-                input_entity_iri, input_entity_list, input_property_iri, task_instance
-            )
+            if input_entity_name not in input_entity_dict:
+                continue
+            input_entity_value = input_entity_dict[input_entity_name]
+            if isinstance(input_entity_value, Method):  # provided input is a method
+                if all(iri is None for iri in input_data_structure_iris):
+                    raise ValueError(f"Expecting a DataEntity, but got a Method for {input_entity_name}.")
+
+                method = input_entity_value
+                # instantiate and link method to the task
+                self._add_and_link_method(
+                    method.name,
+                    method.params_dict,
+                    input_property_iri,
+                    task_instance,
+                    task_instance.namespace,
+                    method_extra_parent_iri=input_entity_iri,
+                )
+            elif isinstance(input_entity_value, list) and all(
+                isinstance(elem, DataEntity) for elem in input_entity_value
+            ):  # provided input is list of data entities
+                self._add_input_data_entities_to_task(
+                    input_entity_iri, input_entity_value, input_property_iri, task_instance
+                )
+            else:
+                raise ValueError(
+                    f"Expecting a DataEntity or a Method for {input_entity_name}, but got {type(input_entity_value)}."
+                )
 
     def _add_input_data_entities_to_task(
         self,
@@ -280,7 +358,7 @@ class ExeKGConstructionMixin:
             data_entity_iri = input_entity_iri + "_" + task_instance.name + "_" + str(same_input_index)
             # instantiate given data entity
             add_data_entity_instance(
-                self.output_kg,
+                self.exe_kg,
                 self.data,
                 self.top_level_schema.kg,
                 self.top_level_schema.namespace,
@@ -294,7 +372,7 @@ class ExeKGConstructionMixin:
                 # data_structure_iri=input_data_entity.data_structure,
             )
             add_and_attach_data_entity(
-                self.output_kg,
+                self.exe_kg,
                 self.data,
                 self.top_level_schema.kg,
                 self.top_level_schema.namespace,
@@ -347,7 +425,7 @@ class ExeKGConstructionMixin:
                     data_structure_iri=data_structure_iri,
                 )
                 add_and_attach_data_entity(
-                    self.output_kg,
+                    self.exe_kg,
                     self.data,
                     self.top_level_schema.kg,
                     self.top_level_schema.namespace,
@@ -360,28 +438,6 @@ class ExeKGConstructionMixin:
 
         return output_names
 
-    def _field_value_to_literal(self, field_value: Union[str, int, float, bool]) -> Literal:
-        """
-        Converts a Python field value to a Literal object with the appropriate datatype.
-
-        Args:
-            field_value (Union[str, int, float, bool]): The value to be converted.
-
-        Returns:
-            Literal: The converted Literal object.
-
-        """
-        if isinstance(field_value, str):
-            return Literal(field_value, datatype=XSD.string)
-        elif isinstance(field_value, int):
-            return Literal(field_value, datatype=XSD.int)
-        elif isinstance(field_value, float):
-            return Literal(field_value, datatype=XSD.float)
-        elif isinstance(field_value, bool):
-            return Literal(field_value, datatype=XSD.boolean)
-        else:
-            return field_value
-
     def save_created_kg(self, dir_path: str, check_executability=True) -> None:
         """
         Save the created ExeKG and simplified pipeline.
@@ -390,21 +446,15 @@ class ExeKGConstructionMixin:
             dir_path (str): The directory path where the files will be saved.
         """
 
-        if check_executability:
-            check_kg_executability(self.output_kg + self.input_kg, self.shacl_shapes_s)
-
-        os.makedirs(dir_path, exist_ok=True)
-
-        # save the ExeKG in RDF/Turtle format
-        ttl_file_path = os.path.join(dir_path, f"{self.pipeline_instance.name}.ttl")
-        self.output_kg.serialize(destination=ttl_file_path)
-        print(f"Executable KG saved in RDF/Turtle format at {ttl_file_path}.")
-
-        # save the simplified pipeline in JSON format
-        json_file_path = os.path.join(dir_path, f"{self.pipeline_instance.name}.json")
-        with open(json_file_path, "w+") as json_file:
-            json_file.write(self.pipeline_serializable.to_json())
-        print(f"Pipeline (simplified) saved in JSON format to {json_file_path}.")
+        save_exe_kg(
+            self.exe_kg,
+            self.input_kg,
+            self.shacl_shapes_s,
+            self.pipeline_serializable,
+            dir_path,
+            self.pipeline_serializable.name,
+            check_executability,
+        )
 
     def name_instance(
         self,
@@ -429,6 +479,9 @@ class ExeKGConstructionMixin:
             entity_type_dict = self.method_type_dict
         else:
             raise ValueError(f"Cannot create instance's name due to invalid parent entity type: {parent_entity.type}")
+
+        if parent_entity.name not in entity_type_dict:
+            raise ValueError(f"Parent entity name {parent_entity.name} not found in entity type dictionary.")
 
         instance_name = get_instance_name(
             parent_entity.name, entity_type_dict[parent_entity.name], self.pipeline_serializable.name
@@ -471,16 +524,20 @@ class ExeKGConstructionMixin:
         task_output_dicts: Dict[str, Dict[str, DataEntity]] = {}
         for task in pipeline_serializable.tasks:
             # replace input data entity names with DataEntity objects
-            input_data_entity_dict = deserialize_input_data_entity_dict(
-                task.input_data_entity_dict, data_entities_dict, task_output_dicts, pipeline_serializable.name
+            input_entity_dict = deserialize_input_entity_info_dict(
+                task.input_entity_info_dict,
+                data_entities_dict,
+                task_output_dicts,
+                pipeline_serializable.name,
+                self.bottom_level_schemata[task.kg_schema_short].namespace,
             )
             # add task to the KG
             added_task = self.add_task(
                 kg_schema_short=task.kg_schema_short,
-                task=task.task_type,
-                method=task.method_type,
+                task_type=task.task_type,
+                method_type=task.method_type,
                 method_params_dict=task.method_params_dict,
-                input_data_entity_dict=input_data_entity_dict,
+                input_entity_dict=input_entity_dict,
             )
             pos = pos_per_task_type.get(task.task_type, 1)
             # store output data entities of the added task
@@ -490,18 +547,24 @@ class ExeKGConstructionMixin:
 
             pos_per_task_type[task.task_type] = pos + 1
 
-        check_kg_executability(self.output_kg + self.input_kg, self.shacl_shapes_s)
+        check_kg_executability(self.exe_kg + self.input_kg, self.shacl_shapes_s)
 
-        return self.output_kg
+        return self.exe_kg
 
     def clear_created_kg(self) -> None:
         """
         Clears the created ExeKG.
         """
-        self.output_kg = Graph(bind_namespaces="rdflib")
-        self._bind_used_namespaces([self.output_kg])
+        self.exe_kg = Graph(bind_namespaces="rdflib")
+        self.exe_kg.bind(self.top_level_schema.namespace_prefix, self.top_level_schema.namespace)
+        for bottom_level_kg_schema in self.bottom_level_schemata.values():
+            self.exe_kg.bind(
+                bottom_level_kg_schema.namespace_prefix,
+                bottom_level_kg_schema.namespace,
+            )
 
         self.pipeline_serializable = Pipeline()
+        self.pipeline_instance = None
 
         self.existing_data_entity_list = []
         self.last_created_task = None

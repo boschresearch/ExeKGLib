@@ -24,8 +24,8 @@ class Train(Task):
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame):
         """
-        Trains the machine learning model determined by self.method_module_chain.
-        The data to use are determined by self.inputs. Parameters to use for the model are in self.method_params_dict.
+        Trains the machine learning model determined by self.method.module_chain.
+        The data to use are determined by self.inputs. Parameters to use for the model are in self.method.params_dict.
         Expects one input data value with name "DataInTrainX" and one with name "DataInTrainY".
 
         Args:
@@ -41,11 +41,24 @@ class Train(Task):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input_x = input_dict["DataInTrainX"][0]["value"]
         input_y = input_dict["DataInTrainY"][0]["value"]
+        input_model_as_method = None
+        # check if input dict contains a method representing an ML model to be optimized
+        if "InputModelAsMethod" in input_dict:
+            input_model_as_method = input_dict["InputModelAsMethod"][0]["value"]
+            input_model_as_method_module = input_model_as_method.resolve_module()
 
-        method_module = self.resolve_module()
+        method_module = self.method.resolve_module()
         if "sklearn" in method_module.__module__:
             assert isinstance(method_module, type), "The method_module should be a class"
-            model = method_module(**self.method_params_dict)
+            if input_model_as_method:
+                # HPO (e.g. GridSearchCV) or Boosting (e.g. AdaBoostClassifier)
+                model = method_module(
+                    input_model_as_method_module(**input_model_as_method.params_dict),
+                    **self.method.params_dict,
+                )
+            else:
+                # normal training
+                model = method_module(**self.method.params_dict)
 
             if not isinstance(input_x, list):
                 model.fit(input_x, input_y)
@@ -128,8 +141,8 @@ class PrepareTransformer(Task):
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> Dict[str, Any]:
         """
-        Prepares the transformer determined by self.method_module_chain.
-        The data to use are determined by self.inputs. Parameters to use for the transformer are in self.method_params_dict.
+        Prepares the transformer determined by self.method.module_chain.
+        The data to use are determined by self.inputs. Parameters to use for the transformer are in self.method.params_dict.
         Expects one input data value with name "DataInToPrepareTransformer".
 
         Args:
@@ -145,11 +158,17 @@ class PrepareTransformer(Task):
         input_dict = self.get_inputs(other_task_output_dict, input_data)
         input = input_dict["DataInToPrepareTransformer"][0]["value"]
 
-        method_module = self.resolve_module()
+        method_module = self.method.resolve_module()
         if "sklearn" in method_module.__module__:
             assert isinstance(method_module, type), "The method_module should be a class"
-            transformer = method_module(**self.method_params_dict)
-            transformer.fit(input)
+            transformer = method_module(**self.method.params_dict)
+
+            if not isinstance(input, list):
+                transformer.fit(input)
+            else:
+                # multiple splits
+                for input_part in input:
+                    transformer.fit(input_part)
 
             print(f"{transformer.__class__.__name__} transforming finished")
         else:
@@ -187,7 +206,13 @@ class Transform(Task):
 
         # check if model belongs to sklearn library
         if "sklearn" in transformer.__module__:
-            transformed_input = transformer.transform(input)
+            if not isinstance(input, list):
+                transformed_input = transformer.transform(input)
+            else:  # multiple splits
+                transformed_input = [
+                    transformer.transform(x) for x in input
+                ]  # NOTE: it can be that the transformer will try to trasform unseen data, which will raise an error. e.g. if OneHotEncoder is used, one chunk of input may have a category that is not present in another chunk of input
+
         else:
             raise NotImplementedError("Only sklearn data transformers are supported for now")
 
@@ -220,8 +245,8 @@ class DataSplitting(Task):
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> Dict[str, Any]:
         """
-        Splits the data using the splitter determined by self.method_module_chain.
-        The data to use are determined by self.inputs. Parameters to use for the splitter are in self.method_params_dict.
+        Splits the data using the splitter determined by self.method.module_chain.
+        The data to use are determined by self.inputs. Parameters to use for the splitter are in self.method.params_dict.
         Expects one input data value with name "DataInDataSplittingX" and one with name "DataInDataSplittingY".
 
         Args:
@@ -238,15 +263,15 @@ class DataSplitting(Task):
         input_x = input_dict["DataInDataSplittingX"][0]["value"]
         input_y = input_dict["DataInDataSplittingY"][0]["value"]
 
-        if "TrainTestSplit" in self.method_module_chain:
-            method_module = self.resolve_module(module_name_to_snakecase=True)
+        if "TrainTestSplit" in self.method.module_chain:
+            method_module = self.method.resolve_module(module_name_to_snakecase=True)
         else:
-            method_module = self.resolve_module()
+            method_module = self.method.resolve_module()
 
         # train_x, train_y, test_x, test_y = self.abstract_method(input_x, input_y)
         if "sklearn" in method_module.__module__:
             if method_module.__name__ == "train_test_split":
-                train_x, test_x, train_y, test_y = method_module(input_x, input_y, **self.method_params_dict)
+                train_x, test_x, train_y, test_y = method_module(input_x, input_y, **self.method.params_dict)
                 print("train_test_split splitting finished")
                 return self.create_output_dict(
                     {
@@ -258,7 +283,7 @@ class DataSplitting(Task):
                 )
             else:
                 assert isinstance(method_module, type), "The method_module should be a class"
-                splitter = method_module(**self.method_params_dict)
+                splitter = method_module(**self.method.params_dict)
 
                 train_x_per_split = []
                 valid_x_per_split = []
@@ -292,8 +317,8 @@ class PerformanceCalculation(Task):
 
     def run_method(self, other_task_output_dict: dict, input_data: pd.DataFrame) -> Dict[str, Any]:
         """
-        Calculates a score using a metric determined by self.method_module_chain.
-        The data to use are determined by self.inputs. Parameters to use for the score calculation are in self.method_params_dict.
+        Calculates a score using a metric determined by self.method.module_chain.
+        The data to use are determined by self.inputs. Parameters to use for the score calculation are in self.method.params_dict.
         Expects one input data value with name "DataInRealY" and one with name "DataInPredictedY".
 
         Args:
@@ -312,16 +337,16 @@ class PerformanceCalculation(Task):
         # predicted_train_y = input_dict["DataInTrainPredictedY"]
         input_predicted_y = input_dict["DataInPredictedY"][0]["value"]
 
-        method_module = self.resolve_module(module_name_to_snakecase=True)
+        method_module = self.method.resolve_module(module_name_to_snakecase=True)
 
         if "sklearn" in method_module.__module__:
             assert callable(method_module), "The method_module should be a function"
             if not isinstance(input_real_y, list):
-                metric_value = method_module(input_real_y, input_predicted_y, **self.method_params_dict)
+                metric_value = method_module(input_real_y, input_predicted_y, **self.method.params_dict)
             else:
                 # multiple splits
                 metric_values = [
-                    method_module(y, p, **self.method_params_dict) for y, p in zip(input_real_y, input_predicted_y)
+                    method_module(y, p, **self.method.params_dict) for y, p in zip(input_real_y, input_predicted_y)
                 ]
                 metric_value = sum(metric_values) / len(metric_values)
         else:

@@ -32,26 +32,32 @@ if __name__ == "__main__":
 
     canvas_task = exe_kg.add_task(
         kg_schema_short="visu",
-        task="CanvasCreation",
-        input_data_entity_dict={},
-        method="CanvasMethod",
+        task_type="CanvasCreation",
+        input_entity_dict={},
+        method_type="CanvasMethod",
         method_params_dict={"hasParamLayout": "1 2", "hasParamFigureSize": "10 5"},
     )
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        task="LinePlotting",
-        input_data_entity_dict={"DataInToPlot": [feature_1]},
-        method="PlotMethod",
-        method_params_dict={"hasParamTitle": "Feature 1"},
+        task_type="LinePlotting",
+        input_entity_dict={"DataInToPlot": [feature_1]},
+        method_type="PlotMethod",
+        method_params_dict={
+            "hasParamTitle": "Feature 1",
+            "hasParamAnnotate": False,
+        },
     )
 
     exe_kg.add_task(
         kg_schema_short="visu",
-        task="LinePlotting",
-        input_data_entity_dict={"DataInToPlot": [feature_2]},
-        method="PlotMethod",
-        method_params_dict={"hasParamTitle": "Feature 2"},
+        task_type="LinePlotting",
+        input_entity_dict={"DataInToPlot": [feature_2]},
+        method_type="PlotMethod",
+        method_params_dict={
+            "hasParamTitle": "Feature 2",
+            "hasParamAnnotate": False,
+        },
     )
 
     exe_kg.save_created_kg(HERE / "pipelines")

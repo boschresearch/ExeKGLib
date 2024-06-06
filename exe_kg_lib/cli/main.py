@@ -5,23 +5,36 @@
 
 import os
 from distutils.dir_util import copy_tree
+from pathlib import Path
+from typing import Optional
 
 import typer
+from typing_extensions import Annotated
 
-from exe_kg_lib.classes.exe_kg_actors import (ExeKGConExe, ExeKGConstructorCLI,
+from exe_kg_lib.classes.exe_kg_actors import (ExeKGConExe, ExeKGConstructor,
+                                              ExeKGConstructorCLI,
                                               ExeKGExecutor)
 from exe_kg_lib.utils.cli_utils import input_pipeline_info
 
 app = typer.Typer(name="ML pipeline creation and execution", no_args_is_help=True)
 
+HERE = Path(__file__).resolve().parent
+
 
 @app.command()
-def create_pipeline():
+def create_pipeline(json_path: Annotated[Optional[str], typer.Argument()] = None):
+    if json_path:
+        exe_kg = ExeKGConstructor()
+        exe_kg.create_exe_kg_from_json(json_path)
+        exe_kg.save_created_kg(HERE / ".." / ".." / "pipelines")
+
+        return
+
     pipeline_name, input_data_path, input_plots_output_dir = input_pipeline_info()
 
     exe_kg = ExeKGConstructorCLI()
     exe_kg.start_pipeline_creation_cli(pipeline_name, input_data_path, input_plots_output_dir)
-    exe_kg.save_created_kg(f"pipelines/{pipeline_name}.ttl")
+    exe_kg.save_created_kg(HERE / ".." / ".." / "pipelines")
 
 
 @app.command()
@@ -37,10 +50,9 @@ def run_pipeline(path: str):
 
 @app.command()
 def get_examples():
-    current_dir = os.path.dirname(__file__)
-    examples_dir = os.path.join(current_dir, "..", "..", "examples")
+    examples_dir = HERE / ".." / ".." / "examples"
 
-    copy_tree(examples_dir, "./examples")
+    copy_tree(str(examples_dir), "./examples")
 
 
 if __name__ == "__main__":

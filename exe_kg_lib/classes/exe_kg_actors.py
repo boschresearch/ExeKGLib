@@ -4,6 +4,7 @@
 from exe_kg_lib.classes.exe_kg_base import ExeKGBase
 from exe_kg_lib.classes.exe_kg_mixins import (ExeKGConstructionCLIMixin,
                                               ExeKGConstructionMixin,
+                                              ExeKGEditMixin,
                                               ExeKGExecutionMixin)
 
 
@@ -20,4 +21,8 @@ class ExeKGExecutor(ExeKGExecutionMixin, ExeKGBase):
 
 
 class ExeKGConExe(ExeKGConstructionMixin, ExeKGExecutionMixin, ExeKGBase):
+    pass
+
+
+class ExeKGEditor(ExeKGEditMixin, ExeKGConstructionMixin, ExeKGBase):
     pass

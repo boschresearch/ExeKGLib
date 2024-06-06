@@ -1,11 +1,19 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+import os
 import re
-from typing import Dict, List
+from io import TextIOWrapper
+from pathlib import Path
+from typing import Callable, Dict, List, Union
 
 from rdflib import RDF, XSD, Graph, Literal, Namespace, URIRef
 
+from exe_kg_lib.classes.exe_kg_serialization.method import \
+    Method as MethodSerializable
+from exe_kg_lib.classes.exe_kg_serialization.pipeline import Pipeline
+from exe_kg_lib.classes.method import Method
+from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 from exe_kg_lib.utils.string_utils import (TASK_OUTPUT_NAME_REGEX,
                                            get_instance_name)
 
@@ -15,18 +23,21 @@ from ..classes.exe_kg_serialization.task import Task as TaskSerializable
 from ..classes.task import Task
 
 
-def add_instance(kg: Graph, entity_instance: Entity) -> None:
+def add_instance(kg: Graph, entity_instance: Entity, extra_parent_iri: str = None) -> None:
     """
     Adds an instance of an entity to the knowledge graph.
 
     Parameters:
         kg (Graph): The knowledge graph to add the instance to.
         entity_instance (Entity): The entity instance to be added.
+        extra_parent_iri (str): An extra parent IRI to add to the instance.
 
     Returns:
         None
     """
     kg.add((entity_instance.iri, RDF.type, entity_instance.parent_entity.iri))
+    if extra_parent_iri:
+        kg.add((entity_instance.iri, RDF.type, URIRef(extra_parent_iri)))
 
 
 def add_relation(kg: Graph, from_entity: Entity, relation_iri: str, to_entity: Entity) -> None:
@@ -74,6 +85,7 @@ def add_instance_from_parent_with_relation(
     relation_iri: str,
     related_entity: Entity,
     instance_name: str,
+    extra_parent_iri: str = None,
 ) -> Entity:
     """
     Adds an instance to the knowledge graph with a relation to a given entity.
@@ -85,6 +97,7 @@ def add_instance_from_parent_with_relation(
         relation_iri (str): The IRI of the relation between the related entity and the instance.
         related_entity (Entity): The related entity.
         instance_name (str): The name of the instance.
+        extra_parent_iri (str): An extra parent IRI to add to the instance.
 
     Returns:
         Entity: The created instance.
@@ -92,7 +105,7 @@ def add_instance_from_parent_with_relation(
     entity_iri = namespace + instance_name
     instance = Entity(entity_iri, parent_entity)
 
-    add_instance(kg, instance)
+    add_instance(kg, instance, extra_parent_iri)
     add_relation(kg, related_entity, relation_iri, instance)
 
     return instance
@@ -219,43 +232,128 @@ def create_pipeline_task(
     return pipeline
 
 
-def deserialize_input_data_entity_dict(
-    input_data_entity_dict_ser: Dict[str, List[str]],
+def deserialize_input_entity_info_dict(
+    input_entity_info_dict: Dict[str, Union[List[str], MethodSerializable]],
     data_entities_dict: Dict[str, DataEntity],
     task_output_dicts: Dict[str, TaskSerializable],
     pipeline_name: str,
-) -> Dict[str, List[DataEntity]]:
+    namespace: Namespace,
+) -> Dict[str, Union[List[DataEntity], Method]]:
     """
-    Deserializes the serialized input data entity dictionary.
+    Deserializes the serialized input entity dictionary.
 
     Args:
-        input_data_entity_dict_ser (Dict[str, List[str]]): The serialized input data entity dictionary.
+        input_entity_info_dict (Dict[str, Union[List[str], MethodSerializable]]): The serialized input entity dictionary.
         data_entities_dict (Dict[str, DataEntity]): The dictionary of data entities.
         task_output_dicts (Dict[str, TaskSerializable]): The dictionary of task output objects.
         pipeline_name (str): The name of the pipeline.
 
     Returns:
-        Dict[str, List[DataEntity]]: The deserialized input data entity dictionary.
+        Dict[str, Union[List[DataEntity], Method]]: The deserialized input data entity dictionary.
     """
-    input_data_entity_dict: Dict[str, List[DataEntity]] = {}
-    for input_name, data_entity_names in input_data_entity_dict_ser.items():
-        input_data_entity_dict[input_name] = []
-        for data_entity_name in data_entity_names:
-            match = re.match(TASK_OUTPUT_NAME_REGEX, data_entity_name)
-            if match:
-                # input entity refers to a data entity that is an output of a previous task
-                prev_task_output_name = match.group(1)
-                prev_task_type = match.group(2)
-                prev_task_instance_number = int(match.group(3))
+    input_entity_dict: Dict[str, List[DataEntity]] = {}
+    for input_name, input_value in input_entity_info_dict.items():
+        if isinstance(input_value, MethodSerializable):  # provided input is a method
+            input_method = input_value
+            input_entity_dict[input_name] = Method(
+                namespace + input_method.method_type, parent_entity=None, params_dict=input_method.params_dict
+            )
+        elif isinstance(input_value, list) and all(
+            isinstance(elem, str) for elem in input_value
+        ):  # provided input is list of data entity names
+            input_data_entity_names = input_value
+            input_entity_dict[input_name] = []
+            for data_entity_name in input_data_entity_names:
+                match = re.match(TASK_OUTPUT_NAME_REGEX, data_entity_name)
+                if match:
+                    # input entity refers to a data entity that is an output of a previous task
+                    prev_task_output_name = match.group(1)
+                    prev_task_type = match.group(2)
+                    prev_task_instance_number = int(match.group(3))
 
-                try:
-                    # regex matched so assume that the data_entity_name is an output of a previous task
-                    prev_task_name = get_instance_name(prev_task_type, prev_task_instance_number, pipeline_name)
-                    input_data_entity_dict[input_name].append(task_output_dicts[prev_task_name][prev_task_output_name])
-                except KeyError:
-                    # regex matched but the data_entity_name is NOT an output of a previous task
-                    input_data_entity_dict[input_name].append(data_entities_dict[data_entity_name])
-            else:
-                input_data_entity_dict[input_name].append(data_entities_dict[data_entity_name])
+                    try:
+                        # regex matched so assume that the data_entity_name is an output of a previous task
+                        prev_task_name = get_instance_name(prev_task_type, prev_task_instance_number, pipeline_name)
+                        input_entity_dict[input_name].append(task_output_dicts[prev_task_name][prev_task_output_name])
+                    except KeyError:
+                        # regex matched but the data_entity_name is NOT an output of a previous task
+                        input_entity_dict[input_name].append(data_entities_dict[data_entity_name])
+                else:
+                    input_entity_dict[input_name].append(data_entities_dict[data_entity_name])
 
-    return input_data_entity_dict
+    return input_entity_dict
+
+
+def load_exe_kg(input_path: str, exe_kg_from_json_method: Callable[[Union[Path, TextIOWrapper, str]], Graph]) -> Graph:
+    """
+    Loads the ExeKG from the specified input path.
+
+    Args:
+        input_path (str): The path to the ExeKG file.
+        exe_kg_from_json_method (Callable[[str], Graph]): The method to convert a simplified serialized pipeline to ExeKG.
+
+    Returns:
+        Graph: The loaded ExeKG.
+    """
+    input_exe_kg = Graph(bind_namespaces="rdflib")
+    if input_path.endswith(".ttl"):
+        # parse ExeKG from Turtle file
+        input_exe_kg.parse(input_path, format="n3")
+    elif input_path.endswith(".json"):
+        # convert simplified serialized pipeline to ExeKG
+        input_exe_kg = exe_kg_from_json_method(input_path)
+
+    return input_exe_kg
+
+
+def field_value_to_literal(field_value: Union[str, int, float, bool]) -> Literal:
+    """
+    Converts a Python field value to a Literal object with the appropriate datatype.
+
+    Args:
+        field_value (Union[str, int, float, bool]): The value to be converted.
+
+    Returns:
+        Literal: The converted Literal object.
+
+    """
+    if isinstance(field_value, str):
+        return Literal(field_value, datatype=XSD.string)
+    elif isinstance(field_value, bool):
+        return Literal(field_value, datatype=XSD.boolean)
+    elif isinstance(field_value, int):
+        return Literal(field_value, datatype=XSD.int)
+    elif isinstance(field_value, float):
+        return Literal(field_value, datatype=XSD.float)
+    else:
+        return Literal(str(field_value), datatype=XSD.string)
+
+
+def save_exe_kg(
+    exe_kg: Graph,
+    input_kg: Graph,
+    shacl_shapes_s: str,
+    pipeline_serializable: Pipeline,
+    dir_path: str,
+    pipeline_name: str,
+    check_executability: bool = True,
+    save_to_ttl: bool = True,
+    save_to_json: bool = True,
+) -> None:
+    if check_executability:
+        check_kg_executability(exe_kg + input_kg, shacl_shapes_s)
+
+    os.makedirs(dir_path, exist_ok=True)
+
+    if save_to_ttl:
+        # save the ExeKG in RDF/Turtle format
+        ttl_file_path = os.path.join(dir_path, f"{pipeline_name}.ttl")
+        exe_kg.serialize(destination=ttl_file_path)
+        print(f"Executable KG saved in RDF/Turtle format at {ttl_file_path}.")
+
+    if save_to_json:
+        # save the simplified pipeline in JSON format
+        json_file_path = os.path.join(dir_path, f"{pipeline_name}.json")
+        with open(json_file_path, "w+") as json_file:
+            json_file.write(pipeline_serializable.to_json())
+        print(f"Pipeline (simplified) saved in JSON format to {json_file_path}.")

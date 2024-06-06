@@ -1,7 +1,7 @@
 {
-    "name": "MLPipeline",
-    "input_data_path": "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\data\\dummy_data.csv",
-    "output_plots_dir": "C:\\Users\\klr2rng\\Documents\\projects\\ExeKGLib-internal\\examples\\plots\\MLPipeline",
+    "name": "MLPipelineSimple",
+    "input_data_path": "FULL_PATH_TO_INPUT_FILE",
+    "output_plots_dir": "FULL_PATH_TO_OUTPUT_PLOTS_DIR",
     "data_entities": [
         {
             "name": "feature_1",
@@ -46,7 +46,7 @@
             "task_type": "Concatenation",
             "method_type": "ConcatenationMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInConcatenation": [
                     "feature_1",
                     "feature_2",
@@ -67,9 +67,9 @@
                 "hasParamTestSize": 0.2,
                 "hasParamRandomState": 0
             },
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInDataSplittingX": [
-                    "DataOutConcatenatedData_Concatenation1_MLPipeline_ConcatenationMethod"
+                    "DataOutConcatenatedData_Concatenation1_MLPipelineSimple_ConcatenationMethod"
                 ],
                 "DataInDataSplittingY": [
                     "label"
@@ -89,12 +89,12 @@
             "method_params_dict": {
                 "hasParamRandomState": 0
             },
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInTrainX": [
-                    "DataOutSplittedTrainDataX_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTrainDataX_DataSplitting1_MLPipelineSimple_TrainTestSplitMethod"
                 ],
                 "DataInTrainY": [
-                    "DataOutSplittedTrainDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTrainDataY_DataSplitting1_MLPipelineSimple_TrainTestSplitMethod"
                 ]
             },
             "output_names": [
@@ -106,12 +106,12 @@
             "task_type": "Test",
             "method_type": "TestMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInTestModel": [
-                    "DataOutTrainModel_BinaryClassification1_MLPipeline_SVCMethod"
+                    "DataOutTrainModel_BinaryClassification1_MLPipelineSimple_SVCMethod"
                 ],
                 "DataInTestX": [
-                    "DataOutSplittedTestDataX_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTestDataX_DataSplitting1_MLPipelineSimple_TrainTestSplitMethod"
                 ]
             },
             "output_names": [
@@ -123,12 +123,12 @@
             "task_type": "PerformanceCalculation",
             "method_type": "AccuracyScoreMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineSimple_TrainTestSplitMethod"
                 ],
                 "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
+                    "DataOutPredictedValueTest_Test1_MLPipelineSimple_TestMethod"
                 ]
             },
             "output_names": [
@@ -140,12 +140,12 @@
             "task_type": "PerformanceCalculation",
             "method_type": "F1ScoreMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineSimple_TrainTestSplitMethod"
                 ],
                 "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
+                    "DataOutPredictedValueTest_Test1_MLPipelineSimple_TestMethod"
                 ]
             },
             "output_names": [
@@ -157,12 +157,12 @@
             "task_type": "PerformanceCalculation",
             "method_type": "PrecisionScoreMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineSimple_TrainTestSplitMethod"
                 ],
                 "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
+                    "DataOutPredictedValueTest_Test1_MLPipelineSimple_TestMethod"
                 ]
             },
             "output_names": [
@@ -174,12 +174,12 @@
             "task_type": "PerformanceCalculation",
             "method_type": "RecallScoreMethod",
             "method_params_dict": {},
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInRealY": [
-                    "DataOutSplittedTestDataY_DataSplitting1_MLPipeline_TrainTestSplitMethod"
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineSimple_TrainTestSplitMethod"
                 ],
                 "DataInPredictedY": [
-                    "DataOutPredictedValueTest_Test1_MLPipeline_TestMethod"
+                    "DataOutPredictedValueTest_Test1_MLPipelineSimple_TestMethod"
                 ]
             },
             "output_names": [
@@ -194,7 +194,7 @@
                 "hasParamLayout": "2 1",
                 "hasParamFigureSize": "10 10"
             },
-            "input_data_entity_dict": {},
+            "input_entity_info_dict": {},
             "output_names": []
         },
         {
@@ -202,12 +202,12 @@
             "task_type": "BarPlotting",
             "method_type": "BarMethod",
             "method_params_dict": {
-                "hasParamTitle": "Test Accuracy & F1"
+                "hasParamTitle": "Test Accuracy and F1-score"
             },
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInToPlot": [
-                    "DataOutScore_PerformanceCalculation1_MLPipeline_AccuracyScoreMethod",
-                    "DataOutScore_PerformanceCalculation2_MLPipeline_F1ScoreMethod"
+                    "DataOutScore_PerformanceCalculation1_MLPipelineSimple_AccuracyScoreMethod",
+                    "DataOutScore_PerformanceCalculation2_MLPipelineSimple_F1ScoreMethod"
                 ]
             },
             "output_names": []
@@ -219,10 +219,10 @@
             "method_params_dict": {
                 "hasParamTitle": "Test Precision & Recall"
             },
-            "input_data_entity_dict": {
+            "input_entity_info_dict": {
                 "DataInToPlot": [
-                    "DataOutScore_PerformanceCalculation3_MLPipeline_PrecisionScoreMethod",
-                    "DataOutScore_PerformanceCalculation4_MLPipeline_RecallScoreMethod"
+                    "DataOutScore_PerformanceCalculation3_MLPipelineSimple_PrecisionScoreMethod",
+                    "DataOutScore_PerformanceCalculation4_MLPipelineSimple_RecallScoreMethod"
                 ]
             },
             "output_names": []

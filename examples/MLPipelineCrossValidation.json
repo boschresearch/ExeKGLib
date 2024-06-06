@@ -1,0 +1,221 @@
+{
+    "name": "MLPipelineCrossValidation",
+    "input_data_path": "FULL_PATH_TO_INPUT_FILE",
+    "output_plots_dir": "FULL_PATH_TO_OUTPUT_PLOTS_DIR",
+    "data_entities": [
+        {
+            "name": "feature_1",
+            "source": "feature_1",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_2",
+            "source": "feature_2",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_3",
+            "source": "feature_3",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_4",
+            "source": "feature_4",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "feature_5",
+            "source": "feature_5",
+            "data_semantics": "Numerical",
+            "data_structure": "Vector"
+        },
+        {
+            "name": "label",
+            "source": "label",
+            "data_semantics": "Categorical",
+            "data_structure": "Vector"
+        }
+    ],
+    "tasks": [
+        {
+            "kg_schema_short": "ml",
+            "task_type": "Concatenation",
+            "method_type": "ConcatenationMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInConcatenation": [
+                    "feature_1",
+                    "feature_2",
+                    "feature_3",
+                    "feature_4",
+                    "feature_5"
+                ]
+            },
+            "output_names": [
+                "DataOutConcatenatedData"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "DataSplitting",
+            "method_type": "TrainTestSplitMethod",
+            "method_params_dict": {
+                "hasParamTestSize": 0.2,
+                "hasParamRandomState": 0
+            },
+            "input_entity_info_dict": {
+                "DataInDataSplittingX": [
+                    "DataOutConcatenatedData_Concatenation1_MLPipelineCrossValidation_ConcatenationMethod"
+                ],
+                "DataInDataSplittingY": [
+                    "label"
+                ]
+            },
+            "output_names": [
+                "DataOutSplittedTestDataX",
+                "DataOutSplittedTestDataY",
+                "DataOutSplittedTrainDataX",
+                "DataOutSplittedTrainDataY"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "DataSplitting",
+            "method_type": "StratifiedKFoldMethod",
+            "method_params_dict": {
+                "hasParamNSplits": 3
+            },
+            "input_entity_info_dict": {
+                "DataInDataSplittingX": [
+                    "DataOutSplittedTrainDataX_DataSplitting1_MLPipelineCrossValidation_TrainTestSplitMethod"
+                ],
+                "DataInDataSplittingY": [
+                    "DataOutSplittedTrainDataY_DataSplitting1_MLPipelineCrossValidation_TrainTestSplitMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutSplittedTestDataX",
+                "DataOutSplittedTestDataY",
+                "DataOutSplittedTrainDataX",
+                "DataOutSplittedTrainDataY"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "BinaryClassification",
+            "method_type": "SVCMethod",
+            "method_params_dict": {
+                "hasParamRandomState": 0
+            },
+            "input_entity_info_dict": {
+                "DataInTrainX": [
+                    "DataOutSplittedTrainDataX_DataSplitting2_MLPipelineCrossValidation_StratifiedKFoldMethod"
+                ],
+                "DataInTrainY": [
+                    "DataOutSplittedTrainDataY_DataSplitting2_MLPipelineCrossValidation_StratifiedKFoldMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutTrainModel"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "Test",
+            "method_type": "TestMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInTestModel": [
+                    "DataOutTrainModel_BinaryClassification1_MLPipelineCrossValidation_SVCMethod"
+                ],
+                "DataInTestX": [
+                    "DataOutSplittedTestDataX_DataSplitting2_MLPipelineCrossValidation_StratifiedKFoldMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutPredictedValueTest"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "Test",
+            "method_type": "TestMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInTestModel": [
+                    "DataOutTrainModel_BinaryClassification1_MLPipelineCrossValidation_SVCMethod"
+                ],
+                "DataInTestX": [
+                    "DataOutSplittedTestDataX_DataSplitting1_MLPipelineCrossValidation_TrainTestSplitMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutPredictedValueTest"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "PerformanceCalculation",
+            "method_type": "F1ScoreMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInRealY": [
+                    "DataOutSplittedTestDataY_DataSplitting2_MLPipelineCrossValidation_StratifiedKFoldMethod"
+                ],
+                "DataInPredictedY": [
+                    "DataOutPredictedValueTest_Test1_MLPipelineCrossValidation_TestMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutScore"
+            ]
+        },
+        {
+            "kg_schema_short": "ml",
+            "task_type": "PerformanceCalculation",
+            "method_type": "F1ScoreMethod",
+            "method_params_dict": {},
+            "input_entity_info_dict": {
+                "DataInRealY": [
+                    "DataOutSplittedTestDataY_DataSplitting1_MLPipelineCrossValidation_TrainTestSplitMethod"
+                ],
+                "DataInPredictedY": [
+                    "DataOutPredictedValueTest_Test2_MLPipelineCrossValidation_TestMethod"
+                ]
+            },
+            "output_names": [
+                "DataOutScore"
+            ]
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "CanvasCreation",
+            "method_type": "CanvasMethod",
+            "method_params_dict": {
+                "hasParamLayout": "1 1",
+                "hasParamFigureSize": "10 5"
+            },
+            "input_entity_info_dict": {},
+            "output_names": []
+        },
+        {
+            "kg_schema_short": "visu",
+            "task_type": "BarPlotting",
+            "method_type": "BarMethod",
+            "method_params_dict": {
+                "hasParamTitle": "Validation F1-score and Test F1-score"
+            },
+            "input_entity_info_dict": {
+                "DataInToPlot": [
+                    "DataOutScore_PerformanceCalculation1_MLPipelineCrossValidation_F1ScoreMethod",
+                    "DataOutScore_PerformanceCalculation2_MLPipelineCrossValidation_F1ScoreMethod"
+                ]
+            },
+            "output_names": []
+        }
+    ]
+}
