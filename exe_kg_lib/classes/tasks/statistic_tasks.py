@@ -40,9 +40,9 @@ class StatisticCalculation(Task):
         input_data = input_dict["DataInStatisticCalculation"]
         input = input_data[0]["value"]  # assume one input
 
-        method_module = self.resolve_module(module_name_to_snakecase=True)
+        method_module = self.method.resolve_module(module_name_to_snakecase=True)
         if "numpy" in method_module.__module__:
-            statistic_result = method_module(input, **self.method_params_dict)
+            statistic_result = method_module(input, **self.method.params_dict)
             return self.create_output_dict({"DataOutStatisticCalculation": statistic_result})
         else:
             raise NotImplementedError("Only numpy library is supported for now")

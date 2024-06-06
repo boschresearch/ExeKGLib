@@ -6,7 +6,10 @@ from typing import Callable, List, Optional, Tuple
 
 from rdflib import Graph, Namespace, URIRef, query
 
-from exe_kg_lib.utils.string_utils import camel_to_snake
+from exe_kg_lib.classes.method import Method
+from exe_kg_lib.utils.string_utils import (camel_to_snake,
+                                           class_name_to_method_name,
+                                           class_name_to_module_name)
 
 from ..classes.entity import Entity
 
@@ -32,7 +35,9 @@ def query_parent_classes(kg: Graph, entity_iri: str) -> query.Result:
     )
 
 
-def query_instance_parent_iri(kg: Graph, entity_iri: str, upper_class_uri_ref: URIRef) -> query.Result:
+def query_instance_parent_iri(
+    kg: Graph, entity_iri: str, upper_class_uri_ref: URIRef, negation_of_inheritance: bool = False
+) -> query.Result:
     """
     Queries the knowledge graph to find the types of a given entity, that are subclasses of a given upper class.
 
@@ -44,8 +49,15 @@ def query_instance_parent_iri(kg: Graph, entity_iri: str, upper_class_uri_ref: U
     Returns:
         query.Result: The result of the query.
     """
+    query_string = f"SELECT ?t WHERE {{ ?entity rdf:type ?t ."
+
+    if negation_of_inheritance:
+        query_string += f"FILTER NOT EXISTS {{ ?t rdfs:subClassOf* ?upper_class . }} }}"
+    else:
+        query_string += f"?t rdfs:subClassOf* ?upper_class . }}"
+
     return kg.query(
-        f"SELECT ?t WHERE {{ ?entity rdf:type ?t ." f"                   ?t rdfs:subClassOf* ?upper_class .}}",
+        query_string,
         initBindings={
             "entity": URIRef(entity_iri),
             "upper_class": upper_class_uri_ref,
@@ -277,8 +289,8 @@ def query_inherited_inputs(input_kg: Graph, namespace_prefix: str, entity_iri: s
         "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
         "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
-        "?m rdfs:subClassOf ?s ."
-        "?s rdfs:subClassOf+ " + namespace_prefix + ":DataStructure . "
+        "OPTIONAL { ?m rdfs:subClassOf ?s . }"
+        "OPTIONAL { ?s rdfs:subClassOf+ " + namespace_prefix + ":DataStructure . }"
         "FILTER(?s != " + namespace_prefix + ":DataEntity) . }",
         initBindings={"entity_iri": URIRef(entity_iri)},
     )
@@ -453,7 +465,7 @@ def get_method_by_task_iri(
     namespace_prefix: str,
     namespace: Namespace,
     task_iri: str,
-) -> Optional[Entity]:
+) -> Optional[Method]:
     """
     Retrieves the method associated with a given task IRI from the knowledge graph.
 
@@ -464,7 +476,7 @@ def get_method_by_task_iri(
         task_iri (str): The IRI of the task.
 
     Returns:
-        Optional[Entity]: The method entity associated with the task IRI, or None if no method is found.
+        Optional[Method]: The method object associated with the task IRI, or None if no method is found.
 
     Raises:
         NoResultsError: If the task with the given IRI is not connected with any method in the KG.
@@ -496,7 +508,7 @@ def get_method_by_task_iri(
 
     method_parent_iri = str(query_result[0])
 
-    return Entity(method_iri, Entity(method_parent_iri))
+    return Method(method_iri, Entity(method_parent_iri))
 
 
 def get_module_hierarchy_chain(
@@ -536,6 +548,26 @@ def get_module_hierarchy_chain(
     module_chain_query_res = [str(x[0]) for x in module_chain_query_res]
     module_chain_iris = [module_iri] + module_chain_query_res[:-1]
     module_chain_names = [iri.split("#")[-1] for iri in module_chain_iris]
+
+    return module_chain_names
+
+
+def get_converted_module_hierarchy_chain(
+    kg: Graph,
+    namespace_prefix: str,
+    method_iri: str,
+) -> List:
+    module_chain_names = None
+    try:
+        module_chain_names = get_module_hierarchy_chain(kg, namespace_prefix, method_iri)
+    except NoResultsError:
+        print(f"Cannot retrieve module chain for method class: {method_iri}. Proceeding without it...")
+
+    if module_chain_names:
+        # convert KG class names to module names and reverse the module chain to store it in the correct order
+        module_chain_names = [class_name_to_module_name(name) for name in module_chain_names]
+        module_chain_names = [class_name_to_method_name(method_iri.split("#")[-1])] + module_chain_names
+        module_chain_names.reverse()
 
     return module_chain_names
 

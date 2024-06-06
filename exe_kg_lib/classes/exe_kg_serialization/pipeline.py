@@ -7,8 +7,11 @@ from typing import Dict, List, Union
 from exe_kg_lib.classes.data_entity import DataEntity
 from exe_kg_lib.classes.exe_kg_serialization.data_entity import \
     DataEntity as DataEntitySerializable
+from exe_kg_lib.classes.exe_kg_serialization.method import \
+    Method as MethodSerializable
 from exe_kg_lib.classes.exe_kg_serialization.task import \
     Task as TaskSerializable
+from exe_kg_lib.classes.method import Method
 
 
 class Pipeline:
@@ -70,14 +73,13 @@ class Pipeline:
 
         data_entities = []
         for data_entity_dict in obj_dict["data_entities"]:
-            data_entity = DataEntitySerializable("", "", "", "")
+            data_entity = DataEntitySerializable()
             data_entity.__dict__ = data_entity_dict
             data_entities.append(data_entity)
 
         tasks = []
         for task_dict in obj_dict["tasks"]:
-            task = TaskSerializable("", "", "", {}, [])
-            task.__dict__ = task_dict
+            task = TaskSerializable.from_dict(task_dict)
             tasks.append(task)
 
         return cls(obj_dict["name"], obj_dict["input_data_path"], obj_dict["output_plots_dir"], data_entities, tasks)
@@ -91,7 +93,7 @@ class Pipeline:
         """
         obj_dict = self.__dict__
         obj_dict["data_entities"] = [data_entity.__dict__ for data_entity in self.data_entities]
-        obj_dict["tasks"] = [task.__dict__ for task in self.tasks]
+        obj_dict["tasks"] = [task.to_dict() for task in self.tasks]
         return json.dumps(obj_dict, indent=4)
 
     def add_data_entity(self, name: str, source_value: str, data_semantics_name: str, data_structure_name: str):
@@ -113,8 +115,8 @@ class Pipeline:
         kg_schema_short: str,
         task_type: str,
         method_type: str,
-        method_params_dict: Dict[str, Union[str, int, float]],
-        input_data_entity_dict: Dict[str, List[DataEntity]],
+        method_params_dict: Dict[str, Union[str, int, float, dict]],
+        input_entity_dict: Dict[str, Union[List[DataEntity], Method]],
         output_names: List[str],
     ):
         """
@@ -125,16 +127,26 @@ class Pipeline:
             task_type (str): The type of the task.
             method_type (str): The type of the method.
             method_params_dict (Dict[str, Union[str, int, float]]): A dictionary of method parameters.
-            input_data_entity_dict (Dict[str, List[DataEntity]]): A dictionary of input data entities.
+            input_entity_dict (Dict[str, Union[List[DataEntity], Method]]): A dictionary of input data entities.
             output_names (List[str]): A list of output names.
         """
         task_ser = TaskSerializable(kg_schema_short, task_type, method_type, method_params_dict, output_names)
 
-        for input_data_entity_name, input_data_entity_list in input_data_entity_dict.items():
-            input_data_entities_ser = []
-            for input_data_entity in input_data_entity_list:
-                input_data_entities_ser.append(input_data_entity.name)
+        for input_entity_name, input_entity_value in input_entity_dict.items():
+            if isinstance(input_entity_value, Method):  # provided input is a method
+                input_method = input_entity_value
 
-            task_ser.input_data_entity_dict[input_data_entity_name] = input_data_entities_ser
+                task_ser.input_entity_info_dict[input_entity_name] = MethodSerializable(
+                    input_method.name, input_method.params_dict
+                )
+            elif isinstance(input_entity_value, list) and all(
+                isinstance(elem, DataEntity) for elem in input_entity_value
+            ):  # provided input is list of data entities
+                input_data_entity_list = input_entity_value
+                input_data_entity_names = []
+                for input_data_entity in input_data_entity_list:
+                    input_data_entity_names.append(input_data_entity.name)
+
+                task_ser.input_entity_info_dict[input_entity_name] = input_data_entity_names
 
         self.tasks.append(task_ser)
