@@ -1,3 +1,6 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
 import importlib
 from typing import Any, Dict, List, Union
 
@@ -6,6 +9,12 @@ from exe_kg_lib.utils.string_utils import camel_to_snake
 
 
 class Method(Entity):
+    """
+    Abstraction of owl:class ds:AtomicMethod.
+
+    ❗ Important for contributors: See Section "Naming conventions" in README.md of "classes.tasks" package before extending the code's functionality.
+    """
+
     def __init__(
         self,
         iri: str,

@@ -17,11 +17,11 @@ ExeKGLib is a Python library that simplifies the construction and execution of M
 
 ## 🌟 Key Benefits of ExeKGLib
 
-1. 🚀 **No-code ML Pipeline Creation**: With ExeKGLib, the user can specify the pipeline's structure and the operations to be performed using a simple JSON file (see [Creating an ML pipeline](#🚀-creating-an-ml-pipeline)), which is then automatically converted to an ExeKG. This ExeKG can be executed to perform the specified operations on the input data (see [Executing an ML pipeline](#🚀-executing-an-ml-pipeline)).
-2. 📦 **Batch Pipeline Creation**: ExeKGLib allows users to create pipelines in a batch fashion through its simple coding interface (see [Creating an ML pipeline](#🚀-creating-an-ml-pipeline)). This enables automatic creation of multiple pipelines as ExeKGs, which can then be queried and analyzed.
+1. 🚀 **No-code ML Pipeline Creation**: With ExeKGLib, the user can specify the pipeline's structure and the operations to be performed using a simple JSON file (see [Creating an ML pipeline](https://boschresearch.github.io/ExeKGLib/usage/#creating-an-ml-pipeline)), which is then automatically converted to an ExeKG. This ExeKG can be executed to perform the specified operations on the input data (see [Executing an ML pipeline](https://boschresearch.github.io/ExeKGLib/usage/#executing-an-ml-pipeline)).
+2. 📦 **Batch Pipeline Creation**: ExeKGLib allows users to create pipelines in a batch fashion through its simple coding interface (see [Creating an ML pipeline](https://boschresearch.github.io/ExeKGLib/usage/#creating-an-ml-pipeline)). This enables automatic creation of multiple pipelines as ExeKGs, which can then be queried and analyzed.
 3. 🔗 **Linked Open Data Integration**: ExeKGLib is a tool that leverages linked open data (LOD) in several significant ways:
-    - 📚 **Pipeline Creation Guidance**: It helps guide the user through the pipeline creation process. This is achieved by using a predefined hierarchy of tasks, along with their compatible inputs, outputs, methods, and method parameters (see [available tasks and methods]([task_hierarchy.md](https://boschresearch.github.io/ExeKGLib/supported-methods/))).
-    - 🧠 **Enhancing User Understanding**: It enhances the user's understanding of Data Science and the pipeline's functionality. This is achieved by linking the generated pipelines to Knowledge Graph (KG) schemata that encapsulate various Data Science concepts (see [KG schemata](#📜-kg-schemata)).
+    - 📚 **Pipeline Creation Guidance**: It helps guide the user through the pipeline creation process. This is achieved by using a predefined hierarchy of tasks, along with their compatible inputs, outputs, methods, and method parameters (see [available tasks and methods](https://boschresearch.github.io/ExeKGLib/supported-tasks-and-methods/)).
+    - 🧠 **Enhancing User Understanding**: It enhances the user's understanding of Data Science and the pipeline's functionality. This is achieved by linking the generated pipelines to Knowledge Graph (KG) schemata that encapsulate various Data Science concepts (see [KG schemata](https://boschresearch.github.io/ExeKGLib/external-sources/#kg-schemata)).
     - ✅ **Validation of ExeKGs**: It validates the generated ExeKGs to ensure their executability.
     - 🔄 **Automatic Conversion and Execution**: It automatically converts the ExeKGs to Python code and executes them.
 
@@ -48,12 +48,15 @@ For detailed installation instructions, refer to the [installation page](https:/
 We provide [example Python and JSON files](https://github.com/boschresearch/ExeKGLib/tree/main/examples) that can be used to create the following pipelines:
 
 1. **🧠 ML pipeline**:
-    1. `ml_pipeline_creation[from_json].py` and `MLPipeline.json`: Loads a CSV dataset, concatenates selected features, splits the data into training and testing sets, trains a Support Vector Classifier model, tests the model, calculates performance metrics (accuracy, F1 score, precision, and recall), and visualizes the results in bar plots.
-    2. `MLPipelineExtended.json`: An extended version of the above ML pipeline that adds a data splitting step for Stratified K-Fold Cross-Validation. Then, it trains and tests the model using the cross-validation technique and visualizes the validation and test F1 scores in bar plots.
+    1. **MLPipelineSimple**: Loads a CSV dataset, concatenates selected features, splits the data into training and testing sets, trains a Support Vector Classifier (SVC) model, tests the model, calculates performance metrics (accuracy, F1 score, precision, and recall), and visualizes the results in bar plots.
+    2. **MLPipelineCrossValidation**: An extended version of **MLPipelineSimple** that adds a data splitting step for Stratified K-Fold Cross-Validation. Then, it trains and tests the model using the cross-validation technique and visualizes the validation and test F1 scores in bar plots.
+    3. **MLPipelineModelSelection**: A modified version of **MLPipelineSimple** that replaces the training step with a model selection step. Rather than using a fixed model, this pipeline involves training and cross-validating a Support Vector Classifier (SVC) model with various hyperparameters to optimize performance.
 2. **📊 Statistics pipeline**:
-    - `stats_pipeline_creation.py`: Loads a specific feature from a CSV dataset, calculates its mean and standard deviation, and visualizes the feature's values using a line plot and the calculated statistics using a bar plot.
+    - **StatsPipeline**: Loads a specific feature from a CSV dataset, calculates its mean and standard deviation, and visualizes the feature's values using a line plot and the calculated statistics using a bar plot.
 3. **📈 Visualization pipeline**:
-    - `visu_pipeline_creation.py`: The pipeline loads two numerical features from a CSV dataset and visualizes each feature's values using separate line plots.
+    - **VisuPipeline**: The pipeline loads two numerical features from a CSV dataset and visualizes each feature's values using separate line plots.
+
+> 💡 **Tip**: To fetch the examples into your working directory for easy access, run `typer exe_kg_lib.cli.main run get-examples`.
 
 > 🗒️ **Note**: The naming convention for output names (used as inputs for subsequent tasks) in `.json` files can be found in `exe_kg_lib/utils/string_utils.py`. Look for `TASK_OUTPUT_NAME_REGEX`.
 
@@ -69,15 +72,15 @@ See [relevant website page](https://boschresearch.github.io/ExeKGLib/supported-t
 ### 🚀 Creating an ML pipeline
 
 #### 💻 Via code
-See `ml_pipeline_creation.py`,  `stats_pipeline_creation.py`,  `visu_pipeline_creation.py` in the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples).
+See the Python files in the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples).
 
 #### 📄 Using JSON
-See `MLPipeline.json` and `ml_pipeline_creation_from_json.py` in the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples).
+Run `typer exe_kg_lib.cli.main run create-pipeline <json_path>` after replacing `<json_path>` to point to a pipeline's JSON file. See the [provided example JSONs](https://github.com/boschresearch/ExeKGLib/tree/main/examples)
+
+> 🗒️ **Note**: Replace `input_data_path` with the path to a dataset and `output_plots_dir` with the directory path where the plots will be saved.
 
 #### 🖥️ Step-by-step via CLI
 Run `typer exe_kg_lib.cli.main run create-pipeline`.
-
-> 🗒️ **Note**: To fetch the [provided examples](https://github.com/boschresearch/ExeKGLib/tree/main/examples) to your working directory for easy access, run `typer exe_kg_lib.cli.main run get-examples`.
 
 ### 🚀 Executing an ML pipeline
 

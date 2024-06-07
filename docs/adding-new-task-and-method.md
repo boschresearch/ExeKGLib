@@ -70,15 +70,15 @@ To add the required semantic components:
         ```turtle
         ml:{Input1}
             a               owl:Class ;
-            rdfs:subClassOf ds:DataEntity,
-                            {Input1DataStructures} .
+            rdfs:subClassOf ds:DataEntity,           # "ds:DataEntity" can be replaced with a subclass of "ds:Method" like "ml:TrainMethod"
+                            {Input1DataStructures} . # in case of the above replacement, data structures are not needed
 
         ...
 
         ml:{InputN}
             a               owl:Class ;
-            rdfs:subClassOf ds:DataEntity,
-                            {InputNDataStructures} .
+            rdfs:subClassOf ds:DataEntity,           # "ds:DataEntity" can be replaced with a subclass of "ds:Method" like "ml:TrainMethod"
+                            {InputNDataStructures} . # in case of the above replacement, data structures are not needed
 
         ml:{Output1}
             a               owl:Class ;
@@ -267,7 +267,7 @@ To add the required semantic components:
 8.  Modify `config.py` in `exe_kg_lib` package to update the value of `KG_SCHEMAS_DIR` to point to the cloned repo's directory from Step 1.
 
 ## B) Modifying the relevant Python code
-🗒️ **Note**: While modifying the code, consider refering to the conventions mentioned in the [tasks package's documentation](../tasks-package-documentation).
+🗒️ **Note**: While modifying the code, consider refering to the conventions mentioned in the [tasks package's documentation](https://github.com/boschresearch/ExeKGLib/tasks-package-documentation).
 
 To modify the relevant Python code:
 

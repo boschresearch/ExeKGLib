@@ -49,7 +49,7 @@ class Task:
                     if "method_type" in input_value and "params_dict" in input_value
                     else input_value
                 )
-                for input_name, input_value in task_dict["input_entity_dict"].items()
+                for input_name, input_value in task_dict["input_entity_info_dict"].items()
             },
             output_names=task_dict["output_names"],
         )

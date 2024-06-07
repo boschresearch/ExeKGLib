@@ -44,16 +44,17 @@ class ExeKGExecutionMixin:
 
     def _property_value_to_field_value(self, property_value: Union[str, Literal]) -> Union[str, DataEntity, Method]:
         """
-        Converts a KG property value to a Python field value.
+        Converts a property value (from the KG) to a Python field value.
 
         Args:
             property_value (Union[str, Literal]): The property value to be converted.
 
         Returns:
-            Union[str, DataEntity]: The converted field value.
+            Union[str, DataEntity, Method]: The converted field value.
 
+        Raises:
+            NoResultsError: If the extra parent entity that is not a subclass of AtomicMethod cannot be retrieved.
         """
-
         if isinstance(property_value, Literal):
             return self._literal_to_field_value(property_value)
 
@@ -83,7 +84,7 @@ class ExeKGExecutionMixin:
 
         method_parent_iri = str(query_result[0])
 
-        # fetch type of entity with given IRI, assuming it's an AtomicMethod instance
+        # fetch another type associated with the entity identified by the given IRI
         query_result = get_first_query_result_if_exists(
             query_instance_parent_iri,
             self.input_kg,
@@ -120,14 +121,16 @@ class ExeKGExecutionMixin:
 
     def _literal_to_field_value(self, literal: Literal) -> Union[str, int, float, bool]:
         """
-        Converts a Literal object to a Python field value of the appropriate type.
+        Converts a Literal object to a Python object based on its datatype.
 
         Args:
             literal (Literal): The Literal object to be converted.
 
         Returns:
-            Union[str, int, float, bool]: The converted field value.
+            Union[str, int, float, bool]: The converted Python object.
 
+        Raises:
+            ValueError: If the datatype of the literal is unsupported.
         """
         if literal.datatype == XSD.string:
             try:
@@ -145,35 +148,32 @@ class ExeKGExecutionMixin:
 
         raise ValueError(f"Unsupported datatype for literal: {literal}")
 
-    def _parse_data_entity_by_iri(self, in_out_data_entity_iri: str, data_entity_parent_iri: str) -> DataEntity:
+    def _parse_data_entity_by_iri(self, data_entity_instance_iri: str, data_entity_parent_iri: str) -> DataEntity:
         """
-        Parses an input or output data entity and stores the parsed info in a Python object.
+        Parses a data entity and stores the info in a DataEntity object.
 
         Args:
-            in_out_data_entity_iri (str): The IRI of the data entity to parse.
+            data_entity_instance_iri (str): The IRI of the data entity instance to be parsed.
+            data_entity_parent_iri (str): The IRI of the parent entity of the data entity.
 
         Returns:
             DataEntity: The parsed DataEntity object.
-
-        Raises:
-            NoResultsError: If the given IRI doesn't belong to an instance of a subclass of DataEntity.
         """
-
         # fetch IRI of data entity that is referenced by the given entity
         query_result = get_first_query_result_if_exists(
             query_data_entity_reference_iri,
             self.input_kg,
             self.top_level_schema.namespace_prefix,
-            in_out_data_entity_iri,
+            data_entity_instance_iri,
         )
 
         if query_result is None:  # no referenced data entity found
-            data_entity_ref_iri = in_out_data_entity_iri
+            data_entity_ref_iri = data_entity_instance_iri
         else:
             data_entity_ref_iri = str(query_result[0])
 
         # create DataEntity object to store all the parsed properties
-        data_entity = DataEntity(in_out_data_entity_iri, Entity(data_entity_parent_iri))
+        data_entity = DataEntity(data_entity_instance_iri, Entity(data_entity_parent_iri))
         data_entity.reference = data_entity_ref_iri.split("#")[1]
 
         for s, p, o in self.input_kg.triples((URIRef(data_entity_ref_iri), None, None)):
@@ -187,6 +187,15 @@ class ExeKGExecutionMixin:
         return data_entity
 
     def _parse_method_of_task(self, task_iri: str) -> Method:
+        """
+        Parses the method associated with a given task IRI.
+
+        Args:
+            task_iri (str): The IRI of the task.
+
+        Returns:
+            Method: The parsed method object.
+        """
         method = get_method_by_task_iri(
             self.input_kg,
             self.top_level_schema.namespace_prefix,

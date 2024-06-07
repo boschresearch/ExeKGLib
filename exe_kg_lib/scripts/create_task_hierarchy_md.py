@@ -167,10 +167,24 @@ def task_hierarchy_to_md(
             md_text += "\t" * (level + 2) + f"<details>\n"
             md_text += "\t" * (level + 3) + f"<summary>Inputs</summary>\n"
             if top_task in task_inputs_dict:
+                # check top task of the hierarchy
+                # open the list
                 md_text += "\t" * (level + 3) + f"<ul>\n"
                 for input_iri in task_inputs_dict[top_task]:
                     input_name = input_iri.split("#")[-1]
                     md_text += "\t" * (level + 4) + f"<li>{input_name}</li>\n"
+
+            if task_iri in task_inputs_dict and task_iri != top_task:
+                # check current task (bottom of the hierarchy)
+                if top_task not in task_inputs_dict:
+                    # open the list
+                    md_text += "\t" * (level + 3) + f"<ul>\n"
+                for input_iri in task_inputs_dict[task_iri]:
+                    input_name = input_iri.split("#")[-1]
+                    md_text += "\t" * (level + 4) + f"<li>{input_name}</li>\n"
+
+            if top_task in task_inputs_dict or (task_iri in task_inputs_dict and task_iri != top_task):
+                # close the list
                 md_text += "\t" * (level + 3) + f"</ul>\n"
             md_text += "\t" * (level + 2) + f"</details>\n"
 
@@ -178,11 +192,26 @@ def task_hierarchy_to_md(
             md_text += "\t" * (level + 2) + f"<details>\n"
             md_text += "\t" * (level + 3) + f"<summary>Outputs</summary>\n"
             if top_task in task_outputs_dict:
+                # check top task of the hierarchy
+                # open the list
                 md_text += "\t" * (level + 3) + f"<ul>\n"
                 for output_iri in task_outputs_dict[top_task]:
                     output_name = output_iri.split("#")[-1]
                     md_text += "\t" * (level + 4) + f"<li>{output_name}</li>\n"
+
+            if task_iri in task_outputs_dict and task_iri != top_task:
+                # check current task (bottom of the hierarchy)
+                if top_task not in task_outputs_dict:
+                    # open the list
+                    md_text += "\t" * (level + 3) + f"<ul>\n"
+                for output_iri in task_outputs_dict[task_iri]:
+                    output_name = output_iri.split("#")[-1]
+                    md_text += "\t" * (level + 4) + f"<li>{output_name}</li>\n"
+
+            if top_task in task_outputs_dict or (task_iri in task_outputs_dict and task_iri != top_task):
+                # close the list
                 md_text += "\t" * (level + 3) + f"</ul>\n"
+
             md_text += "\t" * (level + 2) + f"</details>\n"
 
             # handle the methods attached to the task

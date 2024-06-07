@@ -44,7 +44,7 @@ def property_iri_to_field_name(property_iri: str) -> str:
     return snake_case
 
 
-def class_name_to_module_name(class_name: str):
+def class_name_to_module_name(class_name: str) -> str:
     """
     Converts a class name to a module name by removing the "Module" suffix and converting it to snake case.
 
@@ -58,7 +58,7 @@ def class_name_to_module_name(class_name: str):
     return camel_to_snake(name)
 
 
-def class_name_to_method_name(class_name: str):
+def class_name_to_method_name(class_name: str) -> str:
     """
     Converts a class name to a method name by removing the word "Method" from the end of the class name.
 

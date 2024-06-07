@@ -1189,7 +1189,7 @@
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamPenalty (string)</li>
 									<li>hasParamRandomState (int, string)</li>
-									<li>hasParamRefit (boolean)</li>
+									<li>hasParamRefit (boolean, string)</li>
 									<li>hasParamScoring (string)</li>
 									<li>hasParamSolver (string)</li>
 									<li>hasParamTol (float, string)</li>
@@ -1673,7 +1673,7 @@
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamPenalty (string)</li>
 									<li>hasParamRandomState (int, string)</li>
-									<li>hasParamRefit (boolean)</li>
+									<li>hasParamRefit (boolean, string)</li>
 									<li>hasParamScoring (string)</li>
 									<li>hasParamSolver (string)</li>
 									<li>hasParamTol (float, string)</li>
@@ -2439,6 +2439,62 @@
 				</details>
 			</ul>
 		</details>
+		<details>
+			<summary>ModelSelection ☑️</summary>
+			<ul>
+				<details>
+					<summary>Inputs</summary>
+					<ul>
+						<li>DataInTrainX</li>
+						<li>DataInTrainY</li>
+						<li>InputModelAsMethod</li>
+					</ul>
+				</details>
+				<details>
+					<summary>Outputs</summary>
+					<ul>
+						<li>DataOutTrainModel</li>
+					</ul>
+				</details>
+				<details>
+					<summary>Methods</summary>
+					<ul>
+					<details>
+						<summary>GridSearchCVMethod</summary>
+						<ul>
+							<li>hasParamCv (int, string)</li>
+							<li>hasParamErrorScore (string)</li>
+							<li>hasParamEstimator (string)</li>
+							<li>hasParamNJobs (int, string)</li>
+							<li>hasParamParamGrid (string)</li>
+							<li>hasParamPreDispatch (int, string)</li>
+							<li>hasParamRefit (boolean, string)</li>
+							<li>hasParamReturnTrainScore (boolean)</li>
+							<li>hasParamScoring (string)</li>
+							<li>hasParamVerbose (boolean, int)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>RandomizedSearchCVMethod</summary>
+						<ul>
+							<li>hasParamCv (int, string)</li>
+							<li>hasParamErrorScore (string)</li>
+							<li>hasParamEstimator (string)</li>
+							<li>hasParamNIter (int)</li>
+							<li>hasParamNJobs (int, string)</li>
+							<li>hasParamParamDistributions (string)</li>
+							<li>hasParamPreDispatch (int, string)</li>
+							<li>hasParamRandomState (int, string)</li>
+							<li>hasParamRefit (boolean, string)</li>
+							<li>hasParamReturnTrainScore (boolean)</li>
+							<li>hasParamScoring (string)</li>
+							<li>hasParamVerbose (boolean, int)</li>
+						</ul>
+					</details>
+					</ul>
+				</details>
+			</ul>
+		</details>
 	</ul>
 </details>
 <details>
@@ -3184,55 +3240,6 @@
 			<summary>Methods</summary>
 			<ul>
 			<details>
-				<summary>CheckCvMethod</summary>
-				<ul>
-					<li>hasParamClassifier (boolean)</li>
-					<li>hasParamCv (int, string)</li>
-				</ul>
-			</details>
-			<details>
-				<summary>CrossValPredictMethod</summary>
-				<ul>
-					<li>hasParamCv (int, string)</li>
-					<li>hasParamEstimator (string)</li>
-					<li>hasParamFitParams (string)</li>
-					<li>hasParamMethod (string)</li>
-					<li>hasParamNJobs (int, string)</li>
-					<li>hasParamParams (string)</li>
-					<li>hasParamPreDispatch (int, string)</li>
-					<li>hasParamVerbose (boolean, int)</li>
-				</ul>
-			</details>
-			<details>
-				<summary>CrossValScoreMethod</summary>
-				<ul>
-					<li>hasParamCv (int, string)</li>
-					<li>hasParamErrorScore (string)</li>
-					<li>hasParamFitParams (string)</li>
-					<li>hasParamNJobs (int, string)</li>
-					<li>hasParamParams (string)</li>
-					<li>hasParamPreDispatch (int, string)</li>
-					<li>hasParamScoring (string)</li>
-					<li>hasParamVerbose (boolean, int)</li>
-				</ul>
-			</details>
-			<details>
-				<summary>CrossValidateMethod</summary>
-				<ul>
-					<li>hasParamCv (int, string)</li>
-					<li>hasParamErrorScore (string)</li>
-					<li>hasParamFitParams (string)</li>
-					<li>hasParamNJobs (int, string)</li>
-					<li>hasParamParams (string)</li>
-					<li>hasParamPreDispatch (int, string)</li>
-					<li>hasParamReturnEstimator (boolean)</li>
-					<li>hasParamReturnIndices (boolean)</li>
-					<li>hasParamReturnTrainScore (boolean)</li>
-					<li>hasParamScoring (string)</li>
-					<li>hasParamVerbose (boolean, int)</li>
-				</ul>
-			</details>
-			<details>
 				<summary>DataSplittingMethod</summary>
 				<ul>No parameters</ul>
 			</details>
@@ -3268,23 +3275,6 @@
 				</ul>
 			</details>
 			<details>
-				<summary>LearningCurveMethod</summary>
-				<ul>
-					<li>hasParamCv (int, string)</li>
-					<li>hasParamErrorScore (string)</li>
-					<li>hasParamEstimator (string)</li>
-					<li>hasParamExploitIncrementalLearning (boolean)</li>
-					<li>hasParamFitParams (string)</li>
-					<li>hasParamNJobs (int, string)</li>
-					<li>hasParamPreDispatch (int, string)</li>
-					<li>hasParamRandomState (int, string)</li>
-					<li>hasParamReturnTimes (boolean)</li>
-					<li>hasParamScoring (string)</li>
-					<li>hasParamShuffle (boolean)</li>
-					<li>hasParamVerbose (boolean, int)</li>
-				</ul>
-			</details>
-			<details>
 				<summary>LeavePGroupsOutMethod</summary>
 				<ul>
 					<li>hasParamNGroups (int)</li>
@@ -3294,18 +3284,6 @@
 				<summary>LeavePOutMethod</summary>
 				<ul>
 					<li>hasParamP (float, int)</li>
-				</ul>
-			</details>
-			<details>
-				<summary>PermutationTestScoreMethod</summary>
-				<ul>
-					<li>hasParamCv (int, string)</li>
-					<li>hasParamFitParams (string)</li>
-					<li>hasParamNJobs (int, string)</li>
-					<li>hasParamNPermutations (int)</li>
-					<li>hasParamRandomState (int, string)</li>
-					<li>hasParamScoring (string)</li>
-					<li>hasParamVerbose (boolean, int)</li>
 				</ul>
 			</details>
 			<details>
@@ -3388,20 +3366,6 @@
 					<li>hasParamScoreName (string)</li>
 					<li>hasParamTestScores (string)</li>
 					<li>hasParamTrainScores (string)</li>
-				</ul>
-			</details>
-			<details>
-				<summary>ValidationCurveMethod</summary>
-				<ul>
-					<li>hasParamCv (int, string)</li>
-					<li>hasParamErrorScore (string)</li>
-					<li>hasParamEstimator (string)</li>
-					<li>hasParamFitParams (string)</li>
-					<li>hasParamNJobs (int, string)</li>
-					<li>hasParamParamName (string)</li>
-					<li>hasParamPreDispatch (int, string)</li>
-					<li>hasParamScoring (string)</li>
-					<li>hasParamVerbose (boolean, int)</li>
 				</ul>
 			</details>
 			</ul>

@@ -1,23 +1,20 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-import importlib
 from abc import abstractmethod
-from typing import Any, Dict, Union
+from typing import Dict, Union
 
-import numpy as np
 import pandas as pd
 
 from exe_kg_lib.classes.data_entity import DataEntity
 from exe_kg_lib.classes.method import Method
-from exe_kg_lib.utils.string_utils import camel_to_snake
 
 from .entity import Entity
 
 
 class Task(Entity):
     """
-    Abstraction of owl:class ds:Task.
+    Abstraction of owl:class ds:AtomicTask.
 
     ❗ Important for contributors: See Section "Naming conventions" in README.md of "classes.tasks" package before extending the code's functionality.
     """
@@ -43,6 +40,7 @@ class Task(Entity):
         """
         For each key in keyword_value_dict, checks if the key exists in an output name of the Task.
         If yes, adds the output name with its value to out_dict.
+
         Args:
             keyword_value_dict: key-value pairs where key is a keyword to find in an output name of the Task
                                   and value is the value corresponding to that output name
@@ -67,14 +65,16 @@ class Task(Entity):
         self, dict_to_search: dict, fallback_df: pd.DataFrame
     ) -> Dict[str, Dict[str, Union[pd.DataFrame, Method]]]:
         """
-        Tries to match the Task's input reference names with the keys of dict_to_search and fills input_dict list with their names and values.
-        If the matching fail, it retrieves columns of the provided fallback_df
+        For each input of the Task:
+            - If the input is a DataEntity: Searches for the input reference name in dict_to_search. If not found, uses fallback_df.
+            - If the input is a Method: Uses the input type as the input name and the input itself as the input value.
+
         Args:
             dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
             fallback_df: contains data to return as an alternative
 
         Returns:
-            Dict[str, Dict[str, Union[pd.DataFrame, Method]]]: dictionary with input types as keys and dictionaries with input reference names and values as values
+            Dict[str, Dict[str, Union[pd.DataFrame, Method]]]: dictionary with input types as keys and dictionaries with input names and values as values
         """
         input_dict = {}
         inputs_sorted = sorted(self.inputs, key=lambda x: x.name)

@@ -109,7 +109,7 @@ def query_hierarchy_chain(kg: Graph, entity_iri: str) -> query.Result:
 def query_module_iri_by_method_iri(
     kg: Graph,
     method_iri: str,
-    namespace_prefix,
+    namespace_prefix: str,
 ) -> query.Result:
     """
     Queries the knowledge graph to retrieve the module IRI associated with a given method IRI.
@@ -117,7 +117,7 @@ def query_module_iri_by_method_iri(
     Args:
         kg (Graph): The Knowledge Graph to query.
         method_iri (str): The IRI of the method.
-        namespace_prefix: The namespace prefix used in the query.
+        namespace_prefix (str): The namespace prefix used in the query.
 
     Returns:
         query.Result: The result of the query.
@@ -557,6 +557,17 @@ def get_converted_module_hierarchy_chain(
     namespace_prefix: str,
     method_iri: str,
 ) -> List:
+    """
+    Retrieves the module hierarchy chain for a given method IRI and converts it to a list of module names.
+
+    Args:
+        kg (Graph): The knowledge graph to query.
+        namespace_prefix (str): The namespace prefix to use in queries.
+        method_iri (str): The IRI of the method.
+
+    Returns:
+        List: The list of module names in the module hierarchy chain, in the correct order.
+    """
     module_chain_names = None
     try:
         module_chain_names = get_module_hierarchy_chain(kg, namespace_prefix, method_iri)
@@ -586,7 +597,6 @@ def get_method_grouped_params_plus_inherited(
     Returns:
         List[Tuple[str, List[str]]]: A list of tuples, where each tuple contains a parameter name and a list of its values.
     """
-
     property_list = list(query_method_params_plus_inherited(method_iri, namespace_prefix, kg))
     property_list = sorted(property_list, key=lambda elem: elem[0])  # prepare for grouping
     property_list = [
@@ -634,7 +644,6 @@ def get_grouped_inherited_outputs(
 
     Returns:
         List[Tuple[str, List[str]]]: A list of tuples, where each tuple contains a property name and a list of input values.
-
     """
     property_list = list(query_inherited_outputs(input_kg, namespace_prefix, entity_iri))
     property_list = sorted(property_list, key=lambda elem: elem[0])  # prepare for grouping

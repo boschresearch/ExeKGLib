@@ -115,6 +115,16 @@ class ExeKGConstructionMixin:
         )
 
     def create_method(self, method_type: str, params_dict: Dict[str, Union[str, int, float, dict]]) -> Method:
+        """
+        Creates a Method object with the specified method type and parameters.
+
+        Args:
+            method_type (str): The type of the method.
+            params_dict (Dict[str, Union[str, int, float, dict]]): A dictionary containing the parameters for the method.
+
+        Returns:
+            Method: The created Method object.
+        """
         return Method(
             self.top_level_schema.namespace + method_type,
             self.atomic_method,
@@ -131,6 +141,23 @@ class ExeKGConstructionMixin:
         namespace_to_use: Namespace,
         method_extra_parent_iri: str = None,
     ) -> None:
+        """
+        Adds a method instance to the ExeKG and links it to the task instance.
+
+        Args:
+            method_type (str): The type of the method.
+            method_params_dict (Dict[str, Union[str, int, float, dict]]): A dictionary containing the method parameters.
+            relation_iri (str): The IRI of the relation between the method instance and the task instance.
+            task_instance (Task): The task instance to link the method instance to.
+            namespace_to_use (Namespace): The namespace to use for creating the method instance.
+            method_extra_parent_iri (str, optional): The IRI of an additional parent for the method instance. Defaults to None.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If any of the provided method parameters could not be added to the method instance.
+        """
         method_parent = Entity(namespace_to_use + method_type, self.atomic_method)
         method_instance = add_instance_from_parent_with_relation(
             namespace_to_use,
@@ -170,8 +197,8 @@ class ExeKGConstructionMixin:
         kg_schema_short: str,
         input_entity_dict: Dict[str, Union[List[DataEntity], Method]],
         method_params_dict: Dict[str, Union[str, int, float, dict]],
-        task_type: str = None,
-        method_type: str = None,
+        task_type: str,
+        method_type: str,
     ) -> Task:
         """
         Instantiates and adds a new task entity to the output KG.
@@ -181,8 +208,8 @@ class ExeKGConstructionMixin:
             kg_schema_short (str): The short name of the KG schema to use (e.g. ml, visu, etc.).
             input_entity_dict (Dict[str, Union[List[DataEntity], Method]]): A dictionary containing input data entities for the task.
             method_params_dict (Dict[str, Union[str, int, float, dict]]): A dictionary containing method parameters.
-            task (str, optional): The type of the task. Defaults to None.
-            method (str, optional): The type of the method. Defaults to None.
+            task_type (str): The type of the task. Defaults to None.
+            method_type (str): The type of the method. Defaults to None.
 
         Returns:
             Task: The created task object.
