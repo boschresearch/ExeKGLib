@@ -154,6 +154,7 @@ if __name__ == "__main__":
         method_type="BarMethod",
         method_params_dict={
             "hasParamTitle": "Validation F1-score and Test F1-score",
+            "hasParamAnnotate": True,
         },
     )
 

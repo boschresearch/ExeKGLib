@@ -110,9 +110,13 @@ class Plotting(Task):
                     if isinstance(input_value, pd.DataFrame)
                     else prettify_data_entity_name(input_name)
                 )
-                y = input_value
 
-                y_to_show = round(y, 3) if isinstance(y, float) else y
+                # assume input_value can contain either 1 column or a single number
+                y = input_value
+                if isinstance(input_value, pd.DataFrame):
+                    y = input_value[input_value.columns[0]].values
+                elif isinstance(input_value, pd.Series):
+                    y = input_value.values[0]
 
                 method_to_call = method_module if plot is None else getattr(plot, method_module.__name__)
                 method_to_call(x, y, **self.method.params_dict)
@@ -124,22 +128,41 @@ class Plotting(Task):
                     if "y_label" in self.method.inherited_params_dict:
                         plot.set_ylabel(self.method.inherited_params_dict["y_label"])
                     if "legend_name" in self.method.inherited_params_dict:
-                        plot.legend(title=self.method.inherited_params_dict["hasParamLegendName"])
+                        plot.legend(title=self.method.inherited_params_dict["legend_name"])
 
-                    # format y to round to 3 decimal places
-                    plot.annotate(f"{y_to_show}", (x, y), textcoords="offset points", xytext=(0, 2), ha="center")
+                    if self.method.inherited_params_dict.get("annotate", False):
+                        if isinstance(input_value, pd.DataFrame):
+                            for i, y_val in enumerate(y):
+                                y_to_show = round(y_val, 3) if isinstance(y_val, float) else y_val
+                                plot.annotate(
+                                    f"{y_val}", (x[i], y_val), textcoords="offset points", xytext=(0, 2), ha="center"
+                                )
+                        else:
+                            y_to_show = round(y, 3) if isinstance(y, float) else y
+                            plot.annotate(
+                                f"{y_to_show}", (x, y), textcoords="offset points", xytext=(0, 2), ha="center"
+                            )
 
                 else:
                     if "title" in self.method.inherited_params_dict:
                         plt.title(self.method.inherited_params_dict["title"])
                     if "x_label" in self.method.inherited_params_dict:
-                        plt.xlabel(self.method.inherited_params_dict["hasParamXLabel"])
+                        plt.xlabel(self.method.inherited_params_dict["x_label"])
                     if "y_label" in self.method.inherited_params_dict:
-                        plt.ylabel(self.method.inherited_params_dict["hasParamYLabel"])
+                        plt.ylabel(self.method.inherited_params_dict["y_label"])
                     if "legend_name" in self.method.inherited_params_dict:
-                        plt.legend(title=self.method.inherited_params_dict["hasParamLegendName"])
+                        plt.legend(title=self.method.inherited_params_dict["legend_name"])
 
-                    plt.annotate(f"{y_to_show}", (x, y), textcoords="offset points", xytext=(0, 2), ha="center")
+                    if self.method.inherited_params_dict.get("annotate", False):
+                        if isinstance(input_value, pd.DataFrame):
+                            for i, y_val in enumerate(y):
+                                y_to_show = round(y_val, 3) if isinstance(y_val, float) else y_val
+                                plt.annotate(
+                                    f"{y_val}", (x[i], y_val), textcoords="offset points", xytext=(0, 2), ha="center"
+                                )
+                        else:
+                            y_to_show = round(y, 3) if isinstance(y, float) else y
+                            plt.annotate(f"{y_to_show}", (x, y), textcoords="offset points", xytext=(0, 2), ha="center")
 
             output_dir = Path(self.plots_output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)

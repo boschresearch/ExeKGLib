@@ -158,6 +158,7 @@ if __name__ == "__main__":
         method_type="BarMethod",
         method_params_dict={
             "hasParamTitle": "Test Accuracy and F1-score",
+            "hasParamAnnotate": True,
         },
     )
 
@@ -170,6 +171,7 @@ if __name__ == "__main__":
         method_type="BarMethod",
         method_params_dict={
             "hasParamTitle": "Test Precision & Recall",
+            "hasParamAnnotate": True,
         },
     )
 
