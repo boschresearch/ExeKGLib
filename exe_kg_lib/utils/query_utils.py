@@ -288,7 +288,7 @@ def query_inherited_inputs(input_kg: Graph, namespace_prefix: str, entity_iri: s
         "\nSELECT ?m ?s ?p WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
-        "?p rdfs:subPropertyOf " + namespace_prefix + ":hasInput ."
+        "?p rdfs:subPropertyOf+ " + namespace_prefix + ":hasInput ."
         "OPTIONAL { ?m rdfs:subClassOf ?s . }"
         "OPTIONAL { ?s rdfs:subClassOf+ " + namespace_prefix + ":DataStructure . }"
         "FILTER(?s != " + namespace_prefix + ":DataEntity) . }",
@@ -313,7 +313,7 @@ def query_inherited_outputs(input_kg: Graph, namespace_prefix: str, entity_iri: 
         "\nSELECT ?m ?s ?p WHERE {?entity_iri rdfs:subClassOf* ?parent . "
         "?p rdfs:domain ?parent ."
         "?p rdfs:range ?m ."
-        "?p rdfs:subPropertyOf " + namespace_prefix + ":hasOutput ."
+        "?p rdfs:subPropertyOf+ " + namespace_prefix + ":hasOutput ."
         "?m rdfs:subClassOf ?s ."
         "?s rdfs:subClassOf+ " + namespace_prefix + ":DataStructure . "
         "FILTER(?s != " + namespace_prefix + ":DataEntity) . }",
