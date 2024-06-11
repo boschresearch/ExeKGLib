@@ -51,9 +51,9 @@ class Train(Task):
         if "sklearn" in method_module.__module__:
             assert isinstance(method_module, type), "The method_module should be a class"
             if input_model_as_method:
-                # HPO
+                # HPO (e.g. GridSearchCV) or Boosting (e.g. AdaBoostClassifier)
                 model = method_module(
-                    estimator=input_model_as_method_module(**input_model_as_method.params_dict),
+                    input_model_as_method_module(**input_model_as_method.params_dict),
                     **self.method.params_dict,
                 )
             else:
