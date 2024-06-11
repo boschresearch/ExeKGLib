@@ -51,7 +51,7 @@ class Task:
                 )
                 for input_name, input_value in task_dict["input_entity_info_dict"].items()
             },
-            output_names=task_dict["output_names"],
+            output_names=task_dict.get("output_names", None),
         )
 
     def to_dict(self):
