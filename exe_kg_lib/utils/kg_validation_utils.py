@@ -28,8 +28,7 @@ def check_kg_executability(kg: Union[rdflib.Graph, str], shacl_shapes_s: str) ->
     r = validate(data_graph=kg, shacl_graph=shacl_shapes_s)
     conforms, _, results_text = r
     if not conforms:
-        print(results_text)
         raise KGValidationError(
-            "The KG is not executable. To ensure executability of the KG as an ML pipeline, please fix the above error(s) and try again."
+            f"{results_text}\n\nThe KG is not executable. To ensure executability of the KG as an ML pipeline, please fix the above error(s) and try again."
         )
     return

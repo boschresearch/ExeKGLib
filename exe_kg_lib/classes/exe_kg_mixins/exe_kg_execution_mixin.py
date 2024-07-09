@@ -380,14 +380,14 @@ class ExeKGExecutionMixin:
             try:
                 next_task = self._parse_task_by_iri(next_task_iri, plots_output_dir, canvas_task)
             except NoResultsError as e:
-                print(e)
-                raise RuntimeError(f"Parsing of task with IRI {next_task_iri} failed with the above exception")
+                raise RuntimeError(f"{e}\n\nParsing of task with IRI {next_task_iri} failed with the above exception")
 
             try:
                 output = next_task.run_method(task_output_dict, input_data)
             except NotImplementedError as e:
-                print(e)
-                raise RuntimeError(f"Execution of method for task {next_task_iri} failed with the above exception")
+                raise RuntimeError(
+                    f"{e}\n\nExecution of method for task {next_task_iri} failed with the above exception"
+                )
 
             if output:
                 task_output_dict.update(output)
