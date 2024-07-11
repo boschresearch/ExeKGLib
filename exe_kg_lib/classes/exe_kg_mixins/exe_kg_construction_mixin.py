@@ -17,7 +17,7 @@ from exe_kg_lib.classes.task import Task
 from exe_kg_lib.utils.kg_creation_utils import (
     add_and_attach_data_entity, add_data_entity_instance,
     add_instance_from_parent_with_relation, add_literal, create_pipeline_task,
-    deserialize_input_entity_info_dict)
+    deserialize_input_entity_info_dict, field_value_to_literal, save_exe_kg)
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 from exe_kg_lib.utils.query_utils import (
     NoResultsError, get_grouped_inherited_inputs,
@@ -29,7 +29,7 @@ from exe_kg_lib.utils.string_utils import (get_instance_name,
 
 class ExeKGConstructionMixin:
     # see exe_kg_lib/classes/exe_kg_base.py for the definition of these attributes
-    output_kg: Graph
+    exe_kg: Graph
     pipeline_instance: Entity
     pipeline_serializable: Pipeline
     top_level_schema: KGSchema
@@ -70,7 +70,7 @@ class ExeKGConstructionMixin:
         self.pipeline_instance = create_pipeline_task(
             self.top_level_schema.namespace,
             self.pipeline,
-            self.output_kg,
+            self.exe_kg,
             pipeline_name,
             input_data_path,
             plots_output_dir,
@@ -161,7 +161,7 @@ class ExeKGConstructionMixin:
         method_parent = Entity(namespace_to_use + method_type, self.atomic_method)
         method_instance = add_instance_from_parent_with_relation(
             namespace_to_use,
-            self.output_kg,
+            self.exe_kg,
             method_parent,
             relation_iri,
             task_instance,
@@ -183,9 +183,9 @@ class ExeKGConstructionMixin:
                 continue
 
             input_value = method_params_dict_copy.pop(property_name)
-            literal = self._field_value_to_literal(input_value)
+            literal = field_value_to_literal(input_value)
 
-            add_literal(self.output_kg, method_instance, property_iri, literal)
+            add_literal(self.exe_kg, method_instance, property_iri, literal)
 
         if len(method_params_dict_copy) > 0:
             raise ValueError(
@@ -230,7 +230,7 @@ class ExeKGConstructionMixin:
         task_class = Task(kg_schema_to_use.namespace + task_type, self.atomic_task)
         added_entity = add_instance_from_parent_with_relation(
             kg_schema_to_use.namespace,
-            self.output_kg,
+            self.exe_kg,
             task_class,
             relation_iri,
             self.last_created_task,
@@ -354,7 +354,7 @@ class ExeKGConstructionMixin:
             data_entity_iri = input_entity_iri + "_" + task_instance.name + "_" + str(same_input_index)
             # instantiate given data entity
             add_data_entity_instance(
-                self.output_kg,
+                self.exe_kg,
                 self.data,
                 self.top_level_schema.kg,
                 self.top_level_schema.namespace,
@@ -368,7 +368,7 @@ class ExeKGConstructionMixin:
                 # data_structure_iri=input_data_entity.data_structure,
             )
             add_and_attach_data_entity(
-                self.output_kg,
+                self.exe_kg,
                 self.data,
                 self.top_level_schema.kg,
                 self.top_level_schema.namespace,
@@ -421,7 +421,7 @@ class ExeKGConstructionMixin:
                     data_structure_iri=data_structure_iri,
                 )
                 add_and_attach_data_entity(
-                    self.output_kg,
+                    self.exe_kg,
                     self.data,
                     self.top_level_schema.kg,
                     self.top_level_schema.namespace,
@@ -434,28 +434,6 @@ class ExeKGConstructionMixin:
 
         return output_names
 
-    def _field_value_to_literal(self, field_value: Union[str, int, float, bool]) -> Literal:
-        """
-        Converts a Python field value to a Literal object with the appropriate datatype.
-
-        Args:
-            field_value (Union[str, int, float, bool]): The value to be converted.
-
-        Returns:
-            Literal: The converted Literal object.
-
-        """
-        if isinstance(field_value, str):
-            return Literal(field_value, datatype=XSD.string)
-        elif isinstance(field_value, bool):
-            return Literal(field_value, datatype=XSD.boolean)
-        elif isinstance(field_value, int):
-            return Literal(field_value, datatype=XSD.int)
-        elif isinstance(field_value, float):
-            return Literal(field_value, datatype=XSD.float)
-        else:
-            return Literal(str(field_value), datatype=XSD.string)
-
     def save_created_kg(self, dir_path: str, check_executability=True) -> None:
         """
         Save the created ExeKG and simplified pipeline.
@@ -464,21 +442,15 @@ class ExeKGConstructionMixin:
             dir_path (str): The directory path where the files will be saved.
         """
 
-        if check_executability:
-            check_kg_executability(self.output_kg + self.input_kg, self.shacl_shapes_s)
-
-        os.makedirs(dir_path, exist_ok=True)
-
-        # save the ExeKG in RDF/Turtle format
-        ttl_file_path = os.path.join(dir_path, f"{self.pipeline_instance.name}.ttl")
-        self.output_kg.serialize(destination=ttl_file_path)
-        print(f"Executable KG saved in RDF/Turtle format at {ttl_file_path}.")
-
-        # save the simplified pipeline in JSON format
-        json_file_path = os.path.join(dir_path, f"{self.pipeline_instance.name}.json")
-        with open(json_file_path, "w+") as json_file:
-            json_file.write(self.pipeline_serializable.to_json())
-        print(f"Pipeline (simplified) saved in JSON format to {json_file_path}.")
+        save_exe_kg(
+            self.exe_kg,
+            self.input_kg,
+            self.shacl_shapes_s,
+            self.pipeline_serializable,
+            dir_path,
+            self.pipeline_serializable.name,
+            check_executability,
+        )
 
     def name_instance(
         self,
@@ -571,16 +543,15 @@ class ExeKGConstructionMixin:
 
             pos_per_task_type[task.task_type] = pos + 1
 
-        check_kg_executability(self.output_kg + self.input_kg, self.shacl_shapes_s)
+        check_kg_executability(self.exe_kg + self.input_kg, self.shacl_shapes_s)
 
-        return self.output_kg
+        return self.exe_kg
 
     def clear_created_kg(self) -> None:
         """
         Clears the created ExeKG.
         """
-        self.output_kg = Graph(bind_namespaces="rdflib")
-        self._bind_used_namespaces([self.output_kg])
+        self.exe_kg = Graph(bind_namespaces="rdflib")
 
         self.pipeline_serializable = Pipeline()
 

@@ -1,0 +1,178 @@
+# Copyright (c) 2022 Robert Bosch GmbH
+# SPDX-License-Identifier: AGPL-3.0
+
+import os
+from io import TextIOWrapper
+from pathlib import Path
+from typing import Callable, Dict, List, Union
+
+from rdflib import RDF, Graph
+
+from exe_kg_lib.classes.data_entity import DataEntity
+from exe_kg_lib.classes.entity import Entity
+from exe_kg_lib.classes.exe_kg_mixins.exe_kg_construction_mixin import \
+    ExeKGConstructionMixin
+from exe_kg_lib.classes.exe_kg_serialization.pipeline import Pipeline
+from exe_kg_lib.classes.kg_schema import KGSchema
+from exe_kg_lib.classes.method import Method
+from exe_kg_lib.classes.task import Task
+from exe_kg_lib.utils.kg_creation_utils import (add_data_entity_instance,
+                                                add_relation, load_exe_kg,
+                                                save_exe_kg)
+from exe_kg_lib.utils.kg_edit_utils import (update_metric_values,
+                                            update_pipeline_input_path)
+from exe_kg_lib.utils.query_utils import get_pipeline_and_first_task_iri
+
+
+class ExeKGEditMixin:
+    # see exe_kg_lib/classes/exe_kg_base.py for the definition of these attributes
+    exe_kg: Graph
+    input_kg: Graph
+    top_level_schema: KGSchema
+    bottom_level_schemata: Dict[str, KGSchema]
+    atomic_task: Entity
+    pipeline_serializable: Pipeline
+    task_type_dict: Dict[str, int]
+    data: Entity
+    pipeline: Entity
+    # see exe_kg_lib/classes/exe_kg_mixins/exe_kg_construction_mixin.py for the definition of this attribute
+    create_exe_kg_from_json: Callable[[Union[Path, TextIOWrapper, str]], Graph]
+    add_task: Callable[
+        [
+            str,
+            Dict[str, Union[List[DataEntity], Method]],
+            Dict[str, Union[str, int, float, dict]],
+            str,
+            str,
+        ],
+        Task,
+    ]
+    clear_created_kg: Callable[[], None]
+
+    def __init__(self, input_exe_kg_path: str) -> None:
+        super().__init__()
+
+        self.load_exe_kg(input_exe_kg_path)
+
+    def load_exe_kg(self, input_exe_kg_path: str) -> None:
+        self.input_exe_kg_path = input_exe_kg_path
+
+        self.clear_created_kg()
+        self.exe_kg = load_exe_kg(
+            input_exe_kg_path, self.create_exe_kg_from_json if input_exe_kg_path.endswith(".json") else None
+        )
+
+    def update_metric_values(self, entity_name_value_dict: dict):
+        update_metric_values(
+            self.exe_kg,
+            self.input_exe_kg_path,
+            entity_name_value_dict,
+            self.bottom_level_schemata["ml"].namespace,
+            self.top_level_schema.namespace,
+        )
+
+    # def update_param_values(self, entity_name_value_dict: dict):
+    #     update_metric_values(
+    #         self.exe_kg,
+    #         self.input_exe_kg_path,
+    #         entity_name_value_dict,
+    #         self.bottom_level_schemata["ml"].namespace,
+    #         self.top_level_schema.namespace,
+    #     )
+
+    def update_dataset(
+        self,
+        new_dataset_path: str,
+        new_feature_data_entities: List[DataEntity],
+        new_label_data_entity: DataEntity,
+    ):
+        if new_label_data_entity.name != "label":
+            raise ValueError("The name of the label entity should be 'label'")
+
+        ml_namespace = self.bottom_level_schemata["ml"].namespace
+        concat_task_iri = next(self.exe_kg.subjects(predicate=RDF.type, object=ml_namespace.Concatenation))
+        next_to_concat_task_iri = next(
+            self.exe_kg.objects(subject=concat_task_iri, predicate=self.top_level_schema.namespace.hasNextTask)
+        )
+
+        removal_types = [
+            self.top_level_schema.namespace.DataEntity,
+            ml_namespace.Concatenation,
+            ml_namespace.DataInConcatenation,
+            ml_namespace.DataOutConcatenatedData,
+        ]
+
+        # remove all instances of DataEntity, Concatenation, DataInConcatenation, and DataOutConcatenatedData
+        for removal_type in removal_types:
+            for entity_iri in self.exe_kg.subjects(predicate=RDF.type, object=removal_type):
+                self.exe_kg.remove((entity_iri, None, None))
+
+        pipeline_iri, input_data_path, _, _ = get_pipeline_and_first_task_iri(
+            self.exe_kg, self.top_level_schema.namespace_prefix
+        )
+
+        pipeline_entity = Task(pipeline_iri, self.pipeline)
+
+        # update the input data path of the pipeline
+        update_pipeline_input_path(
+            self.exe_kg,
+            pipeline_iri,
+            new_dataset_path,
+            self.top_level_schema.namespace,
+        )
+
+        # or_last_created_task = self.last_created_task
+        # or_concat_id = self.task_type_dict["Concatenation"]
+
+        # update serializable pipeline name to avoid errors while creating names for new entities
+        self.pipeline_serializable.name = pipeline_entity.name
+
+        # update pipeline construction state to add task in the 1st position of the pipeline
+        self.last_created_task = pipeline_entity
+        self.task_type_dict["Concatenation"] = 1
+
+        # add a new Concatenation task to the pipeline, which also adds the new feature DataEntities
+        concatenate_task = self.add_task(
+            kg_schema_short="ml",
+            input_entity_dict={"DataInConcatenation": new_feature_data_entities},
+            method_type="ConcatenationMethod",
+            method_params_dict={},
+            task_type="Concatenation",
+        )
+
+        # add the new label DataEntity to the pipeline
+        add_data_entity_instance(
+            self.exe_kg,
+            self.data,
+            self.top_level_schema.kg,
+            self.top_level_schema.namespace,
+            new_label_data_entity,
+        )
+
+        # link the new Concatenation task to the pipeline
+        add_relation(
+            self.exe_kg, concatenate_task, self.top_level_schema.namespace.hasNextTask, Entity(next_to_concat_task_iri)
+        )
+
+        # # reset construction state
+        # self.last_created_task = or_last_created_task
+        # self.task_type_dict["Concatenation"] = or_concat_id
+
+    def apply_changes_to_ttl(self, new_path: str = None, check_executability: bool = True) -> None:
+        path_to_save = self.input_exe_kg_path if not new_path else new_path
+        pipeline_name = os.path.basename(path_to_save).split(".")[0]
+
+        save_exe_kg(
+            self.exe_kg,
+            self.input_kg,
+            self.shacl_shapes_s,
+            None,
+            os.path.dirname(path_to_save),
+            pipeline_name,
+            check_executability,
+            save_to_ttl=True,
+            save_to_json=False,
+        )
+
+
+# TODO: update pipeline's name which is used also for task names, input names etc.

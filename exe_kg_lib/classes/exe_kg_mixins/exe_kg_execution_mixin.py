@@ -3,9 +3,11 @@
 
 import ast
 import itertools
+import os
+import pickle
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Callable, Union
+from typing import Callable, Dict, Union
 
 import pandas as pd
 from rdflib import XSD, Graph, Literal, URIRef
@@ -18,6 +20,8 @@ from exe_kg_lib.classes.kg_schema import KGSchema
 from exe_kg_lib.classes.method import Method
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.classes.tasks import ml_tasks, statistic_tasks, visual_tasks
+from exe_kg_lib.utils.kg_creation_utils import load_exe_kg, save_exe_kg
+from exe_kg_lib.utils.kg_edit_utils import update_metric_values
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 from exe_kg_lib.utils.query_utils import (NoResultsError,
                                           get_converted_module_hierarchy_chain,
@@ -37,7 +41,9 @@ from exe_kg_lib.utils.string_utils import property_iri_to_field_name
 class ExeKGExecutionMixin:
     # see exe_kg_lib/classes/exe_kg_base.py for the definition of these attributes
     input_kg: Graph
+    exe_kg: Graph
     top_level_schema: KGSchema
+    bottom_level_schemata: Dict[str, KGSchema]
     shacl_shapes_s: str
     # see exe_kg_lib/classes/exe_kg_mixins/exe_kg_construction_mixin.py for the definition of this attribute
     create_exe_kg_from_json: Callable[[ExeKGConstructionMixin, Union[Path, TextIOWrapper, str]], Graph]
@@ -326,26 +332,6 @@ class ExeKGExecutionMixin:
 
         return task
 
-    def _load_exe_kg(self, input_path: str) -> Graph:
-        """
-        Loads the ExeKG from the specified input path.
-
-        Args:
-            input_path (str): The path to the ExeKG file.
-
-        Returns:
-            Graph: The loaded ExeKG.
-        """
-        input_exe_kg = Graph(bind_namespaces="rdflib")
-        if input_path.endswith(".ttl"):
-            # parse ExeKG from Turtle file
-            input_exe_kg.parse(input_path, format="n3")
-        elif input_path.endswith(".json"):
-            # convert simplified serialized pipeline to ExeKG
-            input_exe_kg = self.create_exe_kg_from_json(input_path)
-
-        return input_exe_kg
-
     def execute_pipeline(self, input_exe_kg_path: str) -> None:
         """
         Executes the pipeline by parsing the input ExeKG task-by-task.
@@ -359,9 +345,11 @@ class ExeKGExecutionMixin:
         Returns:
             None
         """
-        input_exe_kg = self._load_exe_kg(input_exe_kg_path)
+        self.exe_kg = load_exe_kg(
+            input_exe_kg_path, self.create_exe_kg_from_json if input_exe_kg_path.endswith(".json") else None
+        )
 
-        self.input_kg += input_exe_kg
+        self.input_kg += self.exe_kg
         check_kg_executability(self.input_kg, self.shacl_shapes_s)
 
         pipeline_iri, input_data_path, plots_output_dir, next_task_iri = get_pipeline_and_first_task_iri(
@@ -396,3 +384,21 @@ class ExeKGExecutionMixin:
                 canvas_task = next_task
 
             next_task_iri = next_task.next_task
+
+        update_metric_values(
+            self.exe_kg,
+            task_output_dict,
+            self.bottom_level_schemata["ml"].namespace,
+            self.top_level_schema.namespace,
+        )
+
+        save_exe_kg(
+            self.exe_kg,
+            self.input_kg,
+            self.shacl_shapes_s,
+            None,
+            os.path.dirname(input_exe_kg_path),
+            pipeline_iri.split("#")[-1],
+            check_executability=False,
+            save_to_json=False,
+        )

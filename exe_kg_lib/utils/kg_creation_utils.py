@@ -1,14 +1,19 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
+import os
 import re
-from typing import Dict, List, Union
+from io import TextIOWrapper
+from pathlib import Path
+from typing import Callable, Dict, List, Union
 
 from rdflib import RDF, XSD, Graph, Literal, Namespace, URIRef
 
 from exe_kg_lib.classes.exe_kg_serialization.method import \
     Method as MethodSerializable
+from exe_kg_lib.classes.exe_kg_serialization.pipeline import Pipeline
 from exe_kg_lib.classes.method import Method
+from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
 from exe_kg_lib.utils.string_utils import (TASK_OUTPUT_NAME_REGEX,
                                            get_instance_name)
 
@@ -277,3 +282,78 @@ def deserialize_input_entity_info_dict(
                     input_entity_dict[input_name].append(data_entities_dict[data_entity_name])
 
     return input_entity_dict
+
+
+def load_exe_kg(input_path: str, exe_kg_from_json_method: Callable[[Union[Path, TextIOWrapper, str]], Graph]) -> Graph:
+    """
+    Loads the ExeKG from the specified input path.
+
+    Args:
+        input_path (str): The path to the ExeKG file.
+        exe_kg_from_json_method (Callable[[str], Graph]): The method to convert a simplified serialized pipeline to ExeKG.
+
+    Returns:
+        Graph: The loaded ExeKG.
+    """
+    input_exe_kg = Graph(bind_namespaces="rdflib")
+    if input_path.endswith(".ttl"):
+        # parse ExeKG from Turtle file
+        input_exe_kg.parse(input_path, format="n3")
+    elif input_path.endswith(".json"):
+        # convert simplified serialized pipeline to ExeKG
+        input_exe_kg = exe_kg_from_json_method(input_path)
+
+    return input_exe_kg
+
+
+def field_value_to_literal(field_value: Union[str, int, float, bool]) -> Literal:
+    """
+    Converts a Python field value to a Literal object with the appropriate datatype.
+
+    Args:
+        field_value (Union[str, int, float, bool]): The value to be converted.
+
+    Returns:
+        Literal: The converted Literal object.
+
+    """
+    if isinstance(field_value, str):
+        return Literal(field_value, datatype=XSD.string)
+    elif isinstance(field_value, bool):
+        return Literal(field_value, datatype=XSD.boolean)
+    elif isinstance(field_value, int):
+        return Literal(field_value, datatype=XSD.int)
+    elif isinstance(field_value, float):
+        return Literal(field_value, datatype=XSD.float)
+    else:
+        return Literal(str(field_value), datatype=XSD.string)
+
+
+def save_exe_kg(
+    exe_kg: Graph,
+    input_kg: Graph,
+    shacl_shapes_s: str,
+    pipeline_serializable: Pipeline,
+    dir_path: str,
+    pipeline_name: str,
+    check_executability: bool = True,
+    save_to_ttl: bool = True,
+    save_to_json: bool = True,
+) -> None:
+    if check_executability:
+        check_kg_executability(exe_kg + input_kg, shacl_shapes_s)
+
+    os.makedirs(dir_path, exist_ok=True)
+
+    if save_to_ttl:
+        # save the ExeKG in RDF/Turtle format
+        ttl_file_path = os.path.join(dir_path, f"{pipeline_name}.ttl")
+        exe_kg.serialize(destination=ttl_file_path)
+        print(f"Executable KG saved in RDF/Turtle format at {ttl_file_path}.")
+
+    if save_to_json:
+        # save the simplified pipeline in JSON format
+        json_file_path = os.path.join(dir_path, f"{pipeline_name}.json")
+        with open(json_file_path, "w+") as json_file:
+            json_file.write(pipeline_serializable.to_json())
+        print(f"Pipeline (simplified) saved in JSON format to {json_file_path}.")
