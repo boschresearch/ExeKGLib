@@ -18,7 +18,7 @@ ExeKGLib is a Python library that simplifies the construction and execution of M
 ## 🌟 Key Benefits of ExeKGLib
 
 1. 🚀 **No-code ML Pipeline Creation**: With ExeKGLib, the user can specify the pipeline's structure and the operations to be performed using a simple JSON file (see [Creating an ML pipeline](https://boschresearch.github.io/ExeKGLib/usage/#creating-an-ml-pipeline)), which is then automatically converted to an ExeKG. This ExeKG can be executed to perform the specified operations on the input data (see [Executing an ML pipeline](https://boschresearch.github.io/ExeKGLib/usage/#executing-an-ml-pipeline)).
-2. 📦 **Batch Pipeline Creation**: ExeKGLib allows users to create pipelines in a batch fashion through its simple coding interface (see [Creating an ML pipeline](https://boschresearch.github.io/ExeKGLib/usage/#creating-an-ml-pipeline)). This enables automatic creation of multiple pipelines as ExeKGs, which can then be queried and analyzed.
+2. 📦 **Batch Pipeline Creation and Edit**: ExeKGLib allows users to create and edit pipelines in a batch fashion through its simple coding interface (see [Creating an ML pipeline](https://boschresearch.github.io/ExeKGLib/usage/#creating-an-ml-pipeline) and [Editing an ML pipeline](https://boschresearch.github.io/ExeKGLib/usage/#editing-an-ml-pipeline)). This enables automatic creation of multiple pipelines as ExeKGs, which can then be queried and analyzed.
 3. 🔗 **Linked Open Data Integration**: ExeKGLib is a tool that leverages linked open data (LOD) in several significant ways:
     - 📚 **Pipeline Creation Guidance**: It helps guide the user through the pipeline creation process. This is achieved by using a predefined hierarchy of tasks, along with their compatible inputs, outputs, methods, and method parameters (see [available tasks and methods](https://boschresearch.github.io/ExeKGLib/supported-tasks-and-methods/)).
     - 🧠 **Enhancing User Understanding**: It enhances the user's understanding of Data Science and the pipeline's functionality. This is achieved by linking the generated pipelines to Knowledge Graph (KG) schemata that encapsulate various Data Science concepts (see [KG schemata](https://boschresearch.github.io/ExeKGLib/external-sources/#kg-schemata)).
@@ -81,6 +81,11 @@ Run `typer exe_kg_lib.cli.main run create-pipeline <json_path>` after replacing 
 
 #### 🖥️ Step-by-step via CLI
 Run `typer exe_kg_lib.cli.main run create-pipeline`.
+
+### 🚀 Editing an ML pipeline
+
+#### 💻 Via code
+See the [provided sample script](https://github.com/boschresearch/ExeKGLib/tree/main/examples/ml_pipeline_simple_edit.py).
 
 ### 🚀 Executing an ML pipeline
 
