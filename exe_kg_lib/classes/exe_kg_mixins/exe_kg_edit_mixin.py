@@ -4,9 +4,9 @@
 import os
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Callable, Dict, List, Union
+from typing import Callable, Dict, List, Tuple, Union
 
-from rdflib import RDF, Graph
+from rdflib import RDF, Graph, URIRef
 
 from exe_kg_lib.classes.data_entity import DataEntity
 from exe_kg_lib.classes.entity import Entity
@@ -17,8 +17,9 @@ from exe_kg_lib.classes.kg_schema import KGSchema
 from exe_kg_lib.classes.method import Method
 from exe_kg_lib.classes.task import Task
 from exe_kg_lib.utils.kg_creation_utils import (add_data_entity_instance,
-                                                add_relation, load_exe_kg,
-                                                save_exe_kg)
+                                                add_relation,
+                                                field_value_to_literal,
+                                                load_exe_kg, save_exe_kg)
 from exe_kg_lib.utils.kg_edit_utils import (update_metric_values,
                                             update_pipeline_input_path)
 from exe_kg_lib.utils.query_utils import get_pipeline_and_first_task_iri
@@ -62,23 +63,35 @@ class ExeKGEditMixin:
             input_exe_kg_path, self.create_exe_kg_from_json if input_exe_kg_path.endswith(".json") else None
         )
 
-    def update_metric_values(self, entity_name_value_dict: dict):
+    def update_metric_values(self, output_name_value_dict: Dict[str, Union[str, int, float, bool]]):
         update_metric_values(
             self.exe_kg,
-            self.input_exe_kg_path,
-            entity_name_value_dict,
+            output_name_value_dict,
             self.bottom_level_schemata["ml"].namespace,
             self.top_level_schema.namespace,
         )
 
-    # def update_param_values(self, entity_name_value_dict: dict):
-    #     update_metric_values(
-    #         self.exe_kg,
-    #         self.input_exe_kg_path,
-    #         entity_name_value_dict,
-    #         self.bottom_level_schemata["ml"].namespace,
-    #         self.top_level_schema.namespace,
-    #     )
+    def update_param_values(
+        self, method_info_params_dict: Dict[Tuple[str, str], Dict[str, Union[str, int, float, bool]]]
+    ):
+        for (method_ns_prefix, method_name), param_dict in method_info_params_dict.items():
+            namespace = self.bottom_level_schemata[method_ns_prefix].namespace
+            method_iri = URIRef(namespace + method_name)
+            for param_name, param_value in param_dict.items():
+                self.exe_kg.remove(
+                    (
+                        method_iri,
+                        URIRef(namespace + param_name),
+                        None,
+                    )
+                )
+                self.exe_kg.add(
+                    (
+                        method_iri,
+                        URIRef(namespace + param_name),
+                        field_value_to_literal(param_value),
+                    )
+                )
 
     def update_dataset(
         self,
@@ -157,6 +170,29 @@ class ExeKGEditMixin:
         # # reset construction state
         # self.last_created_task = or_last_created_task
         # self.task_type_dict["Concatenation"] = or_concat_id
+
+    def update_pipeline_name(self, new_name: str):
+        pipeline_iri, _, _, _ = get_pipeline_and_first_task_iri(self.exe_kg, self.top_level_schema.namespace_prefix)
+
+        pipeline_entity = Task(pipeline_iri, self.pipeline)
+
+        # collect triples to update
+        triples_to_update = []
+        for s, p, o in self.exe_kg:
+            new_s, new_o = s, o
+            # check and replace in subject URI
+            if isinstance(s, URIRef) and pipeline_entity.name in str(s):
+                new_s = URIRef(str(s).replace(pipeline_entity.name, new_name))
+            # check and replace in object URI if it's a URIRef
+            if isinstance(o, URIRef) and pipeline_entity.name in str(o):
+                new_o = URIRef(str(o).replace(pipeline_entity.name, new_name))
+            if new_s != s or new_o != o:
+                triples_to_update.append((s, p, o, new_s, new_o))
+
+        # Update the graph
+        for old_s, p, old_o, new_s, new_o in triples_to_update:
+            self.exe_kg.remove((old_s, p, old_o))
+            self.exe_kg.add((new_s, p, new_o))
 
     def apply_changes_to_ttl(self, new_path: str = None, check_executability: bool = True) -> None:
         path_to_save = self.input_exe_kg_path if not new_path else new_path
