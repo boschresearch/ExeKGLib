@@ -10,8 +10,6 @@ from rdflib import RDF, Graph, URIRef
 
 from exe_kg_lib.classes.data_entity import DataEntity
 from exe_kg_lib.classes.entity import Entity
-from exe_kg_lib.classes.exe_kg_mixins.exe_kg_construction_mixin import \
-    ExeKGConstructionMixin
 from exe_kg_lib.classes.exe_kg_serialization.pipeline import Pipeline
 from exe_kg_lib.classes.kg_schema import KGSchema
 from exe_kg_lib.classes.method import Method
@@ -36,7 +34,7 @@ class ExeKGEditMixin:
     task_type_dict: Dict[str, int]
     data: Entity
     pipeline: Entity
-    # see exe_kg_lib/classes/exe_kg_mixins/exe_kg_construction_mixin.py for the definition of this attribute
+    # see exe_kg_lib/classes/exe_kg_mixins/exe_kg_construction_mixin.py for the definition of these attributes
     create_exe_kg_from_json: Callable[[Union[Path, TextIOWrapper, str]], Graph]
     add_task: Callable[
         [
@@ -56,6 +54,15 @@ class ExeKGEditMixin:
         self.load_exe_kg(input_exe_kg_path)
 
     def load_exe_kg(self, input_exe_kg_path: str) -> None:
+        """
+        Resets ExeKG creation state and loads an ExeKG from the specified path.
+
+        Args:
+            input_exe_kg_path (str): The path to the input executable knowledge graph.
+
+        Returns:
+            None
+        """
         self.input_exe_kg_path = input_exe_kg_path
 
         self.clear_created_kg()
@@ -63,7 +70,17 @@ class ExeKGEditMixin:
             input_exe_kg_path, self.create_exe_kg_from_json if input_exe_kg_path.endswith(".json") else None
         )
 
-    def update_metric_values(self, output_name_value_dict: Dict[str, Union[str, int, float, bool]]):
+    def update_metric_values(self, output_name_value_dict: Dict[str, Union[str, int, float, bool]]) -> None:
+        """
+        Updates the metric values in the ExeKG instance.
+
+        Args:
+            output_name_value_dict (Dict[str, Union[str, int, float, bool]]): A dictionary containing the metric names as keys
+                and their corresponding values as values. The values can be of type str, int, float, or bool.
+
+        Returns:
+            None
+        """
         update_metric_values(
             self.exe_kg,
             output_name_value_dict,
@@ -74,6 +91,18 @@ class ExeKGEditMixin:
     def update_param_values(
         self, method_info_params_dict: Dict[Tuple[str, str], Dict[str, Union[str, int, float, bool]]]
     ):
+        """
+        Update the parameter values for a given method in the knowledge graph.
+
+        Args:
+            method_info_params_dict (Dict[Tuple[str, str], Dict[str, Union[str, int, float, bool]]]):
+                A dictionary containing the method information as keys and parameter dictionary as values.
+                The method information is represented as a tuple of (method_ns_prefix, method_name).
+                The parameter dictionary contains parameter names as keys and parameter values as values.
+
+        Returns:
+            None
+        """
         for (method_ns_prefix, method_name), param_dict in method_info_params_dict.items():
             namespace = self.bottom_level_schemata[method_ns_prefix].namespace
             method_iri = URIRef(namespace + method_name)
@@ -99,6 +128,18 @@ class ExeKGEditMixin:
         new_feature_data_entities: List[DataEntity],
         new_label_data_entity: DataEntity,
     ):
+        """
+        Update the dataset used in the ExeKG.
+
+        Args:
+            new_dataset_path (str): The path to the new dataset.
+            new_feature_data_entities (List[DataEntity]): The list of new feature data entities.
+            new_label_data_entity (DataEntity): The new label data entity.
+
+        Raises:
+            ValueError: If the name of the label entity is not 'label'.
+        """
+
         if new_label_data_entity.name != "label":
             raise ValueError("The name of the label entity should be 'label'")
 
@@ -172,6 +213,15 @@ class ExeKGEditMixin:
         # self.task_type_dict["Concatenation"] = or_concat_id
 
     def update_pipeline_name(self, new_name: str):
+        """
+        Updates every instance of the pipeline name in the ExeKG.
+
+        Args:
+            new_name (str): The new name for the pipeline.
+
+        Returns:
+            None
+        """
         pipeline_iri, _, _, _ = get_pipeline_and_first_task_iri(self.exe_kg, self.top_level_schema.namespace_prefix)
 
         pipeline_entity = Task(pipeline_iri, self.pipeline)
@@ -195,6 +245,13 @@ class ExeKGEditMixin:
             self.exe_kg.add((new_s, p, new_o))
 
     def apply_changes_to_ttl(self, new_path: str = None, check_executability: bool = True) -> None:
+        """
+        Applies the changes made to the ExeKG and saves it to a TTL file.
+
+        Args:
+            new_path (str, optional): The new path to save the TTL file. If not provided, the input_exe_kg_path will be used. Defaults to None.
+            check_executability (bool, optional): Flag indicating whether to check the executability of the saved TTL file. Defaults to True.
+        """
         path_to_save = self.input_exe_kg_path if not new_path else new_path
         pipeline_name = os.path.basename(path_to_save).split(".")[0]
 
@@ -209,6 +266,3 @@ class ExeKGEditMixin:
             save_to_ttl=True,
             save_to_json=False,
         )
-
-
-# TODO: update pipeline's name which is used also for task names, input names etc.
