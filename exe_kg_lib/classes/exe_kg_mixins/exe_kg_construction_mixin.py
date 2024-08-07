@@ -552,8 +552,15 @@ class ExeKGConstructionMixin:
         Clears the created ExeKG.
         """
         self.exe_kg = Graph(bind_namespaces="rdflib")
+        self.exe_kg.bind(self.top_level_schema.namespace_prefix, self.top_level_schema.namespace)
+        for bottom_level_kg_schema in self.bottom_level_schemata.values():
+            self.exe_kg.bind(
+                bottom_level_kg_schema.namespace_prefix,
+                bottom_level_kg_schema.namespace,
+            )
 
         self.pipeline_serializable = Pipeline()
+        self.pipeline_instance = None
 
         self.existing_data_entity_list = []
         self.last_created_task = None

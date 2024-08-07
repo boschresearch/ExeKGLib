@@ -48,10 +48,11 @@ class ExeKGEditMixin:
     ]
     clear_created_kg: Callable[[], None]
 
-    def __init__(self, input_exe_kg_path: str) -> None:
+    def __init__(self, input_exe_kg_path: str = None) -> None:
         super().__init__()
 
-        self.load_exe_kg(input_exe_kg_path)
+        if input_exe_kg_path:
+            self.load_exe_kg(input_exe_kg_path)
 
     def load_exe_kg(self, input_exe_kg_path: str) -> None:
         """
@@ -222,20 +223,23 @@ class ExeKGEditMixin:
         Returns:
             None
         """
+
         pipeline_iri, _, _, _ = get_pipeline_and_first_task_iri(self.exe_kg, self.top_level_schema.namespace_prefix)
 
         pipeline_entity = Task(pipeline_iri, self.pipeline)
+
+        old_name = pipeline_entity.name
 
         # collect triples to update
         triples_to_update = []
         for s, p, o in self.exe_kg:
             new_s, new_o = s, o
             # check and replace in subject URI
-            if isinstance(s, URIRef) and pipeline_entity.name in str(s):
-                new_s = URIRef(str(s).replace(pipeline_entity.name, new_name))
+            if isinstance(s, URIRef) and old_name in str(s):
+                new_s = URIRef(str(s).replace(old_name, new_name))
             # check and replace in object URI if it's a URIRef
-            if isinstance(o, URIRef) and pipeline_entity.name in str(o):
-                new_o = URIRef(str(o).replace(pipeline_entity.name, new_name))
+            if isinstance(o, URIRef) and old_name in str(o):
+                new_o = URIRef(str(o).replace(old_name, new_name))
             if new_s != s or new_o != o:
                 triples_to_update.append((s, p, o, new_s, new_o))
 
@@ -243,6 +247,10 @@ class ExeKGEditMixin:
         for old_s, p, old_o, new_s, new_o in triples_to_update:
             self.exe_kg.remove((old_s, p, old_o))
             self.exe_kg.add((new_s, p, new_o))
+
+        self.pipeline_serializable.name = new_name
+
+        return old_name, new_name
 
     def apply_changes_to_ttl(self, new_path: str = None, check_executability: bool = True) -> None:
         """
