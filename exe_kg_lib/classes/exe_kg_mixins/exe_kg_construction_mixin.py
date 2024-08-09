@@ -312,8 +312,8 @@ class ExeKGConstructionMixin:
             input_data_structure_iris = [pair[0] for pair in info_l]
             input_entity_name = input_entity_iri.split("#")[1]
 
-            # if input_entity_name not in input_entity_dict:
-            #     continue
+            if input_entity_name not in input_entity_dict:
+                continue
             input_entity_value = input_entity_dict[input_entity_name]
             if isinstance(input_entity_value, Method):  # provided input is a method
                 if all(iri is None for iri in input_data_structure_iris):
