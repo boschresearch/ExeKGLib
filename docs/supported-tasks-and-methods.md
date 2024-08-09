@@ -14,6 +14,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -28,35 +29,35 @@
 							<details>
 								<summary>ARDRegressionMethod</summary>
 								<ul>
-									<li>hasParamAlpha1 (float)</li>
-									<li>hasParamAlpha2 (float)</li>
+									<li>hasParamAlpha1 (float, int)</li>
+									<li>hasParamAlpha2 (float, int)</li>
 									<li>hasParamComputeScore (boolean)</li>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamLambda1 (float)</li>
-									<li>hasParamLambda2 (float)</li>
+									<li>hasParamLambda1 (float, int)</li>
+									<li>hasParamLambda2 (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNIter (int)</li>
-									<li>hasParamThresholdLambda (float)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamThresholdLambda (float, int)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>BayesianRidgeMethod</summary>
 								<ul>
-									<li>hasParamAlpha1 (float)</li>
-									<li>hasParamAlpha2 (float)</li>
-									<li>hasParamAlphaInit (float)</li>
+									<li>hasParamAlpha1 (float, int)</li>
+									<li>hasParamAlpha2 (float, int)</li>
+									<li>hasParamAlphaInit (float, int)</li>
 									<li>hasParamComputeScore (boolean)</li>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamLambda1 (float)</li>
-									<li>hasParamLambda2 (float)</li>
-									<li>hasParamLambdaInit (float)</li>
+									<li>hasParamLambda1 (float, int)</li>
+									<li>hasParamLambda2 (float, int)</li>
+									<li>hasParamLambdaInit (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNIter (int)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -72,6 +73,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -87,7 +89,7 @@
 								<summary>AdaBoostRegressorMethod</summary>
 								<ul>
 									<li>hasParamEstimator (string)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamRandomState (int, string)</li>
@@ -97,23 +99,23 @@
 								<summary>GradientBoostingRegressorMethod</summary>
 								<ul>
 									<li>hasParamAlpha (float, int, string)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamInit (string)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSubsample (float, int, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -125,8 +127,8 @@
 									<li>hasParamCategoricalFeatures (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
 									<li>hasParamInteractionCst (int, string)</li>
-									<li>hasParamL2Regularization (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamL2Regularization (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxBins (int)</li>
 									<li>hasParamMaxDepth (int, string)</li>
@@ -136,10 +138,10 @@
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMonotonicCst (string)</li>
 									<li>hasParamNIterNoChange (int)</li>
-									<li>hasParamQuantile (float)</li>
+									<li>hasParamQuantile (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamScoring (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -157,6 +159,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -171,15 +174,15 @@
 							<details>
 								<summary>DecisionTreeRegressorMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSplitter (string)</li>
 								</ul>
@@ -187,15 +190,15 @@
 							<details>
 								<summary>ExtraTreeRegressorMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSplitter (string)</li>
 								</ul>
@@ -212,6 +215,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -245,7 +249,7 @@
 									<li>hasParamMetricParams (string)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamP (float, int)</li>
-									<li>hasParamRadius (float)</li>
+									<li>hasParamRadius (float, int)</li>
 									<li>hasParamWeights (string)</li>
 								</ul>
 							</details>
@@ -261,6 +265,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -276,10 +281,10 @@
 								<summary>LarsMethod</summary>
 								<ul>
 									<li>hasParamCopyX (boolean)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamFitPath (boolean)</li>
-									<li>hasParamJitter (float)</li>
+									<li>hasParamJitter (float, int)</li>
 									<li>hasParamNNonzeroCoefs (int)</li>
 									<li>hasParamPrecompute (boolean, string)</li>
 									<li>hasParamRandomState (int, string)</li>
@@ -291,10 +296,10 @@
 								<ul>
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamCopyX (boolean)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamFitPath (boolean)</li>
-									<li>hasParamJitter (float)</li>
+									<li>hasParamJitter (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamPositive (boolean)</li>
 									<li>hasParamPrecompute (boolean, string)</li>
@@ -314,6 +319,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -329,16 +335,16 @@
 								<summary>ExtraTreesRegressorMethod</summary>
 								<ul>
 									<li>hasParamBootstrap (boolean)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
 									<li>hasParamMaxSamples (float, int)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOobScore (boolean, string)</li>
@@ -351,16 +357,16 @@
 								<summary>RandomForestRegressorMethod</summary>
 								<ul>
 									<li>hasParamBootstrap (boolean)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
 									<li>hasParamMaxSamples (float, int)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOobScore (boolean, string)</li>
@@ -381,6 +387,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -414,9 +421,9 @@
 									<li>hasParamAlphas (string)</li>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamCv (int, string)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamL1Ratio (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNAlphas (int)</li>
 									<li>hasParamNJobs (int, string)</li>
@@ -424,7 +431,7 @@
 									<li>hasParamPrecompute (boolean, string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSelection (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -434,13 +441,13 @@
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamL1Ratio (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamPositive (boolean)</li>
 									<li>hasParamPrecompute (boolean, string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSelection (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
 							</details>
@@ -451,7 +458,7 @@
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
@@ -460,10 +467,10 @@
 								<summary>HuberRegressorMethod</summary>
 								<ul>
 									<li>hasParamAlpha (float, int, string)</li>
-									<li>hasParamEpsilon (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
 							</details>
@@ -472,7 +479,7 @@
 								<ul>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamCv (int, string)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamMaxNAlphas (int)</li>
@@ -487,7 +494,7 @@
 									<li>hasParamAlphas (string)</li>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamCv (int, string)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNAlphas (int)</li>
@@ -496,7 +503,7 @@
 									<li>hasParamPrecompute (boolean, string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSelection (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -505,7 +512,7 @@
 								<ul>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamCv (int, string)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamMaxNAlphas (int)</li>
@@ -520,10 +527,10 @@
 								<ul>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamCriterion (string)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamNoiseVariance (float)</li>
+									<li>hasParamNoiseVariance (float, int)</li>
 									<li>hasParamPositive (boolean)</li>
 									<li>hasParamPrecompute (boolean, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
@@ -540,7 +547,7 @@
 									<li>hasParamPrecompute (boolean, string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSelection (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
 							</details>
@@ -550,22 +557,22 @@
 									<li>hasParamActivation (string)</li>
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamBatchSize (int)</li>
-									<li>hasParamBeta1 (float)</li>
-									<li>hasParamBeta2 (float)</li>
+									<li>hasParamBeta1 (float, int)</li>
+									<li>hasParamBeta2 (float, int)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEpsilon (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
-									<li>hasParamLearningRateInit (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
+									<li>hasParamLearningRateInit (float, int)</li>
 									<li>hasParamMaxFun (int)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamMomentum (float)</li>
+									<li>hasParamMomentum (float, int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamNesterovsMomentum (boolean)</li>
-									<li>hasParamPowerT (float)</li>
+									<li>hasParamPowerT (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -577,15 +584,15 @@
 									<li>hasParamAlphas (string)</li>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamCv (int, string)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamL1Ratio (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNAlphas (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSelection (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -595,11 +602,11 @@
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamL1Ratio (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSelection (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
 							</details>
@@ -609,14 +616,14 @@
 									<li>hasParamAlphas (string)</li>
 									<li>hasParamCopyX (boolean)</li>
 									<li>hasParamCv (int, string)</li>
-									<li>hasParamEps (float)</li>
+									<li>hasParamEps (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNAlphas (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSelection (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -629,22 +636,22 @@
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSelection (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>OneClassSVMMethod</summary>
 								<ul>
-									<li>hasParamCacheSize (float)</li>
-									<li>hasParamCoef0 (float)</li>
+									<li>hasParamCacheSize (float, int)</li>
+									<li>hasParamCoef0 (float, int)</li>
 									<li>hasParamDegree (float, int, string)</li>
-									<li>hasParamGamma (float, string)</li>
+									<li>hasParamGamma (float, int, string)</li>
 									<li>hasParamKernel (string)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamNu (float)</li>
+									<li>hasParamNu (float, int)</li>
 									<li>hasParamShrinking (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -665,23 +672,23 @@
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamNNonzeroCoefs (int)</li>
 									<li>hasParamPrecompute (boolean, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>PassiveAggressiveRegressorMethod</summary>
 								<ul>
 									<li>hasParamAverage (boolean, int, string)</li>
-									<li>hasParamC (float)</li>
+									<li>hasParamC (float, int)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEpsilon (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -694,7 +701,7 @@
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
@@ -704,7 +711,7 @@
 								<ul>
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamQuantile (float)</li>
+									<li>hasParamQuantile (float, int)</li>
 									<li>hasParamSolver (string)</li>
 									<li>hasParamSolverOptions (string)</li>
 								</ul>
@@ -719,9 +726,9 @@
 									<li>hasParamMaxSkips (int)</li>
 									<li>hasParamMaxTrials (int)</li>
 									<li>hasParamRandomState (int, string)</li>
-									<li>hasParamResidualThreshold (float)</li>
+									<li>hasParamResidualThreshold (float, int)</li>
 									<li>hasParamStopNInliers (int)</li>
-									<li>hasParamStopScore (float)</li>
+									<li>hasParamStopScore (float, int)</li>
 								</ul>
 							</details>
 							<details>
@@ -745,22 +752,22 @@
 									<li>hasParamPositive (boolean)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>SGDOneClassSVMMethod</summary>
 								<ul>
 									<li>hasParamAverage (boolean, int, string)</li>
-									<li>hasParamEta0 (float)</li>
+									<li>hasParamEta0 (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamNu (float)</li>
-									<li>hasParamPowerT (float)</li>
+									<li>hasParamNu (float, int)</li>
+									<li>hasParamPowerT (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
@@ -771,19 +778,19 @@
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamAverage (boolean, int, string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEpsilon (float)</li>
-									<li>hasParamEta0 (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
+									<li>hasParamEta0 (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamL1Ratio (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamPenalty (string)</li>
-									<li>hasParamPowerT (float)</li>
+									<li>hasParamPowerT (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -810,7 +817,7 @@
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamNSubsamples (int)</li>
 									<li>hasParamRandomState (int, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -821,9 +828,9 @@
 									<li>hasParamFitIntercept (boolean)</li>
 									<li>hasParamLink (string)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamPower (float)</li>
+									<li>hasParamPower (float, int)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
@@ -848,6 +855,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -880,6 +888,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -894,47 +903,47 @@
 							<details>
 								<summary>LinearSVRMethod</summary>
 								<ul>
-									<li>hasParamC (float)</li>
+									<li>hasParamC (float, int)</li>
 									<li>hasParamDual (boolean)</li>
-									<li>hasParamEpsilon (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamInterceptScaling (float)</li>
+									<li>hasParamInterceptScaling (float, int)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamRandomState (int, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>NuSVRMethod</summary>
 								<ul>
-									<li>hasParamC (float)</li>
-									<li>hasParamCacheSize (float)</li>
-									<li>hasParamCoef0 (float)</li>
+									<li>hasParamC (float, int)</li>
+									<li>hasParamCacheSize (float, int)</li>
+									<li>hasParamCoef0 (float, int)</li>
 									<li>hasParamDegree (float, int, string)</li>
-									<li>hasParamGamma (float, string)</li>
+									<li>hasParamGamma (float, int, string)</li>
 									<li>hasParamKernel (string)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamNu (float)</li>
+									<li>hasParamNu (float, int)</li>
 									<li>hasParamShrinking (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>SVRMethod</summary>
 								<ul>
-									<li>hasParamC (float)</li>
-									<li>hasParamCacheSize (float)</li>
-									<li>hasParamCoef0 (float)</li>
+									<li>hasParamC (float, int)</li>
+									<li>hasParamCacheSize (float, int)</li>
+									<li>hasParamCoef0 (float, int)</li>
 									<li>hasParamDegree (float, int, string)</li>
-									<li>hasParamEpsilon (float)</li>
-									<li>hasParamGamma (float, string)</li>
+									<li>hasParamEpsilon (float, int)</li>
+									<li>hasParamGamma (float, int, string)</li>
 									<li>hasParamKernel (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamShrinking (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -955,6 +964,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -971,7 +981,7 @@
 								<ul>
 									<li>hasParamAlgorithm (string)</li>
 									<li>hasParamEstimator (string)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 								</ul>
@@ -996,7 +1006,7 @@
 								<summary>BernoulliNBMethod</summary>
 								<ul>
 									<li>hasParamAlpha (float, int, string)</li>
-									<li>hasParamBinarize (float, string)</li>
+									<li>hasParamBinarize (float, int, string)</li>
 									<li>hasParamFitPrior (boolean)</li>
 									<li>hasParamForceAlpha (boolean)</li>
 								</ul>
@@ -1005,7 +1015,7 @@
 								<summary>BernoulliRBMMethod</summary>
 								<ul>
 									<li>hasParamBatchSize (int)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamNComponents (float, int, string)</li>
 									<li>hasParamNIter (int)</li>
 									<li>hasParamRandomState (int, string)</li>
@@ -1033,16 +1043,16 @@
 							<details>
 								<summary>DecisionTreeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSplitter (string)</li>
 								</ul>
@@ -1050,16 +1060,16 @@
 							<details>
 								<summary>ExtraTreeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSplitter (string)</li>
 								</ul>
@@ -1068,17 +1078,17 @@
 								<summary>ExtraTreesClassifierMethod</summary>
 								<ul>
 									<li>hasParamBootstrap (boolean)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
 									<li>hasParamMaxSamples (float, int)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOobScore (boolean, string)</li>
@@ -1090,29 +1100,29 @@
 							<details>
 								<summary>GaussianNBMethod</summary>
 								<ul>
-									<li>hasParamVarSmoothing (float)</li>
+									<li>hasParamVarSmoothing (float, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>GradientBoostingClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamInit (string)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSubsample (float, int, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1125,8 +1135,8 @@
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
 									<li>hasParamInteractionCst (int, string)</li>
-									<li>hasParamL2Regularization (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamL2Regularization (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxBins (int)</li>
 									<li>hasParamMaxDepth (int, string)</li>
@@ -1138,7 +1148,7 @@
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamScoring (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1160,17 +1170,17 @@
 							<details>
 								<summary>LinearSVCMethod</summary>
 								<ul>
-									<li>hasParamC (float)</li>
+									<li>hasParamC (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamDual (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamInterceptScaling (float)</li>
+									<li>hasParamInterceptScaling (float, int)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamMultiClass (string)</li>
 									<li>hasParamPenalty (string)</li>
 									<li>hasParamRandomState (int, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -1182,8 +1192,8 @@
 									<li>hasParamCv (int, string)</li>
 									<li>hasParamDual (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamInterceptScaling (float)</li>
-									<li>hasParamL1Ratios (float)</li>
+									<li>hasParamInterceptScaling (float, int)</li>
+									<li>hasParamL1Ratios (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamMultiClass (string)</li>
 									<li>hasParamNJobs (int, string)</li>
@@ -1192,26 +1202,26 @@
 									<li>hasParamRefit (boolean, string)</li>
 									<li>hasParamScoring (string)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>LogisticRegressionMethod</summary>
 								<ul>
-									<li>hasParamC (float)</li>
+									<li>hasParamC (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamDual (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamInterceptScaling (float)</li>
-									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamInterceptScaling (float, int)</li>
+									<li>hasParamL1Ratio (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamMultiClass (string)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamPenalty (string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
@@ -1222,22 +1232,22 @@
 									<li>hasParamActivation (string)</li>
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamBatchSize (int)</li>
-									<li>hasParamBeta1 (float)</li>
-									<li>hasParamBeta2 (float)</li>
+									<li>hasParamBeta1 (float, int)</li>
+									<li>hasParamBeta2 (float, int)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEpsilon (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
-									<li>hasParamLearningRateInit (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
+									<li>hasParamLearningRateInit (float, int)</li>
 									<li>hasParamMaxFun (int)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamMomentum (float)</li>
+									<li>hasParamMomentum (float, int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamNesterovsMomentum (boolean)</li>
-									<li>hasParamPowerT (float)</li>
+									<li>hasParamPowerT (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1255,26 +1265,26 @@
 								<summary>NearestCentroidMethod</summary>
 								<ul>
 									<li>hasParamMetric (string)</li>
-									<li>hasParamShrinkThreshold (float)</li>
+									<li>hasParamShrinkThreshold (float, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>NuSVCMethod</summary>
 								<ul>
 									<li>hasParamBreakTies (boolean)</li>
-									<li>hasParamCacheSize (float)</li>
+									<li>hasParamCacheSize (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
-									<li>hasParamCoef0 (float)</li>
+									<li>hasParamCoef0 (float, int)</li>
 									<li>hasParamDecisionFunctionShape (string)</li>
 									<li>hasParamDegree (float, int, string)</li>
-									<li>hasParamGamma (float, string)</li>
+									<li>hasParamGamma (float, int, string)</li>
 									<li>hasParamKernel (string)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamNu (float)</li>
+									<li>hasParamNu (float, int)</li>
 									<li>hasParamProbability (boolean)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShrinking (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -1296,7 +1306,7 @@
 							<details>
 								<summary>OutputCodeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCodeSize (float)</li>
+									<li>hasParamCodeSize (float, int)</li>
 									<li>hasParamEstimator (string)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamRandomState (int, string)</li>
@@ -1306,7 +1316,7 @@
 								<summary>PassiveAggressiveClassifierMethod</summary>
 								<ul>
 									<li>hasParamAverage (boolean, int, string)</li>
-									<li>hasParamC (float)</li>
+									<li>hasParamC (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
@@ -1316,7 +1326,7 @@
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1328,16 +1338,16 @@
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEta0 (float)</li>
+									<li>hasParamEta0 (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamL1Ratio (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamPenalty (string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1353,7 +1363,7 @@
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOutlierLabel (string)</li>
 									<li>hasParamP (float, int)</li>
-									<li>hasParamRadius (float)</li>
+									<li>hasParamRadius (float, int)</li>
 									<li>hasParamWeights (string)</li>
 								</ul>
 							</details>
@@ -1361,17 +1371,17 @@
 								<summary>RandomForestClassifierMethod</summary>
 								<ul>
 									<li>hasParamBootstrap (boolean)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
 									<li>hasParamMaxSamples (float, int)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOobScore (boolean, string)</li>
@@ -1401,7 +1411,7 @@
 									<li>hasParamPositive (boolean)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 								</ul>
 							</details>
 							<details>
@@ -1411,20 +1421,20 @@
 									<li>hasParamAverage (boolean, int, string)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEpsilon (float)</li>
-									<li>hasParamEta0 (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
+									<li>hasParamEta0 (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamL1Ratio (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamPenalty (string)</li>
-									<li>hasParamPowerT (float)</li>
+									<li>hasParamPowerT (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1434,19 +1444,19 @@
 								<summary>SVCMethod</summary>
 								<ul>
 									<li>hasParamBreakTies (boolean)</li>
-									<li>hasParamC (float)</li>
-									<li>hasParamCacheSize (float)</li>
+									<li>hasParamC (float, int)</li>
+									<li>hasParamCacheSize (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
-									<li>hasParamCoef0 (float)</li>
+									<li>hasParamCoef0 (float, int)</li>
 									<li>hasParamDecisionFunctionShape (string)</li>
 									<li>hasParamDegree (float, int, string)</li>
-									<li>hasParamGamma (float, string)</li>
+									<li>hasParamGamma (float, int, string)</li>
 									<li>hasParamKernel (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamProbability (boolean)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShrinking (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -1484,6 +1494,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -1500,7 +1511,7 @@
 								<ul>
 									<li>hasParamAlgorithm (string)</li>
 									<li>hasParamEstimator (string)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 								</ul>
@@ -1509,7 +1520,7 @@
 								<summary>BernoulliNBMethod</summary>
 								<ul>
 									<li>hasParamAlpha (float, int, string)</li>
-									<li>hasParamBinarize (float, string)</li>
+									<li>hasParamBinarize (float, int, string)</li>
 									<li>hasParamFitPrior (boolean)</li>
 									<li>hasParamForceAlpha (boolean)</li>
 								</ul>
@@ -1517,16 +1528,16 @@
 							<details>
 								<summary>DecisionTreeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSplitter (string)</li>
 								</ul>
@@ -1534,16 +1545,16 @@
 							<details>
 								<summary>ExtraTreeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSplitter (string)</li>
 								</ul>
@@ -1552,17 +1563,17 @@
 								<summary>ExtraTreesClassifierMethod</summary>
 								<ul>
 									<li>hasParamBootstrap (boolean)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
 									<li>hasParamMaxSamples (float, int)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOobScore (boolean, string)</li>
@@ -1574,29 +1585,29 @@
 							<details>
 								<summary>GaussianNBMethod</summary>
 								<ul>
-									<li>hasParamVarSmoothing (float)</li>
+									<li>hasParamVarSmoothing (float, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>GradientBoostingClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamInit (string)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSubsample (float, int, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1609,8 +1620,8 @@
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
 									<li>hasParamInteractionCst (int, string)</li>
-									<li>hasParamL2Regularization (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamL2Regularization (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxBins (int)</li>
 									<li>hasParamMaxDepth (int, string)</li>
@@ -1622,7 +1633,7 @@
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamScoring (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1644,17 +1655,17 @@
 							<details>
 								<summary>LinearSVCMethod</summary>
 								<ul>
-									<li>hasParamC (float)</li>
+									<li>hasParamC (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamDual (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamInterceptScaling (float)</li>
+									<li>hasParamInterceptScaling (float, int)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamMultiClass (string)</li>
 									<li>hasParamPenalty (string)</li>
 									<li>hasParamRandomState (int, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -1666,8 +1677,8 @@
 									<li>hasParamCv (int, string)</li>
 									<li>hasParamDual (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamInterceptScaling (float)</li>
-									<li>hasParamL1Ratios (float)</li>
+									<li>hasParamInterceptScaling (float, int)</li>
+									<li>hasParamL1Ratios (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamMultiClass (string)</li>
 									<li>hasParamNJobs (int, string)</li>
@@ -1676,26 +1687,26 @@
 									<li>hasParamRefit (boolean, string)</li>
 									<li>hasParamScoring (string)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>LogisticRegressionMethod</summary>
 								<ul>
-									<li>hasParamC (float)</li>
+									<li>hasParamC (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamDual (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamInterceptScaling (float)</li>
-									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamInterceptScaling (float, int)</li>
+									<li>hasParamL1Ratio (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamMultiClass (string)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamPenalty (string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
 								</ul>
@@ -1706,22 +1717,22 @@
 									<li>hasParamActivation (string)</li>
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamBatchSize (int)</li>
-									<li>hasParamBeta1 (float)</li>
-									<li>hasParamBeta2 (float)</li>
+									<li>hasParamBeta1 (float, int)</li>
+									<li>hasParamBeta2 (float, int)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEpsilon (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
-									<li>hasParamLearningRateInit (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
+									<li>hasParamLearningRateInit (float, int)</li>
 									<li>hasParamMaxFun (int)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamMomentum (float)</li>
+									<li>hasParamMomentum (float, int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamNesterovsMomentum (boolean)</li>
-									<li>hasParamPowerT (float)</li>
+									<li>hasParamPowerT (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1731,26 +1742,26 @@
 								<summary>NearestCentroidMethod</summary>
 								<ul>
 									<li>hasParamMetric (string)</li>
-									<li>hasParamShrinkThreshold (float)</li>
+									<li>hasParamShrinkThreshold (float, int)</li>
 								</ul>
 							</details>
 							<details>
 								<summary>NuSVCMethod</summary>
 								<ul>
 									<li>hasParamBreakTies (boolean)</li>
-									<li>hasParamCacheSize (float)</li>
+									<li>hasParamCacheSize (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
-									<li>hasParamCoef0 (float)</li>
+									<li>hasParamCoef0 (float, int)</li>
 									<li>hasParamDecisionFunctionShape (string)</li>
 									<li>hasParamDegree (float, int, string)</li>
-									<li>hasParamGamma (float, string)</li>
+									<li>hasParamGamma (float, int, string)</li>
 									<li>hasParamKernel (string)</li>
 									<li>hasParamMaxIter (int)</li>
-									<li>hasParamNu (float)</li>
+									<li>hasParamNu (float, int)</li>
 									<li>hasParamProbability (boolean)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShrinking (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -1772,7 +1783,7 @@
 							<details>
 								<summary>OutputCodeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCodeSize (float)</li>
+									<li>hasParamCodeSize (float, int)</li>
 									<li>hasParamEstimator (string)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamRandomState (int, string)</li>
@@ -1782,7 +1793,7 @@
 								<summary>PassiveAggressiveClassifierMethod</summary>
 								<ul>
 									<li>hasParamAverage (boolean, int, string)</li>
-									<li>hasParamC (float)</li>
+									<li>hasParamC (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
 									<li>hasParamFitIntercept (boolean)</li>
@@ -1792,7 +1803,7 @@
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1804,16 +1815,16 @@
 									<li>hasParamAlpha (float, int, string)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEta0 (float)</li>
+									<li>hasParamEta0 (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
+									<li>hasParamL1Ratio (float, int)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamPenalty (string)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1829,7 +1840,7 @@
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOutlierLabel (string)</li>
 									<li>hasParamP (float, int)</li>
-									<li>hasParamRadius (float)</li>
+									<li>hasParamRadius (float, int)</li>
 									<li>hasParamWeights (string)</li>
 								</ul>
 							</details>
@@ -1837,17 +1848,17 @@
 								<summary>RandomForestClassifierMethod</summary>
 								<ul>
 									<li>hasParamBootstrap (boolean)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
 									<li>hasParamMaxSamples (float, int)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOobScore (boolean, string)</li>
@@ -1877,7 +1888,7 @@
 									<li>hasParamPositive (boolean)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSolver (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 								</ul>
 							</details>
 							<details>
@@ -1887,20 +1898,20 @@
 									<li>hasParamAverage (boolean, int, string)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
-									<li>hasParamEpsilon (float)</li>
-									<li>hasParamEta0 (float)</li>
+									<li>hasParamEpsilon (float, int)</li>
+									<li>hasParamEta0 (float, int)</li>
 									<li>hasParamFitIntercept (boolean)</li>
-									<li>hasParamL1Ratio (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamL1Ratio (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamPenalty (string)</li>
-									<li>hasParamPowerT (float)</li>
+									<li>hasParamPowerT (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShuffle (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -1910,19 +1921,19 @@
 								<summary>SVCMethod</summary>
 								<ul>
 									<li>hasParamBreakTies (boolean)</li>
-									<li>hasParamC (float)</li>
-									<li>hasParamCacheSize (float)</li>
+									<li>hasParamC (float, int)</li>
+									<li>hasParamCacheSize (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
-									<li>hasParamCoef0 (float)</li>
+									<li>hasParamCoef0 (float, int)</li>
 									<li>hasParamDecisionFunctionShape (string)</li>
 									<li>hasParamDegree (float, int, string)</li>
-									<li>hasParamGamma (float, string)</li>
+									<li>hasParamGamma (float, int, string)</li>
 									<li>hasParamKernel (string)</li>
 									<li>hasParamMaxIter (int)</li>
 									<li>hasParamProbability (boolean)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamShrinking (boolean)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 								</ul>
 							</details>
@@ -1938,6 +1949,7 @@
 							<ul>
 								<li>DataInTrainX</li>
 								<li>DataInTrainY</li>
+								<li>InputModelAsMethod</li>
 							</ul>
 						</details>
 						<details>
@@ -1954,7 +1966,7 @@
 								<ul>
 									<li>hasParamAlgorithm (string)</li>
 									<li>hasParamEstimator (string)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 								</ul>
@@ -1962,16 +1974,16 @@
 							<details>
 								<summary>DecisionTreeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSplitter (string)</li>
 								</ul>
@@ -1979,16 +1991,16 @@
 							<details>
 								<summary>ExtraTreeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSplitter (string)</li>
 								</ul>
@@ -1997,17 +2009,17 @@
 								<summary>ExtraTreesClassifierMethod</summary>
 								<ul>
 									<li>hasParamBootstrap (boolean)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
 									<li>hasParamMaxSamples (float, int)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOobScore (boolean, string)</li>
@@ -2019,23 +2031,23 @@
 							<details>
 								<summary>GradientBoostingClassifierMethod</summary>
 								<ul>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamInit (string)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamSubsample (float, int, string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -2048,8 +2060,8 @@
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamEarlyStopping (boolean)</li>
 									<li>hasParamInteractionCst (int, string)</li>
-									<li>hasParamL2Regularization (float)</li>
-									<li>hasParamLearningRate (float, string)</li>
+									<li>hasParamL2Regularization (float, int)</li>
+									<li>hasParamLearningRate (float, int, string)</li>
 									<li>hasParamLoss (string)</li>
 									<li>hasParamMaxBins (int)</li>
 									<li>hasParamMaxDepth (int, string)</li>
@@ -2061,7 +2073,7 @@
 									<li>hasParamNIterNoChange (int)</li>
 									<li>hasParamRandomState (int, string)</li>
 									<li>hasParamScoring (string)</li>
-									<li>hasParamTol (float, string)</li>
+									<li>hasParamTol (float, int, string)</li>
 									<li>hasParamValidationFraction (float, int, string)</li>
 									<li>hasParamVerbose (boolean, int)</li>
 									<li>hasParamWarmStart (boolean)</li>
@@ -2098,7 +2110,7 @@
 							<details>
 								<summary>OutputCodeClassifierMethod</summary>
 								<ul>
-									<li>hasParamCodeSize (float)</li>
+									<li>hasParamCodeSize (float, int)</li>
 									<li>hasParamEstimator (string)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamRandomState (int, string)</li>
@@ -2114,7 +2126,7 @@
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOutlierLabel (string)</li>
 									<li>hasParamP (float, int)</li>
-									<li>hasParamRadius (float)</li>
+									<li>hasParamRadius (float, int)</li>
 									<li>hasParamWeights (string)</li>
 								</ul>
 							</details>
@@ -2122,17 +2134,17 @@
 								<summary>RandomForestClassifierMethod</summary>
 								<ul>
 									<li>hasParamBootstrap (boolean)</li>
-									<li>hasParamCcpAlpha (float)</li>
+									<li>hasParamCcpAlpha (float, int)</li>
 									<li>hasParamClassWeight (string)</li>
 									<li>hasParamCriterion (string)</li>
 									<li>hasParamMaxDepth (int, string)</li>
 									<li>hasParamMaxFeatures (float, int, string)</li>
 									<li>hasParamMaxLeafNodes (int, string)</li>
 									<li>hasParamMaxSamples (float, int)</li>
-									<li>hasParamMinImpurityDecrease (float)</li>
+									<li>hasParamMinImpurityDecrease (float, int)</li>
 									<li>hasParamMinSamplesLeaf (float, int)</li>
 									<li>hasParamMinSamplesSplit (float, int)</li>
-									<li>hasParamMinWeightFractionLeaf (float)</li>
+									<li>hasParamMinWeightFractionLeaf (float, int)</li>
 									<li>hasParamNEstimators (int)</li>
 									<li>hasParamNJobs (int, string)</li>
 									<li>hasParamOobScore (boolean, string)</li>
@@ -2155,6 +2167,7 @@
 					<ul>
 						<li>DataInTrainX</li>
 						<li>DataInTrainY</li>
+						<li>InputModelAsMethod</li>
 					</ul>
 				</details>
 				<details>
@@ -2172,9 +2185,9 @@
 							<li>hasParamAffinity (string)</li>
 							<li>hasParamConvergenceIter (int)</li>
 							<li>hasParamCopy (boolean)</li>
-							<li>hasParamDamping (float)</li>
+							<li>hasParamDamping (float, int)</li>
 							<li>hasParamMaxIter (int)</li>
-							<li>hasParamPreference (float)</li>
+							<li>hasParamPreference (float, int)</li>
 							<li>hasParamRandomState (int, string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 						</ul>
@@ -2185,7 +2198,7 @@
 							<li>hasParamComputeDistances (boolean)</li>
 							<li>hasParamComputeFullTree (boolean)</li>
 							<li>hasParamConnectivity (string)</li>
-							<li>hasParamDistanceThreshold (float)</li>
+							<li>hasParamDistanceThreshold (float, int)</li>
 							<li>hasParamLinkage (string)</li>
 							<li>hasParamMemory (string)</li>
 							<li>hasParamMetric (string)</li>
@@ -2199,7 +2212,7 @@
 							<li>hasParamComputeLabels (boolean)</li>
 							<li>hasParamCopy (boolean)</li>
 							<li>hasParamNClusters (int, string)</li>
-							<li>hasParamThreshold (float, string)</li>
+							<li>hasParamThreshold (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -2213,7 +2226,7 @@
 							<li>hasParamNClusters (int, string)</li>
 							<li>hasParamNInit (int)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 						</ul>
 					</details>
@@ -2221,7 +2234,7 @@
 						<summary>DBSCANMethod</summary>
 						<ul>
 							<li>hasParamAlgorithm (string)</li>
-							<li>hasParamEps (float)</li>
+							<li>hasParamEps (float, int)</li>
 							<li>hasParamLeafSize (int)</li>
 							<li>hasParamMetric (string)</li>
 							<li>hasParamMetricParams (string)</li>
@@ -2236,7 +2249,7 @@
 							<li>hasParamAlgorithm (string)</li>
 							<li>hasParamAllowSingleCluster (boolean)</li>
 							<li>hasParamAlpha (float, int, string)</li>
-							<li>hasParamClusterSelectionEpsilon (float)</li>
+							<li>hasParamClusterSelectionEpsilon (float, int)</li>
 							<li>hasParamClusterSelectionMethod (string)</li>
 							<li>hasParamCopy (boolean)</li>
 							<li>hasParamLeafSize (int)</li>
@@ -2253,7 +2266,7 @@
 						<summary>IsolationForestMethod</summary>
 						<ul>
 							<li>hasParamBootstrap (boolean)</li>
-							<li>hasParamContamination (float)</li>
+							<li>hasParamContamination (float, int)</li>
 							<li>hasParamMaxFeatures (float, int, string)</li>
 							<li>hasParamMaxSamples (float, int)</li>
 							<li>hasParamNEstimators (int)</li>
@@ -2273,7 +2286,7 @@
 							<li>hasParamNClusters (int, string)</li>
 							<li>hasParamNInit (int)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 						</ul>
 					</details>
@@ -2294,21 +2307,21 @@
 						<summary>KernelDensityMethod</summary>
 						<ul>
 							<li>hasParamAlgorithm (string)</li>
-							<li>hasParamAtol (float)</li>
-							<li>hasParamBandwidth (float, string)</li>
+							<li>hasParamAtol (float, int)</li>
+							<li>hasParamBandwidth (float, int, string)</li>
 							<li>hasParamBreadthFirst (boolean)</li>
 							<li>hasParamKernel (string)</li>
 							<li>hasParamLeafSize (int)</li>
 							<li>hasParamMetric (string)</li>
 							<li>hasParamMetricParams (string)</li>
-							<li>hasParamRtol (float)</li>
+							<li>hasParamRtol (float, int)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>LocalOutlierFactorMethod</summary>
 						<ul>
 							<li>hasParamAlgorithm (string)</li>
-							<li>hasParamContamination (float)</li>
+							<li>hasParamContamination (float, int)</li>
 							<li>hasParamLeafSize (int)</li>
 							<li>hasParamMetric (string)</li>
 							<li>hasParamMetricParams (string)</li>
@@ -2321,7 +2334,7 @@
 					<details>
 						<summary>MeanShiftMethod</summary>
 						<ul>
-							<li>hasParamBandwidth (float, string)</li>
+							<li>hasParamBandwidth (float, int, string)</li>
 							<li>hasParamBinSeeding (boolean)</li>
 							<li>hasParamClusterAll (boolean)</li>
 							<li>hasParamMaxIter (int)</li>
@@ -2342,8 +2355,8 @@
 							<li>hasParamNClusters (int, string)</li>
 							<li>hasParamNInit (int)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamReassignmentRatio (float)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamReassignmentRatio (float, int)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 						</ul>
 					</details>
@@ -2356,7 +2369,7 @@
 							<li>hasParamMetricParams (string)</li>
 							<li>hasParamNJobs (int, string)</li>
 							<li>hasParamNNeighbors (int)</li>
-							<li>hasParamRadius (float)</li>
+							<li>hasParamRadius (float, int)</li>
 						</ul>
 					</details>
 					<details>
@@ -2364,9 +2377,9 @@
 						<ul>
 							<li>hasParamAlgorithm (string)</li>
 							<li>hasParamClusterMethod (string)</li>
-							<li>hasParamEps (float)</li>
+							<li>hasParamEps (float, int)</li>
 							<li>hasParamLeafSize (int)</li>
-							<li>hasParamMaxEps (float)</li>
+							<li>hasParamMaxEps (float, int)</li>
 							<li>hasParamMemory (string)</li>
 							<li>hasParamMetric (string)</li>
 							<li>hasParamMetricParams (string)</li>
@@ -2385,7 +2398,7 @@
 							<li>hasParamMode (string)</li>
 							<li>hasParamNJobs (int, string)</li>
 							<li>hasParamP (float, int)</li>
-							<li>hasParamRadius (float)</li>
+							<li>hasParamRadius (float, int)</li>
 						</ul>
 					</details>
 					<details>
@@ -2408,11 +2421,11 @@
 						<ul>
 							<li>hasParamAffinity (string)</li>
 							<li>hasParamAssignLabels (string)</li>
-							<li>hasParamCoef0 (float)</li>
+							<li>hasParamCoef0 (float, int)</li>
 							<li>hasParamDegree (float, int, string)</li>
 							<li>hasParamEigenSolver (string)</li>
-							<li>hasParamEigenTol (float)</li>
-							<li>hasParamGamma (float, string)</li>
+							<li>hasParamEigenTol (float, int)</li>
+							<li>hasParamGamma (float, int, string)</li>
 							<li>hasParamKernelParams (string)</li>
 							<li>hasParamNClusters (int, string)</li>
 							<li>hasParamNComponents (float, int, string)</li>
@@ -2469,6 +2482,47 @@
 							<li>hasParamParamGrid (string)</li>
 							<li>hasParamPreDispatch (int, string)</li>
 							<li>hasParamRefit (boolean, string)</li>
+							<li>hasParamReturnTrainScore (boolean)</li>
+							<li>hasParamScoring (string)</li>
+							<li>hasParamVerbose (boolean, int)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>HalvingGridSearchCVMethod</summary>
+						<ul>
+							<li>hasParamAggressiveElimination (boolean)</li>
+							<li>hasParamCv (int, string)</li>
+							<li>hasParamErrorScore (string)</li>
+							<li>hasParamEstimator (string)</li>
+							<li>hasParamFactor (float, int)</li>
+							<li>hasParamMaxResources (int)</li>
+							<li>hasParamMinResources (int, string)</li>
+							<li>hasParamNJobs (int, string)</li>
+							<li>hasParamParamGrid (string)</li>
+							<li>hasParamRandomState (int, string)</li>
+							<li>hasParamRefit (boolean, string)</li>
+							<li>hasParamResource (string)</li>
+							<li>hasParamReturnTrainScore (boolean)</li>
+							<li>hasParamScoring (string)</li>
+							<li>hasParamVerbose (boolean, int)</li>
+						</ul>
+					</details>
+					<details>
+						<summary>HalvingRandomSearchCVMethod</summary>
+						<ul>
+							<li>hasParamAggressiveElimination (boolean)</li>
+							<li>hasParamCv (int, string)</li>
+							<li>hasParamErrorScore (string)</li>
+							<li>hasParamEstimator (string)</li>
+							<li>hasParamFactor (float, int)</li>
+							<li>hasParamMaxResources (int)</li>
+							<li>hasParamMinResources (int, string)</li>
+							<li>hasParamNCandidates (int)</li>
+							<li>hasParamNJobs (int, string)</li>
+							<li>hasParamParamDistributions (string)</li>
+							<li>hasParamRandomState (int, string)</li>
+							<li>hasParamRefit (boolean, string)</li>
+							<li>hasParamResource (string)</li>
 							<li>hasParamReturnTrainScore (boolean)</li>
 							<li>hasParamScoring (string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
@@ -2548,7 +2602,7 @@
 						<summary>BinarizerMethod</summary>
 						<ul>
 							<li>hasParamCopy (boolean)</li>
-							<li>hasParamThreshold (float, string)</li>
+							<li>hasParamThreshold (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -2711,10 +2765,10 @@
 						<ul>
 							<li>hasParamMaxDepth (int, string)</li>
 							<li>hasParamMaxLeafNodes (int, string)</li>
-							<li>hasParamMinImpurityDecrease (float)</li>
+							<li>hasParamMinImpurityDecrease (float, int)</li>
 							<li>hasParamMinSamplesLeaf (float, int)</li>
 							<li>hasParamMinSamplesSplit (float, int)</li>
-							<li>hasParamMinWeightFractionLeaf (float)</li>
+							<li>hasParamMinWeightFractionLeaf (float, int)</li>
 							<li>hasParamNEstimators (int)</li>
 							<li>hasParamNJobs (int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
@@ -2771,7 +2825,7 @@
 							<li>hasParamCv (int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
 							<li>hasParamShuffle (boolean)</li>
-							<li>hasParamSmooth (float)</li>
+							<li>hasParamSmooth (float, int)</li>
 							<li>hasParamTargetType (string)</li>
 						</ul>
 					</details>
@@ -2812,9 +2866,9 @@
 							<li>hasParamPositiveDict (boolean)</li>
 							<li>hasParamRandomState (int, string)</li>
 							<li>hasParamSplitSign (boolean)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamTransformAlgorithm (string)</li>
-							<li>hasParamTransformAlpha (float)</li>
+							<li>hasParamTransformAlpha (float, int)</li>
 							<li>hasParamTransformMaxIter (int)</li>
 							<li>hasParamTransformNNonzeroCoefs (int)</li>
 							<li>hasParamVerbose (boolean, int)</li>
@@ -2830,7 +2884,7 @@
 							<li>hasParamRandomState (int, string)</li>
 							<li>hasParamRotation (string)</li>
 							<li>hasParamSvdMethod (string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -2842,7 +2896,7 @@
 							<li>hasParamMaxIter (int)</li>
 							<li>hasParamNComponents (float, int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamWInit (string)</li>
 							<li>hasParamWhiten (boolean, string)</li>
 							<li>hasParamWhitenSolver (string)</li>
@@ -2854,7 +2908,7 @@
 							<li>hasParamComputeDistances (boolean)</li>
 							<li>hasParamComputeFullTree (boolean)</li>
 							<li>hasParamConnectivity (string)</li>
-							<li>hasParamDistanceThreshold (float)</li>
+							<li>hasParamDistanceThreshold (float, int)</li>
 							<li>hasParamLinkage (string)</li>
 							<li>hasParamMemory (string)</li>
 							<li>hasParamMetric (string)</li>
@@ -2875,12 +2929,12 @@
 						<summary>KernelPCAMethod</summary>
 						<ul>
 							<li>hasParamAlpha (float, int, string)</li>
-							<li>hasParamCoef0 (float)</li>
+							<li>hasParamCoef0 (float, int)</li>
 							<li>hasParamCopyX (boolean)</li>
 							<li>hasParamDegree (float, int, string)</li>
 							<li>hasParamEigenSolver (string)</li>
 							<li>hasParamFitInverseTransform (boolean)</li>
-							<li>hasParamGamma (float, string)</li>
+							<li>hasParamGamma (float, int, string)</li>
 							<li>hasParamKernel (string)</li>
 							<li>hasParamKernelParams (string)</li>
 							<li>hasParamMaxIter (int)</li>
@@ -2888,26 +2942,26 @@
 							<li>hasParamNJobs (int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
 							<li>hasParamRemoveZeroEig (boolean)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>LatentDirichletAllocationMethod</summary>
 						<ul>
 							<li>hasParamBatchSize (int)</li>
-							<li>hasParamDocTopicPrior (float)</li>
+							<li>hasParamDocTopicPrior (float, int)</li>
 							<li>hasParamEvaluateEvery (int)</li>
-							<li>hasParamLearningDecay (float)</li>
+							<li>hasParamLearningDecay (float, int)</li>
 							<li>hasParamLearningMethod (string)</li>
-							<li>hasParamLearningOffset (float)</li>
+							<li>hasParamLearningOffset (float, int)</li>
 							<li>hasParamMaxDocUpdateIter (int)</li>
 							<li>hasParamMaxIter (int)</li>
-							<li>hasParamMeanChangeTol (float)</li>
+							<li>hasParamMeanChangeTol (float, int)</li>
 							<li>hasParamNComponents (float, int, string)</li>
 							<li>hasParamNJobs (int, string)</li>
-							<li>hasParamPerpTol (float)</li>
+							<li>hasParamPerpTol (float, int)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamTopicWordPrior (float)</li>
+							<li>hasParamTopicWordPrior (float, int)</li>
 							<li>hasParamTotalSamples (int)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 						</ul>
@@ -2929,9 +2983,9 @@
 							<li>hasParamRandomState (int, string)</li>
 							<li>hasParamShuffle (boolean)</li>
 							<li>hasParamSplitSign (boolean)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamTransformAlgorithm (string)</li>
-							<li>hasParamTransformAlpha (float)</li>
+							<li>hasParamTransformAlpha (float, int)</li>
 							<li>hasParamTransformMaxIter (int)</li>
 							<li>hasParamTransformNNonzeroCoefs (int)</li>
 							<li>hasParamVerbose (boolean, int)</li>
@@ -2940,20 +2994,20 @@
 					<details>
 						<summary>MiniBatchNMFMethod</summary>
 						<ul>
-							<li>hasParamAlphaH (float)</li>
-							<li>hasParamAlphaW (float)</li>
+							<li>hasParamAlphaH (float, int)</li>
+							<li>hasParamAlphaW (float, int)</li>
 							<li>hasParamBatchSize (int)</li>
-							<li>hasParamBetaLoss (float, string)</li>
-							<li>hasParamForgetFactor (float)</li>
+							<li>hasParamBetaLoss (float, int, string)</li>
+							<li>hasParamForgetFactor (float, int)</li>
 							<li>hasParamFreshRestarts (boolean)</li>
 							<li>hasParamFreshRestartsMaxIter (int)</li>
 							<li>hasParamInit (string)</li>
-							<li>hasParamL1Ratio (float)</li>
+							<li>hasParamL1Ratio (float, int)</li>
 							<li>hasParamMaxIter (int)</li>
 							<li>hasParamMaxNoImprovement (int, string)</li>
 							<li>hasParamNComponents (float, int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamTransformMaxIter (int)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 						</ul>
@@ -2970,26 +3024,26 @@
 							<li>hasParamNComponents (float, int, string)</li>
 							<li>hasParamNJobs (int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamRidgeAlpha (float)</li>
+							<li>hasParamRidgeAlpha (float, int)</li>
 							<li>hasParamShuffle (boolean)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>NMFMethod</summary>
 						<ul>
-							<li>hasParamAlphaH (float)</li>
-							<li>hasParamAlphaW (float)</li>
-							<li>hasParamBetaLoss (float, string)</li>
+							<li>hasParamAlphaH (float, int)</li>
+							<li>hasParamAlphaW (float, int)</li>
+							<li>hasParamBetaLoss (float, int, string)</li>
 							<li>hasParamInit (string)</li>
-							<li>hasParamL1Ratio (float)</li>
+							<li>hasParamL1Ratio (float, int)</li>
 							<li>hasParamMaxIter (int)</li>
 							<li>hasParamNComponents (float, int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
 							<li>hasParamShuffle (boolean)</li>
 							<li>hasParamSolver (string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 						</ul>
 					</details>
@@ -3001,7 +3055,7 @@
 							<li>hasParamMaxIter (int)</li>
 							<li>hasParamNComponents (float, int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
 							<li>hasParamWarmStart (boolean)</li>
 						</ul>
@@ -3016,7 +3070,7 @@
 							<li>hasParamPowerIterationNormalizer (string)</li>
 							<li>hasParamRandomState (int, string)</li>
 							<li>hasParamSvdSolver (string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamWhiten (boolean, string)</li>
 						</ul>
 					</details>
@@ -3028,7 +3082,7 @@
 							<li>hasParamPositiveCode (boolean)</li>
 							<li>hasParamSplitSign (boolean)</li>
 							<li>hasParamTransformAlgorithm (string)</li>
-							<li>hasParamTransformAlpha (float)</li>
+							<li>hasParamTransformAlpha (float, int)</li>
 							<li>hasParamTransformMaxIter (int)</li>
 							<li>hasParamTransformNNonzeroCoefs (int)</li>
 						</ul>
@@ -3042,8 +3096,8 @@
 							<li>hasParamNComponents (float, int, string)</li>
 							<li>hasParamNJobs (int, string)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamRidgeAlpha (float)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamRidgeAlpha (float, int)</li>
+							<li>hasParamTol (float, int, string)</li>
 							<li>hasParamUInit (string)</li>
 							<li>hasParamVInit (string)</li>
 							<li>hasParamVerbose (boolean, int)</li>
@@ -3058,7 +3112,7 @@
 							<li>hasParamNOversamples (int)</li>
 							<li>hasParamPowerIterationNormalizer (string)</li>
 							<li>hasParamRandomState (int, string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -3169,7 +3223,7 @@
 							<li>hasParamMaxFeatures (float, int, string)</li>
 							<li>hasParamNormOrder (int, string)</li>
 							<li>hasParamPrefit (boolean)</li>
-							<li>hasParamThreshold (float, string)</li>
+							<li>hasParamThreshold (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -3202,13 +3256,13 @@
 							<li>hasParamNFeaturesToSelect (float, int)</li>
 							<li>hasParamNJobs (int, string)</li>
 							<li>hasParamScoring (string)</li>
-							<li>hasParamTol (float, string)</li>
+							<li>hasParamTol (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>VarianceThresholdMethod</summary>
 						<ul>
-							<li>hasParamThreshold (float, string)</li>
+							<li>hasParamThreshold (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -3499,7 +3553,7 @@
 			<details>
 				<summary>D2TweedieScoreMethod</summary>
 				<ul>
-					<li>hasParamPower (float)</li>
+					<li>hasParamPower (float, int)</li>
 				</ul>
 			</details>
 			<details>
@@ -3511,7 +3565,7 @@
 				<ul>
 					<li>hasParamIgnoreTies (boolean)</li>
 					<li>hasParamK (int)</li>
-					<li>hasParamLogBase (float)</li>
+					<li>hasParamLogBase (float, int)</li>
 				</ul>
 			</details>
 			<details>
@@ -3545,7 +3599,7 @@
 				<summary>FbetaScoreMethod</summary>
 				<ul>
 					<li>hasParamAverage (boolean, int, string)</li>
-					<li>hasParamBeta (float)</li>
+					<li>hasParamBeta (float, int)</li>
 					<li>hasParamPosLabel (boolean, float, int, string)</li>
 					<li>hasParamZeroDivision (string)</li>
 				</ul>
@@ -3579,7 +3633,7 @@
 			<details>
 				<summary>HomogeneityCompletenessVMeasureMethod</summary>
 				<ul>
-					<li>hasParamBeta (float)</li>
+					<li>hasParamBeta (float, int)</li>
 				</ul>
 			</details>
 			<details>
@@ -3605,7 +3659,7 @@
 			<details>
 				<summary>LogLossMethod</summary>
 				<ul>
-					<li>hasParamEps (float)</li>
+					<li>hasParamEps (float, int)</li>
 					<li>hasParamNormalize (boolean, string)</li>
 				</ul>
 			</details>
@@ -3671,7 +3725,7 @@
 			<details>
 				<summary>MeanTweedieDevianceMethod</summary>
 				<ul>
-					<li>hasParamPower (float)</li>
+					<li>hasParamPower (float, int)</li>
 				</ul>
 			</details>
 			<details>
@@ -3739,7 +3793,7 @@
 					<li>hasParamMetric (string)</li>
 					<li>hasParamNJobs (int, string)</li>
 					<li>hasParamReduceFunc (string)</li>
-					<li>hasParamWorkingMemory (float)</li>
+					<li>hasParamWorkingMemory (float, int)</li>
 				</ul>
 			</details>
 			<details>
@@ -3773,7 +3827,7 @@
 				<summary>PrecisionRecallFscoreSupportMethod</summary>
 				<ul>
 					<li>hasParamAverage (boolean, int, string)</li>
-					<li>hasParamBeta (float)</li>
+					<li>hasParamBeta (float, int)</li>
 					<li>hasParamPosLabel (boolean, float, int, string)</li>
 					<li>hasParamWarnFor (string)</li>
 					<li>hasParamZeroDivision (string)</li>
@@ -3856,7 +3910,7 @@
 			<details>
 				<summary>VMeasureScoreMethod</summary>
 				<ul>
-					<li>hasParamBeta (float)</li>
+					<li>hasParamBeta (float, int)</li>
 				</ul>
 			</details>
 			<details>
@@ -4088,7 +4142,7 @@
 							<li>hasParamKeepdims (boolean)</li>
 							<li>hasParamMethod (string)</li>
 							<li>hasParamOverwriteInput (boolean)</li>
-							<li>hasParamQ (float)</li>
+							<li>hasParamQ (float, int)</li>
 						</ul>
 					</details>
 					<details>
@@ -4099,7 +4153,7 @@
 							<li>hasParamKeepdims (boolean)</li>
 							<li>hasParamMethod (string)</li>
 							<li>hasParamOverwriteInput (boolean)</li>
-							<li>hasParamQ (float)</li>
+							<li>hasParamQ (float, int)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4180,9 +4234,9 @@
 							<li>hasParamInterpolate (boolean)</li>
 							<li>hasParamStep (string)</li>
 							<li>hasParamWhere (string)</li>
-							<li>hasParamX (float, string)</li>
-							<li>hasParamY1 (float, string)</li>
-							<li>hasParamY2 (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
+							<li>hasParamY1 (float, int, string)</li>
+							<li>hasParamY2 (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -4212,20 +4266,20 @@
 						<summary>BarMethod</summary>
 						<ul>
 							<li>hasParamAlign (string)</li>
-							<li>hasParamBottom (float, string)</li>
-							<li>hasParamHeight (float, string)</li>
-							<li>hasParamWidth (float, string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamBottom (float, int, string)</li>
+							<li>hasParamHeight (float, int, string)</li>
+							<li>hasParamWidth (float, int, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>BarhMethod</summary>
 						<ul>
 							<li>hasParamAlign (string)</li>
-							<li>hasParamHeight (float, string)</li>
-							<li>hasParamLeft (float, string)</li>
-							<li>hasParamWidth (float, string)</li>
-							<li>hasParamY (float, string)</li>
+							<li>hasParamHeight (float, int, string)</li>
+							<li>hasParamLeft (float, int, string)</li>
+							<li>hasParamWidth (float, int, string)</li>
+							<li>hasParamY (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4254,7 +4308,7 @@
 							<li>hasParamBootstrap (int, string)</li>
 							<li>hasParamBoxprops (string)</li>
 							<li>hasParamCapprops (string)</li>
-							<li>hasParamCapwidths (float, string)</li>
+							<li>hasParamCapwidths (float, int, string)</li>
 							<li>hasParamConfIntervals (string)</li>
 							<li>hasParamFlierprops (string)</li>
 							<li>hasParamLabels (string)</li>
@@ -4272,11 +4326,11 @@
 							<li>hasParamSym (string)</li>
 							<li>hasParamUsermedians (string)</li>
 							<li>hasParamVert (boolean, string)</li>
-							<li>hasParamWhis (float, string)</li>
+							<li>hasParamWhis (float, int, string)</li>
 							<li>hasParamWhiskerprops (string)</li>
-							<li>hasParamWidths (float, string)</li>
-							<li>hasParamX (float, string)</li>
-							<li>hasParamZorder (float, string)</li>
+							<li>hasParamWidths (float, int, string)</li>
+							<li>hasParamX (float, int, string)</li>
+							<li>hasParamZorder (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4329,20 +4383,20 @@
 						<summary>ErrorbarMethod</summary>
 						<ul>
 							<li>hasParamBarsabove (boolean)</li>
-							<li>hasParamCapsize (float, string)</li>
-							<li>hasParamCapthick (float, string)</li>
+							<li>hasParamCapsize (float, int, string)</li>
+							<li>hasParamCapthick (float, int, string)</li>
 							<li>hasParamEcolor (string)</li>
-							<li>hasParamElinewidth (float, string)</li>
+							<li>hasParamElinewidth (float, int, string)</li>
 							<li>hasParamErrorevery (int, string)</li>
 							<li>hasParamFmt (string)</li>
 							<li>hasParamLolims (boolean, string)</li>
 							<li>hasParamUplims (boolean, string)</li>
-							<li>hasParamX (float, string)</li>
-							<li>hasParamXerr (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
+							<li>hasParamXerr (float, int, string)</li>
 							<li>hasParamXlolims (boolean, string)</li>
 							<li>hasParamXuplims (boolean, string)</li>
-							<li>hasParamY (float, string)</li>
-							<li>hasParamYerr (float, string)</li>
+							<li>hasParamY (float, int, string)</li>
+							<li>hasParamYerr (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4367,23 +4421,23 @@
 					<details>
 						<summary>HexbinMethod</summary>
 						<ul>
-							<li>hasParamAlpha (float, string)</li>
+							<li>hasParamAlpha (float, int, string)</li>
 							<li>hasParamBins (int, string)</li>
 							<li>hasParamC (string)</li>
 							<li>hasParamCmap (string)</li>
 							<li>hasParamEdgecolors (string)</li>
 							<li>hasParamExtent (string)</li>
 							<li>hasParamGridsize (int, string)</li>
-							<li>hasParamLinewidths (float, string)</li>
+							<li>hasParamLinewidths (float, int, string)</li>
 							<li>hasParamMarginals (boolean)</li>
 							<li>hasParamMincnt (int, string)</li>
 							<li>hasParamNorm (string)</li>
 							<li>hasParamReduceCFunction (string)</li>
-							<li>hasParamVmax (float, string)</li>
-							<li>hasParamVmin (float, string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamVmax (float, int, string)</li>
+							<li>hasParamVmin (float, int, string)</li>
+							<li>hasParamX (float, int, string)</li>
 							<li>hasParamXscale (string)</li>
-							<li>hasParamY (float, string)</li>
+							<li>hasParamY (float, int, string)</li>
 							<li>hasParamYscale (string)</li>
 						</ul>
 					</details>
@@ -4391,13 +4445,13 @@
 						<summary>Hist2dMethod</summary>
 						<ul>
 							<li>hasParamBins (int, string)</li>
-							<li>hasParamCmax (float, string)</li>
-							<li>hasParamCmin (float, string)</li>
-							<li>hasParamDensity (boolean, float)</li>
+							<li>hasParamCmax (float, int, string)</li>
+							<li>hasParamCmin (float, int, string)</li>
+							<li>hasParamDensity (boolean, float, int)</li>
 							<li>hasParamRange (string)</li>
 							<li>hasParamWeights (string)</li>
-							<li>hasParamX (float, string)</li>
-							<li>hasParamY (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
+							<li>hasParamY (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -4405,19 +4459,19 @@
 						<ul>
 							<li>hasParamAlign (string)</li>
 							<li>hasParamBins (int, string)</li>
-							<li>hasParamBottom (float, string)</li>
+							<li>hasParamBottom (float, int, string)</li>
 							<li>hasParamColor (string)</li>
-							<li>hasParamCumulative (boolean, float)</li>
-							<li>hasParamDensity (boolean, float)</li>
+							<li>hasParamCumulative (boolean, float, int)</li>
+							<li>hasParamDensity (boolean, float, int)</li>
 							<li>hasParamHisttype (string)</li>
 							<li>hasParamLabel (string)</li>
 							<li>hasParamLog (boolean)</li>
 							<li>hasParamOrientation (string)</li>
 							<li>hasParamRange (string)</li>
-							<li>hasParamRwidth (float, string)</li>
+							<li>hasParamRwidth (float, int, string)</li>
 							<li>hasParamStacked (boolean)</li>
 							<li>hasParamWeights (string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4442,46 +4496,46 @@
 					<details>
 						<summary>ImshowMethod</summary>
 						<ul>
-							<li>hasParamAlpha (float, string)</li>
-							<li>hasParamAspect (float, string)</li>
+							<li>hasParamAlpha (float, int, string)</li>
+							<li>hasParamAspect (float, int, string)</li>
 							<li>hasParamCmap (string)</li>
 							<li>hasParamExtent (string)</li>
 							<li>hasParamFilternorm (boolean)</li>
-							<li>hasParamFilterrad (float)</li>
+							<li>hasParamFilterrad (float, int)</li>
 							<li>hasParamInterpolation (string)</li>
 							<li>hasParamInterpolationStage (string)</li>
 							<li>hasParamNorm (string)</li>
 							<li>hasParamOrigin (string)</li>
 							<li>hasParamResample (boolean, string)</li>
 							<li>hasParamUrl (string)</li>
-							<li>hasParamVmax (float, string)</li>
-							<li>hasParamVmin (float, string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamVmax (float, int, string)</li>
+							<li>hasParamVmin (float, int, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>PcolorMethod</summary>
 						<ul>
-							<li>hasParamAlpha (float, string)</li>
-							<li>hasParamArgs (float, string)</li>
+							<li>hasParamAlpha (float, int, string)</li>
+							<li>hasParamArgs (float, int, string)</li>
 							<li>hasParamCmap (string)</li>
 							<li>hasParamNorm (string)</li>
 							<li>hasParamShading (string)</li>
-							<li>hasParamVmax (float, string)</li>
-							<li>hasParamVmin (float, string)</li>
+							<li>hasParamVmax (float, int, string)</li>
+							<li>hasParamVmin (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>PcolormeshMethod</summary>
 						<ul>
-							<li>hasParamAlpha (float, string)</li>
+							<li>hasParamAlpha (float, int, string)</li>
 							<li>hasParamAntialiased (boolean)</li>
-							<li>hasParamArgs (float, string)</li>
+							<li>hasParamArgs (float, int, string)</li>
 							<li>hasParamCmap (string)</li>
 							<li>hasParamNorm (string)</li>
 							<li>hasParamShading (string)</li>
-							<li>hasParamVmax (float, string)</li>
-							<li>hasParamVmin (float, string)</li>
+							<li>hasParamVmax (float, int, string)</li>
+							<li>hasParamVmin (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4506,18 +4560,18 @@
 					<details>
 						<summary>AcorrMethod</summary>
 						<ul>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>AngleSpectrumMethod</summary>
 						<ul>
 							<li>hasParamFc (int, string)</li>
-							<li>hasParamFs (float, string)</li>
+							<li>hasParamFs (float, int, string)</li>
 							<li>hasParamPadTo (int, string)</li>
 							<li>hasParamSides (string)</li>
 							<li>hasParamWindow (string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -4525,15 +4579,15 @@
 						<ul>
 							<li>hasParamDetrend (string)</li>
 							<li>hasParamFc (int, string)</li>
-							<li>hasParamFs (float, string)</li>
+							<li>hasParamFs (float, int, string)</li>
 							<li>hasParamNfft (int)</li>
 							<li>hasParamNoverlap (int)</li>
 							<li>hasParamPadTo (int, string)</li>
 							<li>hasParamScaleByFreq (boolean, string)</li>
 							<li>hasParamSides (string)</li>
 							<li>hasParamWindow (string)</li>
-							<li>hasParamX (float, string)</li>
-							<li>hasParamY (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
+							<li>hasParamY (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -4544,29 +4598,29 @@
 						<summary>MagnitudeSpectrumMethod</summary>
 						<ul>
 							<li>hasParamFc (int, string)</li>
-							<li>hasParamFs (float, string)</li>
+							<li>hasParamFs (float, int, string)</li>
 							<li>hasParamPadTo (int, string)</li>
 							<li>hasParamScale (string)</li>
 							<li>hasParamSides (string)</li>
 							<li>hasParamWindow (string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>PhaseSpectrumMethod</summary>
 						<ul>
 							<li>hasParamFc (int, string)</li>
-							<li>hasParamFs (float, string)</li>
+							<li>hasParamFs (float, int, string)</li>
 							<li>hasParamPadTo (int, string)</li>
 							<li>hasParamSides (string)</li>
 							<li>hasParamWindow (string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>PlotMethod</summary>
 						<ul>
-							<li>hasParamArgs (float, string)</li>
+							<li>hasParamArgs (float, int, string)</li>
 							<li>hasParamScalex (boolean)</li>
 							<li>hasParamScaley (boolean)</li>
 						</ul>
@@ -4585,15 +4639,15 @@
 							<li>hasParamBaseline (string)</li>
 							<li>hasParamColors (string)</li>
 							<li>hasParamLabels (string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
 						<summary>StemMethod</summary>
 						<ul>
-							<li>hasParamArgs (float, string)</li>
+							<li>hasParamArgs (float, int, string)</li>
 							<li>hasParamBasefmt (string)</li>
-							<li>hasParamBottom (float, string)</li>
+							<li>hasParamBottom (float, int, string)</li>
 							<li>hasParamLabel (string)</li>
 							<li>hasParamLinefmt (string)</li>
 							<li>hasParamMarkerfmt (string)</li>
@@ -4604,8 +4658,8 @@
 						<summary>StepMethod</summary>
 						<ul>
 							<li>hasParamWhere (string)</li>
-							<li>hasParamX (float, string)</li>
-							<li>hasParamY (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
+							<li>hasParamY (float, int, string)</li>
 						</ul>
 					</details>
 					<details>
@@ -4615,8 +4669,8 @@
 							<li>hasParamMaxlags (int)</li>
 							<li>hasParamNormed (boolean)</li>
 							<li>hasParamUsevlines (boolean)</li>
-							<li>hasParamX (float, string)</li>
-							<li>hasParamY (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
+							<li>hasParamY (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4648,17 +4702,17 @@
 							<li>hasParamExplode (string)</li>
 							<li>hasParamFrame (boolean)</li>
 							<li>hasParamHatch (string)</li>
-							<li>hasParamLabeldistance (float, string)</li>
+							<li>hasParamLabeldistance (float, int, string)</li>
 							<li>hasParamLabels (string)</li>
 							<li>hasParamNormalize (boolean)</li>
-							<li>hasParamPctdistance (float)</li>
-							<li>hasParamRadius (float)</li>
+							<li>hasParamPctdistance (float, int)</li>
+							<li>hasParamRadius (float, int)</li>
 							<li>hasParamRotatelabels (boolean)</li>
 							<li>hasParamShadow (boolean)</li>
-							<li>hasParamStartangle (float)</li>
+							<li>hasParamStartangle (float, int)</li>
 							<li>hasParamTextprops (string)</li>
 							<li>hasParamWedgeprops (string)</li>
-							<li>hasParamX (float, string)</li>
+							<li>hasParamX (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4706,19 +4760,19 @@
 					<details>
 						<summary>ScatterMethod</summary>
 						<ul>
-							<li>hasParamAlpha (float, string)</li>
+							<li>hasParamAlpha (float, int, string)</li>
 							<li>hasParamC (string)</li>
 							<li>hasParamCmap (string)</li>
 							<li>hasParamEdgecolors (string)</li>
-							<li>hasParamLinewidths (float, string)</li>
+							<li>hasParamLinewidths (float, int, string)</li>
 							<li>hasParamMarker (string)</li>
 							<li>hasParamNorm (string)</li>
 							<li>hasParamPlotnonfinite (boolean)</li>
-							<li>hasParamS (float, string)</li>
-							<li>hasParamVmax (float, string)</li>
-							<li>hasParamVmin (float, string)</li>
-							<li>hasParamX (float, string)</li>
-							<li>hasParamY (float, string)</li>
+							<li>hasParamS (float, int, string)</li>
+							<li>hasParamVmax (float, int, string)</li>
+							<li>hasParamVmin (float, int, string)</li>
+							<li>hasParamX (float, int, string)</li>
+							<li>hasParamY (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4747,17 +4801,17 @@
 					<details>
 						<summary>StreamplotMethod</summary>
 						<ul>
-							<li>hasParamArrowsize (float)</li>
+							<li>hasParamArrowsize (float, int)</li>
 							<li>hasParamArrowstyle (string)</li>
 							<li>hasParamBrokenStreamlines (string)</li>
 							<li>hasParamColor (string)</li>
-							<li>hasParamDensity (boolean, float)</li>
+							<li>hasParamDensity (boolean, float, int)</li>
 							<li>hasParamIntegrationDirection (string)</li>
-							<li>hasParamLinewidth (float, string)</li>
-							<li>hasParamMaxlength (float)</li>
-							<li>hasParamMinlength (float)</li>
+							<li>hasParamLinewidth (float, int, string)</li>
+							<li>hasParamMaxlength (float, int)</li>
+							<li>hasParamMinlength (float, int)</li>
 							<li>hasParamStartPoints (string)</li>
-							<li>hasParamZorder (float, string)</li>
+							<li>hasParamZorder (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
@@ -4782,7 +4836,7 @@
 					<details>
 						<summary>ViolinplotMethod</summary>
 						<ul>
-							<li>hasParamBwMethod (float, string)</li>
+							<li>hasParamBwMethod (float, int, string)</li>
 							<li>hasParamDataset (string)</li>
 							<li>hasParamPoints (int)</li>
 							<li>hasParamPositions (string)</li>
@@ -4791,7 +4845,7 @@
 							<li>hasParamShowmeans (boolean, string)</li>
 							<li>hasParamShowmedians (boolean)</li>
 							<li>hasParamVert (boolean, string)</li>
-							<li>hasParamWidths (float, string)</li>
+							<li>hasParamWidths (float, int, string)</li>
 						</ul>
 					</details>
 					</ul>
