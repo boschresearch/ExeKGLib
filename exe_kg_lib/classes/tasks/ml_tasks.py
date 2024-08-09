@@ -162,7 +162,13 @@ class PrepareTransformer(Task):
         if "sklearn" in method_module.__module__:
             assert isinstance(method_module, type), "The method_module should be a class"
             transformer = method_module(**self.method.params_dict)
-            transformer.fit(input)
+
+            if not isinstance(input, list):
+                transformer.fit(input)
+            else:
+                # multiple splits
+                for input_part in input:
+                    transformer.fit(input_part)
 
             print(f"{transformer.__class__.__name__} transforming finished")
         else:
@@ -200,7 +206,13 @@ class Transform(Task):
 
         # check if model belongs to sklearn library
         if "sklearn" in transformer.__module__:
-            transformed_input = transformer.transform(input)
+            if not isinstance(input, list):
+                transformed_input = transformer.transform(input)
+            else:  # multiple splits
+                transformed_input = [
+                    transformer.transform(x) for x in input
+                ]  # NOTE: it can be that the transformer will try to trasform unseen data, which will raise an error. e.g. if OneHotEncoder is used, one chunk of input may have a category that is not present in another chunk of input
+
         else:
             raise NotImplementedError("Only sklearn data transformers are supported for now")
 
