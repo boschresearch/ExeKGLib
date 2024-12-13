@@ -19,10 +19,11 @@ from exe_kg_lib.utils.kg_creation_utils import (
     add_instance_from_parent_with_relation, add_literal, create_pipeline_task,
     deserialize_input_entity_info_dict, field_value_to_literal, save_exe_kg)
 from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
-from exe_kg_lib.utils.query_utils import (
-    NoResultsError, get_grouped_inherited_inputs,
-    get_grouped_inherited_outputs, get_method_grouped_params_plus_inherited,
-    query_method_properties_and_methods)
+from exe_kg_lib.utils.query_utils import (NoResultsError,
+                                          get_grouped_inherited_inputs,
+                                          get_grouped_inherited_outputs,
+                                          get_method_grouped_params,
+                                          query_method_properties_and_methods)
 from exe_kg_lib.utils.string_utils import (get_instance_name,
                                            get_task_output_name)
 
@@ -170,8 +171,11 @@ class ExeKGConstructionMixin:
         )
 
         # fetch compatible data properties from KG schema
-        property_list = get_method_grouped_params_plus_inherited(
-            method_parent.iri, self.top_level_schema.namespace_prefix, self.input_kg
+        property_list = get_method_grouped_params(
+            method_parent.iri,
+            self.top_level_schema.namespace_prefix,
+            self.input_kg,
+            inherited=method_parent.namespace == str(self.bottom_level_schemata["visu"].namespace),
         )
 
         method_params_dict_copy = method_params_dict.copy()

@@ -230,7 +230,9 @@ def query_method_params(method_iri: str, namespace_prefix: str, kg: Graph) -> qu
     )
 
 
-def query_method_params_plus_inherited(method_iri: str, namespace_prefix: str, kg: Graph) -> query.Result:
+def query_method_params_plus_inherited(
+    method_iri: str, namespace_prefix: str, kg: Graph, inherited=False
+) -> query.Result:
     """
     Queries the parameters and their ranges for a given method IRI, including inherited parameters.
 
@@ -242,12 +244,20 @@ def query_method_params_plus_inherited(method_iri: str, namespace_prefix: str, k
     Returns:
         query.Result: The result of the query.
     """
+    if inherited:
+        return kg.query(
+            f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?domain . "
+            f"?method_iri rdfs:subClassOf* ?domain . "
+            f"?p rdfs:range ?r . "
+            f"?p rdfs:subPropertyOf {namespace_prefix}:hasParameter . }}",
+            initBindings={"method_iri": URIRef(method_iri)},
+        )
+
     return kg.query(
-        f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?domain . "
-        f"?task_iri rdfs:subClassOf* ?domain . "
+        f"\nSELECT ?p ?r WHERE {{?p rdfs:domain ?method_iri . "
         f"?p rdfs:range ?r . "
         f"?p rdfs:subPropertyOf {namespace_prefix}:hasParameter . }}",
-        initBindings={"task_iri": URIRef(method_iri)},
+        initBindings={"method_iri": URIRef(method_iri)},
     )
 
 
@@ -583,8 +593,8 @@ def get_converted_module_hierarchy_chain(
     return module_chain_names
 
 
-def get_method_grouped_params_plus_inherited(
-    method_iri: str, namespace_prefix: str, kg: Graph
+def get_method_grouped_params(
+    method_iri: str, namespace_prefix: str, kg: Graph, inherited: bool = False
 ) -> List[Tuple[str, List[str]]]:
     """
     Retrieves the (inherited) parameters for a given method, grouped by property IRI.
@@ -597,7 +607,7 @@ def get_method_grouped_params_plus_inherited(
     Returns:
         List[Tuple[str, List[str]]]: A list of tuples, where each tuple contains a parameter name and a list of its values.
     """
-    property_list = list(query_method_params_plus_inherited(method_iri, namespace_prefix, kg))
+    property_list = list(query_method_params_plus_inherited(method_iri, namespace_prefix, kg, inherited))
     property_list = sorted(property_list, key=lambda elem: elem[0])  # prepare for grouping
     property_list = [
         (key, [pair[1] for pair in group]) for key, group in itertools.groupby(property_list, lambda elem: elem[0])
