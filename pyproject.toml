@@ -36,6 +36,7 @@ rdflib = "^6.2.0"
 mkdocs = "^1.4.2"
 pyshacl = "^0.21.0"
 typer-cli = "^0.12.3"
+requests = "^2.32.3"
 
 [tool.poetry.group.dev.dependencies]
 black = ">=22.10,<24.0"
