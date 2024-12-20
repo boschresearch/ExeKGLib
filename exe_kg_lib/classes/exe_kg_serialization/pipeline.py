@@ -60,16 +60,22 @@ class Pipeline:
         Returns:
             cls: An instance of the class with the deserialized data.
         """
-        # if source is a path
-        if isinstance(source, TextIOWrapper):
-            obj_dict = json.load(source)
-        elif isinstance(source, Path) or Path(str(source)).exists():
-            with open(source) as file:
-                obj_dict = json.load(file)
-        elif isinstance(source, str):
+        obj_dict = None
+        try:
+            # if source is a path
+            if isinstance(source, TextIOWrapper):
+                obj_dict = json.load(source)
+            elif isinstance(source, Path) or Path(str(source)).exists():
+                with open(source) as file:
+                    obj_dict = json.load(file)
+        except OSError:
+            pass
+
+        if obj_dict is None and isinstance(source, str):
             obj_dict = json.loads(source)
-        else:
-            raise ValueError("Invalid source type. Must be a Path, TextIOWrapper, or str.")
+
+        if obj_dict is None:
+            raise ValueError("Invalid source type. Must be a valid Path, TextIOWrapper, or str.")
 
         data_entities = []
         for data_entity_dict in obj_dict["data_entities"]:
