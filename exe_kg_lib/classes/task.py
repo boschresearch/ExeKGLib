@@ -2,22 +2,21 @@
 # SPDX-License-Identifier: AGPL-3.0
 
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, Union
 
-import numpy as np
 import pandas as pd
+
+from exe_kg_lib.classes.data_entity import DataEntity
+from exe_kg_lib.classes.method import Method
 
 from .entity import Entity
 
 
 class Task(Entity):
     """
-    Abstraction of owl:class Task.
+    Abstraction of owl:class ds:AtomicTask.
 
-    ❗ Important for contributors ❗
-    The fields that contain "_" are by convention the snake-case conversions of the equivalent camel-case property names in the KG.
-    e.g. has_next_task field corresponds to hasNextTask property in the KG.
-    This is necessary for automatically mapping KG properties to Python object fields while parsing the KG.
+    ❗ Important for contributors: See Section "Naming conventions" in README.md of "classes.tasks" package before extending the code's functionality.
     """
 
     def __init__(
@@ -26,10 +25,10 @@ class Task(Entity):
         parent_entity: Entity = None,
     ):
         super().__init__(iri, parent_entity)
-        self.has_next_task = None
-        self.has_method = None
-        self.has_input = []
-        self.has_output = []
+        self.next_task = None  # used for storing the next Task in the pipeline
+        self.method = None  # used for storing the method of the Task
+        self.inputs = []  # used for storing input DataEntity objects during KG execution
+        self.outputs = []  # used for storing output DataEntity objects during KG execution
         self.input_dict = {}  # used for storing input DataEntity objects during KG creation
         self.output_dict = {}  # used for storing output DataEntity objects during KG creation
 
@@ -48,11 +47,11 @@ class Task(Entity):
         Returns:
             dict: pairs of Task's output names and corresponding output values
         """
-        if len(self.has_output) == 0:
+        if len(self.outputs) == 0:
             # assume one output and use task name as key
             return {self.name: list(keyword_value_dict.values())[0]}
 
-        output_names = [has_output_elem.name for has_output_elem in self.has_output]
+        output_names = [has_output_elem.name for has_output_elem in self.outputs]
         out_dict = {}
         for output_name in output_names:
             for key, value in keyword_value_dict.items():
@@ -61,24 +60,37 @@ class Task(Entity):
 
         return out_dict
 
-    def get_inputs(self, dict_to_search: dict, fallback_df: pd.DataFrame) -> Dict[str, np.ndarray]:
+    def get_inputs(
+        self, dict_to_search: dict, fallback_df: pd.DataFrame
+    ) -> Dict[str, Dict[str, Union[pd.DataFrame, Method]]]:
         """
-        Tries to match the Task's input names with the keys of dict_to_search
-        and fills input_dict list with their corresponding values.
-        If the matches fail, it retrieves columns of the provided fallback_df
+        For each input of the Task:
+            - If the input is a DataEntity: Searches for the input reference name in dict_to_search. If not found, uses fallback_df.
+            - If the input is a Method: Uses the input type as the input name and the input itself as the input value.
+
         Args:
             dict_to_search: contains key-value pairs where key is a possible input name and value is its corresponding value
             fallback_df: contains data to return as an alternative
 
         Returns:
-            Dict[str, np.ndarray]: pairs of input entity types and corresponding input values
+            Dict[str, Dict[str, Union[pd.DataFrame, Method]]]: dictionary with input types as keys and dictionaries with input names and values as values
         """
         input_dict = {}
-        for input in self.has_input:
-            try:
-                input_dict[input.type] = dict_to_search[input.has_reference]
-            except KeyError:
-                input_dict[input.type] = fallback_df[input.has_source]
+        inputs_sorted = sorted(self.inputs, key=lambda x: x.name)
+        for input in inputs_sorted:
+            if input.type not in input_dict:
+                input_dict[input.type] = []
+            if isinstance(input, DataEntity):
+                input_name = input.reference
+                try:
+                    input_value = dict_to_search[input.reference]
+                except KeyError:
+                    input_value = fallback_df.loc[:, [input.source]]
+            elif isinstance(input, Method):
+                input_name = input.type
+                input_value = input
+
+            input_dict[input.type].append({"name": input_name, "value": input_value})
 
         return input_dict
 

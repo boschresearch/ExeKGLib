@@ -1,36 +1,57 @@
 # Copyright (c) 2022 Robert Bosch GmbH
 # SPDX-License-Identifier: AGPL-3.0
 
-from typing import Dict, Union
+import os
+import re
+from io import TextIOWrapper
+from pathlib import Path
+from typing import Callable, Dict, List, Union
 
 from rdflib import RDF, XSD, Graph, Literal, Namespace, URIRef
 
+from exe_kg_lib.classes.exe_kg_serialization.method import \
+    Method as MethodSerializable
+from exe_kg_lib.classes.exe_kg_serialization.pipeline import Pipeline
+from exe_kg_lib.classes.method import Method
+from exe_kg_lib.utils.kg_validation_utils import check_kg_executability
+from exe_kg_lib.utils.string_utils import (TASK_OUTPUT_NAME_REGEX,
+                                           get_instance_name)
+
 from ..classes.data_entity import DataEntity
 from ..classes.entity import Entity
+from ..classes.exe_kg_serialization.task import Task as TaskSerializable
 from ..classes.task import Task
-from .query_utils import (get_data_properties_by_entity_iri,
-                          get_first_query_result_if_exists)
 
 
-def add_instance(kg: Graph, entity_instance: Entity) -> None:
+def add_instance(kg: Graph, entity_instance: Entity, extra_parent_iri: str = None) -> None:
     """
-    Adds entity instance to KG only if its parent entity exists and there is no instance with the same IRI
-    Args:
-        kg: Graph object to add to
-        entity_instance: the entity instance to create
+    Adds an instance of an entity to the knowledge graph.
+
+    Parameters:
+        kg (Graph): The knowledge graph to add the instance to.
+        entity_instance (Entity): The entity instance to be added.
+        extra_parent_iri (str): An extra parent IRI to add to the instance.
+
+    Returns:
+        None
     """
-    if entity_instance.parent_entity and (entity_instance.iri, None, None) not in kg:
-        kg.add((entity_instance.iri, RDF.type, entity_instance.parent_entity.iri))
+    kg.add((entity_instance.iri, RDF.type, entity_instance.parent_entity.iri))
+    if extra_parent_iri:
+        kg.add((entity_instance.iri, RDF.type, URIRef(extra_parent_iri)))
 
 
 def add_relation(kg: Graph, from_entity: Entity, relation_iri: str, to_entity: Entity) -> None:
     """
-    Adds relation between 2 given entities to KG
+    Adds a relation between two entities in the knowledge graph.
+
     Args:
-        kg: Graph object to add to
-        from_entity: relation source
-        relation_iri: IRI that connects the 2 given entities
-        to_entity: relation destination
+        kg (Graph): The knowledge graph to add the relation to.
+        from_entity (Entity): The entity from which the relation originates.
+        relation_iri (str): The IRI of the relation.
+        to_entity (Entity): The entity to which the relation points.
+
+    Returns:
+        None
     """
     kg.add(
         (
@@ -43,12 +64,16 @@ def add_relation(kg: Graph, from_entity: Entity, relation_iri: str, to_entity: E
 
 def add_literal(kg: Graph, from_entity: Entity, relation_iri: str, literal: Literal) -> None:
     """
-    Adds relation between a given entity and a given literal to KG
-    Args:
-        kg: Graph object to add to
-        from_entity: relation source
-        relation_iri: IRI that connects the given entity with the given literal
-        literal: literal to add to Graph object
+    Adds a literal value to the knowledge graph.
+
+    Parameters:
+        kg (Graph): The knowledge graph to add the literal to.
+        from_entity (Entity): The entity from which the relation originates.
+        relation_iri (str): The IRI of the relation.
+        literal (Literal): The literal value to add.
+
+    Returns:
+        None
     """
     kg.add((from_entity.iri, URIRef(relation_iri), literal))
 
@@ -60,57 +85,30 @@ def add_instance_from_parent_with_relation(
     relation_iri: str,
     related_entity: Entity,
     instance_name: str,
+    extra_parent_iri: str = None,
 ) -> Entity:
     """
-    Creates an entity object based on the arguments and calls add_instance() and add_relation() to create a new entity instance and relation
+    Adds an instance to the knowledge graph with a relation to a given entity.
+
     Args:
-        namespace: namespace for the new instance
-        kg: Graph object to add to
-        parent_entity: parent entity for the new instance
-        relation_iri: IRI that connects the given related_entity with the new instance
-        related_entity: relation source
-        instance_name: name for the new instance
+        namespace (Namespace): The namespace for the instance.
+        kg (Graph): The knowledge graph.
+        parent_entity (Entity): The parent entity of the instance.
+        relation_iri (str): The IRI of the relation between the related entity and the instance.
+        related_entity (Entity): The related entity.
+        instance_name (str): The name of the instance.
+        extra_parent_iri (str): An extra parent IRI to add to the instance.
 
     Returns:
-        Entity: object containing the new entity instance's basic info
+        Entity: The created instance.
     """
     entity_iri = namespace + instance_name
     instance = Entity(entity_iri, parent_entity)
 
-    add_instance(kg, instance)
+    add_instance(kg, instance, extra_parent_iri)
     add_relation(kg, related_entity, relation_iri, instance)
 
     return instance
-
-
-def name_instance(
-    task_type_dict: Dict[str, int],
-    method_type_dict: Dict[str, int],
-    parent_entity: Entity,
-) -> Union[None, str]:
-    """
-    Creates a unique name for a new instance by concatenating the parent entity's name (which is the instance type) with a number
-    Also increments the relevant number of the corresponding dict
-    Args:
-        task_type_dict: contains pairs of task types and numbers
-        method_type_dict: contains pairs of method types and numbers
-        parent_entity: instance's parent entity
-
-    Returns:
-        str: name to be given to the new instance
-        None: if the type of the given parent entity is not equal with "AtomicTask" or "AtomicMethod"
-    """
-    if parent_entity.type == "AtomicTask":
-        entity_type_dict = task_type_dict
-    elif parent_entity.type == "AtomicMethod":
-        entity_type_dict = method_type_dict
-    else:
-        print("Error: Invalid parent entity type")
-        return None
-
-    instance_name = parent_entity.name + str(entity_type_dict[parent_entity.name])
-    entity_type_dict[parent_entity.name] += 1
-    return instance_name
 
 
 def add_data_entity_instance(
@@ -121,50 +119,54 @@ def add_data_entity_instance(
     data_entity: DataEntity,
 ) -> None:
     """
-    Adds data entity instance to kg with the necessary relations
+    Adds a data entity instance to the knowledge graph.
+
     Args:
-        kg: Graph object to add to
-        data: object representing top-level DataEntity class in KG
-        top_level_kg: KG corresponding to the top-level KG schema
-        top_level_schema_namespace: namespace of the top-level KG schema
-        data_entity: data entity to add
+        kg (Graph): The knowledge graph to add the data entity instance to.
+        data (Entity): The data entity instance to be added.
+        top_level_kg (Graph): The top-level knowledge graph.
+        top_level_schema_namespace (Namespace): The namespace for the top-level schema.
+        data_entity (DataEntity): The data entity object.
+
+    Returns:
+        None
     """
     add_instance(kg, data_entity)
 
-    if data_entity.has_source:
-        has_source_iri, range_iri = get_first_query_result_if_exists(
-            get_data_properties_by_entity_iri, data.iri, top_level_kg
-        )
+    if data_entity.source:
+        # has_source_iri, range_iri = get_first_query_result_if_exists(
+        #     get_method_params_plus_inherited, data_entity.parent_entity.iri, top_level_kg
+        # )
 
         source_literal = Literal(
-            lexical_or_value=data_entity.has_source,
-            datatype=range_iri,
+            lexical_or_value=data_entity.source,
+            datatype=XSD.string,
         )
 
-        add_literal(kg, data_entity, has_source_iri, source_literal)
+        add_literal(kg, data_entity, top_level_schema_namespace.hasSource, source_literal)
 
-    if data_entity.has_data_structure:
+    if data_entity.data_structure:
         add_relation(
             kg,
             data_entity,
-            top_level_schema_namespace.hasDataStructure,
-            Entity(data_entity.has_data_structure),
+            RDF.type,
+            Entity(data_entity.data_structure),
         )
 
-    if data_entity.has_data_semantics:
+    if data_entity.data_semantics:
         add_relation(
             kg,
             data_entity,
-            top_level_schema_namespace.hasDataSemantics,
-            Entity(data_entity.has_data_semantics),
+            RDF.type,
+            Entity(data_entity.data_semantics),
         )
 
-    if data_entity.has_reference:
+    if data_entity.reference:
         add_relation(
             kg,
             data_entity,
             top_level_schema_namespace.hasReference,
-            Entity(data_entity.has_reference),
+            Entity(data_entity.reference),
         )
 
 
@@ -178,15 +180,19 @@ def add_and_attach_data_entity(
     task_entity: Task,
 ) -> None:
     """
-    Adds data entity instance to kg with the necessary relations, and attaches it to the given task
+    Adds a data entity to the knowledge graph and attaches it to a task entity using a specified relation.
+
     Args:
-        kg: Graph object to add to
-        data: object representing top-level DataEntity class in KG
-        top_level_kg: KG corresponding to the top-level KG schema
-        top_level_schema_namespace: namespace of the top-level KG schema
-        data_entity: data entity to add
-        relation: IRI of relation to add
-        task_entity: task to attach the data entity to
+        kg (Graph): The knowledge graph to add the data entity to.
+        data (Entity): The data entity to add.
+        top_level_kg (Graph): The top-level knowledge graph.
+        top_level_schema_namespace (Namespace): The namespace for the top-level schema.
+        data_entity (DataEntity): The data entity to attach.
+        relation (URIRef): The relation to use for attaching the data entity.
+        task_entity (Task): The task entity to attach the data entity to.
+
+    Returns:
+        None
     """
     add_data_entity_instance(kg, data, top_level_kg, top_level_schema_namespace, data_entity)
     add_relation(kg, task_entity, relation, data_entity)
@@ -198,18 +204,21 @@ def create_pipeline_task(
     kg: Graph,
     pipeline_name: str,
     input_data_path: str,
+    plots_output_dir: str,
 ) -> Task:
     """
-    Adds instance of pipeline task to kg
+    Create a pipeline task in the knowledge graph.
+
     Args:
-        top_level_schema_namespace: namespace of the top-level KG schema
-        parent_entity: parent entity of pipeline instance
-        kg: Graph object to add to
-        pipeline_name: name for the pipeline
-        input_data_path: path for the input data to be used by the pipeline's tasks
+        top_level_schema_namespace (Namespace): The top-level schema namespace.
+        parent_entity (Entity): The parent entity of the pipeline task.
+        kg (Graph): The knowledge graph.
+        pipeline_name (str): The name of the pipeline.
+        input_data_path (str): The path to the input data for the pipeline.
+        plots_output_dir (str): The directory to store the output plots when executing the pipeline.
 
     Returns:
-        Task: created pipeline task
+        Task: The created pipeline task.
     """
     pipeline = Task(top_level_schema_namespace + pipeline_name, parent_entity)
     add_instance(kg, pipeline)
@@ -217,4 +226,134 @@ def create_pipeline_task(
     input_data_path_literal = Literal(lexical_or_value=input_data_path, datatype=XSD.string)
     add_literal(kg, pipeline, top_level_schema_namespace.hasInputDataPath, input_data_path_literal)
 
+    plots_output_dir_literal = Literal(lexical_or_value=plots_output_dir, datatype=XSD.string)
+    add_literal(kg, pipeline, top_level_schema_namespace.hasPlotsOutputDir, plots_output_dir_literal)
+
     return pipeline
+
+
+def deserialize_input_entity_info_dict(
+    input_entity_info_dict: Dict[str, Union[List[str], MethodSerializable]],
+    data_entities_dict: Dict[str, DataEntity],
+    task_output_dicts: Dict[str, TaskSerializable],
+    pipeline_name: str,
+    namespace: Namespace,
+) -> Dict[str, Union[List[DataEntity], Method]]:
+    """
+    Deserializes the serialized input entity dictionary.
+
+    Args:
+        input_entity_info_dict (Dict[str, Union[List[str], MethodSerializable]]): The serialized input entity dictionary.
+        data_entities_dict (Dict[str, DataEntity]): The dictionary of data entities.
+        task_output_dicts (Dict[str, TaskSerializable]): The dictionary of task output objects.
+        pipeline_name (str): The name of the pipeline.
+
+    Returns:
+        Dict[str, Union[List[DataEntity], Method]]: The deserialized input data entity dictionary.
+    """
+    input_entity_dict: Dict[str, List[DataEntity]] = {}
+    for input_name, input_value in input_entity_info_dict.items():
+        if isinstance(input_value, MethodSerializable):  # provided input is a method
+            input_method = input_value
+            input_entity_dict[input_name] = Method(
+                namespace + input_method.method_type, parent_entity=None, params_dict=input_method.params_dict
+            )
+        elif isinstance(input_value, list) and all(
+            isinstance(elem, str) for elem in input_value
+        ):  # provided input is list of data entity names
+            input_data_entity_names = input_value
+            input_entity_dict[input_name] = []
+            for data_entity_name in input_data_entity_names:
+                match = re.match(TASK_OUTPUT_NAME_REGEX, data_entity_name)
+                if match:
+                    # input entity refers to a data entity that is an output of a previous task
+                    prev_task_output_name = match.group(1)
+                    prev_task_type = match.group(2)
+                    prev_task_instance_number = int(match.group(3))
+
+                    try:
+                        # regex matched so assume that the data_entity_name is an output of a previous task
+                        prev_task_name = get_instance_name(prev_task_type, prev_task_instance_number, pipeline_name)
+                        input_entity_dict[input_name].append(task_output_dicts[prev_task_name][prev_task_output_name])
+                    except KeyError:
+                        # regex matched but the data_entity_name is NOT an output of a previous task
+                        input_entity_dict[input_name].append(data_entities_dict[data_entity_name])
+                else:
+                    input_entity_dict[input_name].append(data_entities_dict[data_entity_name])
+
+    return input_entity_dict
+
+
+def load_exe_kg(input_path: str, exe_kg_from_json_method: Callable[[Union[Path, TextIOWrapper, str]], Graph]) -> Graph:
+    """
+    Loads the ExeKG from the specified input path.
+
+    Args:
+        input_path (str): The path to the ExeKG file.
+        exe_kg_from_json_method (Callable[[str], Graph]): The method to convert a simplified serialized pipeline to ExeKG.
+
+    Returns:
+        Graph: The loaded ExeKG.
+    """
+    input_exe_kg = Graph(bind_namespaces="rdflib")
+    if input_path.endswith(".ttl"):
+        # parse ExeKG from Turtle file
+        input_exe_kg.parse(input_path, format="n3")
+    elif input_path.endswith(".json"):
+        # convert simplified serialized pipeline to ExeKG
+        input_exe_kg = exe_kg_from_json_method(input_path)
+
+    return input_exe_kg
+
+
+def field_value_to_literal(field_value: Union[str, int, float, bool]) -> Literal:
+    """
+    Converts a Python field value to a Literal object with the appropriate datatype.
+
+    Args:
+        field_value (Union[str, int, float, bool]): The value to be converted.
+
+    Returns:
+        Literal: The converted Literal object.
+
+    """
+    if isinstance(field_value, str):
+        return Literal(field_value, datatype=XSD.string)
+    elif isinstance(field_value, bool):
+        return Literal(field_value, datatype=XSD.boolean)
+    elif isinstance(field_value, int):
+        return Literal(field_value, datatype=XSD.int)
+    elif isinstance(field_value, float):
+        return Literal(field_value, datatype=XSD.float)
+    else:
+        return Literal(str(field_value), datatype=XSD.string)
+
+
+def save_exe_kg(
+    exe_kg: Graph,
+    input_kg: Graph,
+    shacl_shapes_s: str,
+    pipeline_serializable: Pipeline,
+    dir_path: str,
+    pipeline_name: str,
+    check_executability: bool = True,
+    save_to_ttl: bool = True,
+    save_to_json: bool = True,
+) -> None:
+    if check_executability:
+        check_kg_executability(exe_kg + input_kg, shacl_shapes_s)
+
+    os.makedirs(dir_path, exist_ok=True)
+
+    if save_to_ttl:
+        # save the ExeKG in RDF/Turtle format
+        ttl_file_path = os.path.join(dir_path, f"{pipeline_name}.ttl")
+        exe_kg.serialize(destination=ttl_file_path)
+        print(f"Executable KG saved in RDF/Turtle format at {ttl_file_path}.")
+
+    if save_to_json:
+        # save the simplified pipeline in JSON format
+        json_file_path = os.path.join(dir_path, f"{pipeline_name}.json")
+        with open(json_file_path, "w+") as json_file:
+            json_file.write(pipeline_serializable.to_json())
+        print(f"Pipeline (simplified) saved in JSON format to {json_file_path}.")
