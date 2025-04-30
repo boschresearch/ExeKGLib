@@ -541,9 +541,9 @@ class ExeKGConstructionMixin:
             )
             pos = pos_per_task_type.get(task.task_type, 1)
             # store output data entities of the added task
-            task_output_dicts[
-                get_instance_name(task.task_type, pos, self.pipeline_serializable.name)
-            ] = added_task.output_dict
+            task_output_dicts[get_instance_name(task.task_type, pos, self.pipeline_serializable.name)] = (
+                added_task.output_dict
+            )
 
             pos_per_task_type[task.task_type] = pos + 1
 
