@@ -26,15 +26,15 @@ requires = ["poetry-core>=1.3.2"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 typer = "^0.12.3"
 pandas = "*"
 scikit-learn = "^1.1.3"
 black = {extras = ["d"], version = ">=22.10,<25.0"}
 matplotlib = "^3.6.2"
-rdflib = "^6.2.0"
+rdflib = ">=7.1.4,<8.0.0"
 mkdocs = "^1.4.2"
-pyshacl = "^0.21.0"
+pyshacl = "^0.31"
 typer-cli = "^0.12.3"
 requests = "^2.32.3"
 
